@@ -11,7 +11,7 @@ from importlib import resources
 from pathlib import Path
 from typing import Any
 
-from absolutely_proprietary.models import Entry, Status
+from absolutely_proprietary.models import Entry, Ring, Status
 from absolutely_proprietary.net import Fetcher
 
 log = logging.getLogger(__name__)
@@ -95,6 +95,7 @@ def _entry_from_json(raw: dict[str, Any], origin: str) -> Entry:
         description=raw.get("description", ""),
         origin=origin,
         reference=raw.get("reference", ""),
+        ring=Ring(raw["ring"]) if "ring" in raw else None,
     )
 
 

@@ -13,7 +13,7 @@ from absolutely_proprietary.blacklist import (
     parse_parabola,
     parse_parabola_line,
 )
-from absolutely_proprietary.models import Entry, Status
+from absolutely_proprietary.models import Entry, Ring, Status
 from absolutely_proprietary.net import Fetcher
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -99,6 +99,15 @@ def test_json_patterns_keep_file_order_and_newer_lists_win() -> None:
     assert [e.name for _, e in bl.patterns] == ["specific", "catch-all", "general"]
     hit = bl.lookup("Microsoft PowerToys")
     assert hit is not None and hit.status is Status.FREE
+
+
+def test_json_ring_is_optional_and_validated() -> None:
+    bl = Blacklist()
+    bl.load_json({"entries": [{"name": "vgk", "ring": 0}, {"name": "calendar"}]}, "test")
+    assert bl.by_name["vgk"].ring is Ring.KERNEL
+    assert bl.by_name["calendar"].ring is None
+    with pytest.raises(ValueError):
+        Blacklist().load_json({"entries": [{"name": "bad", "ring": 2}]}, "test")
 
 
 def test_merged_overrides() -> None:

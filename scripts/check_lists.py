@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any
 
 from absolutely_proprietary import licenses
-from absolutely_proprietary.models import Status
+from absolutely_proprietary.models import Ring, Status
 
 LISTS = Path(__file__).resolve().parent.parent / "absolutely_proprietary" / "data" / "lists"
 USER_AGENT = "absolutely-proprietary-list-checker/1.0 (+https://github.com/vmavromatis/absolutely-proprietary)"
@@ -68,6 +68,8 @@ def check_offline(path: Path, entries: list[dict[str, Any]]) -> list[str]:
     for e in entries:
         if Status(e.get("status", "nonfree")) is not Status.FREE and not e.get("reference"):
             problems.append(f"{path.name}: {e['name']}: no reference")
+        if "ring" in e and e["ring"] not in set(Ring):
+            problems.append(f"{path.name}: {e['name']}: ring {e['ring']!r} is not one of {', '.join(map(str, Ring))}")
         if pattern := e.get("pattern"):
             try:
                 re.compile(pattern)
