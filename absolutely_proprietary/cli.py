@@ -23,7 +23,7 @@ from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, Context, Source
 log = logging.getLogger("absolutely_proprietary")
 
 # Opt-in flags for what runs below userspace; each turns on the source of the same name.
-LAYER_FLAGS = ("kernel",)
+LAYER_FLAGS = ("kernel", "hypervisors")
 PROPRIETARY = [Status.NONFREE.value, Status.SEMIFREE.value, Status.USES_NONFREE.value]
 SORT_KEYS = {
     "source": lambda f: (f.package.source, f.package.name.lower()),
@@ -65,6 +65,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="only scan sources of this kind (repeatable)",
     )
     g.add_argument("--kernel", action="store_true", help="also scan kernel modules and third-party drivers (ring 0)")
+    g.add_argument(
+        "--hypervisors",
+        action="store_true",
+        help="also scan the hypervisor this OS runs on and installed ones (ring -1)",
+    )
     g.add_argument(
         "--list-sources", action="store_true", help="show every source and whether it's available here, then exit"
     )
