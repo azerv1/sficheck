@@ -112,7 +112,7 @@ def test_merged_overrides() -> None:
 
 def test_every_bundled_list_loads() -> None:
     names = bundled_names()
-    assert {"common", "debian", "windows", "windows-packages", "lang", "containers"} <= set(names)
+    assert {"common", "debian", "windows", "windows-packages", "lang"} <= set(names)
     bl = load_bundled(*names)
     assert len(bl) > 200
     assert all(e.status in Status for e in bl.by_name.values())

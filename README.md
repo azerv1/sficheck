@@ -1,6 +1,6 @@
 # Absolutely Proprietary
 
-Proprietary software detector. It audits everything installed through your system package manager, your language package managers and your container engine, then prints your Stallman Freedom Index (free / classified).
+Proprietary software detector. It audits everything installed through your system package manager and your language package managers, then prints your Stallman Freedom Index (free / classified).
 
 It runs on GNU/Linux (Arch, Debian, Ubuntu, NixOS and anything with flatpak/snap/brew), Windows and macOS. Python 3.11+, no dependencies.
 
@@ -36,9 +36,6 @@ Arch users can use the [AUR package](https://aur.archlinux.org/packages/absolute
 - .NET: `dotnet` global tools, opt-in `nuget` cache
 - C/C++: `vcpkg`, `conan`
 
-**Containers**
-- `docker`, `podman` — `org.opencontainers.image.licenses` label plus the curated list (mongo, mssql, hashicorp/*, …).
-
 Opt-in sources only run when named, e.g. `--sources maven,gradle`.
 
 ## How a package is classified
@@ -58,7 +55,7 @@ Statuses:
 ## Options
 
 ```
---sources A,B / --skip A,B / --kind system|lang|container    what to scan
+--sources A,B / --skip A,B / --kind system|lang              what to scan
 --status S (repeatable) / -f, --full / --all / --show-unknown  what to show (default: nonfree)
 --sort source|name|status|alternatives  (-s, -a shortcuts)  -r   ordering
 --format table|markdown|json|csv  -o FILE                     output
@@ -119,7 +116,6 @@ Add `"pattern"` (a case-insensitive regex) instead of an exact name for fuzzy ma
 - `windows.json` — registry DisplayName regexes
 - `windows-packages.json` — winget/scoop/choco id regexes
 - `lang.json` — language packages with missing or misleading metadata
-- `containers.json` — image repository regexes
 
 ## Development
 

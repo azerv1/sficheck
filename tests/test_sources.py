@@ -10,7 +10,6 @@ from absolutely_proprietary.models import Finding, Status
 from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME
 from absolutely_proprietary.sources.base import Context, Source
 from absolutely_proprietary.sources.compiled import Cargo, Go
-from absolutely_proprietary.sources.containers import Docker
 from absolutely_proprietary.sources.javascript import Npm
 from absolutely_proprietary.sources.jvm import Maven, Sdkman
 from absolutely_proprietary.sources.python import Pip
@@ -250,29 +249,6 @@ def test_scoop_and_choco(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fetche
     found = scan(Chocolatey(ctx), fetcher)
     assert found["KB2919355"].status is Status.NONFREE
     assert found["jq"].status is Status.FREE
-
-
-def test_docker_labels_and_curated(fake_run: FakeRun, fetcher: StubFetcher, ctx: Context) -> None:
-    images = [
-        {"Repository": "mongo", "Tag": "7", "ID": "aaa111"},
-        {"Repository": "ghcr.io/acme/tool", "Tag": "1", "ID": "bbb222"},
-        {"Repository": "<none>", "Tag": "<none>", "ID": "ccc333"},
-    ]
-    inspect = [
-        {"Id": "sha256:aaa111ffff", "Config": {"Labels": None}},
-        {"Id": "sha256:bbb222ffff", "Config": {"Labels": {"org.opencontainers.image.licenses": "Apache-2.0"}}},
-    ]
-    fake_run({"docker image ls": "\n".join(json.dumps(i) for i in images), "docker image inspect": json.dumps(inspect)})
-    found = scan(Docker(ctx), fetcher)
-    assert found["mongo"].status is Status.NONFREE
-    assert found["ghcr.io/acme/tool"].status is Status.FREE
-    assert "<none>" not in found
-
-
-def test_docker_daemon_down_raises(fake_run: FakeRun, ctx: Context) -> None:
-    fake_run({"docker image ls": None})
-    with pytest.raises(RuntimeError, match="daemon"):
-        list(Docker(ctx).packages())
 
 
 def test_ignore_user_list_and_online(fake_run: FakeRun, fetcher: StubFetcher, ctx: Context) -> None:

@@ -56,7 +56,7 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--skip", type=_csv, default=[], metavar="A,B", help="skip these sources")
     g.add_argument(
         "--kind",
-        choices=["system", "lang", "container"],
+        choices=["system", "lang"],
         action="append",
         help="only scan sources of this kind (repeatable)",
     )

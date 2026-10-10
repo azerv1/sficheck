@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from absolutely_proprietary.sources.base import Context, Source
 from absolutely_proprietary.sources.compiled import Cargo, Conan, DotnetTools, Go, Mint, NugetCache, Vcpkg
-from absolutely_proprietary.sources.containers import Docker, Podman
 from absolutely_proprietary.sources.javascript import Bun, Deno, Npm, Pnpm, Yarn
 from absolutely_proprietary.sources.jvm import Coursier, Gradle, Maven, Sdkman
 from absolutely_proprietary.sources.python import Pip, Pipx, UvTools
@@ -53,9 +52,6 @@ ALL_SOURCES: tuple[type[Source], ...] = (
     GhcPkg,
     Mix,
     Julia,
-    # containers
-    Docker,
-    Podman,
 )
 
 BY_NAME: dict[str, type[Source]] = {cls.name: cls for cls in ALL_SOURCES}

@@ -23,5 +23,5 @@ jobs:
       - run: mypy absolutely_proprietary tests
       - run: pytest -q
       - name: Smoke test against the real machine
-        run: absolutely-proprietary --list-sources && absolutely-proprietary -q --format json --skip winget,docker > /dev/null
+        run: absolutely-proprietary --list-sources && absolutely-proprietary -q --format json --skip winget > /dev/null
         shell: bash

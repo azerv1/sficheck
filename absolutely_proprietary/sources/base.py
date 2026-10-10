@@ -31,7 +31,7 @@ class Source:
     """
 
     name: ClassVar[str]
-    kind: ClassVar[str] = "lang"  # "system" | "lang" | "container"
+    kind: ClassVar[str] = "lang"  # "system" | "lang"
     description: ClassVar[str] = ""
     # Bundled curated lists (data/lists/<name>.json) consulted for this source.
     lists: ClassVar[tuple[str, ...]] = ("lang",)
