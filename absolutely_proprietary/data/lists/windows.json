@@ -8,10 +8,10 @@
       "alternatives": [
         "Trisquel",
         "Parabola",
-        "Guix System",
-        "Debian"
+        "Guix System"
       ],
-      "description": "The operating system itself is proprietary"
+      "description": "The operating system itself is proprietary",
+      "reference": "https://en.wikipedia.org/wiki/Microsoft_Windows"
     },
     {
       "name": "Visual Studio Code",
@@ -20,12 +20,8 @@
       "alternatives": [
         "VSCodium"
       ],
-      "description": "Microsoft's VS Code build is under a proprietary license with telemetry"
-    },
-    {
-      "name": "VSCodium",
-      "pattern": "^VSCodium",
-      "status": "free"
+      "description": "Microsoft's VS Code build is under a proprietary license",
+      "reference": "https://en.wikipedia.org/wiki/Visual_Studio_Code"
     },
     {
       "name": "Visual Studio",
@@ -35,20 +31,15 @@
         "MSYS2/MinGW-w64",
         "LLVM/Clang"
       ],
-      "description": "Proprietary IDE/toolchain"
+      "description": "Proprietary IDE/toolchain",
+      "reference": "https://en.wikipedia.org/wiki/Visual_Studio"
     },
     {
       "name": "Visual C++ Redistributable",
       "pattern": "^Microsoft Visual C\\+\\+ .*Redistributable",
       "status": "nonfree",
-      "alternatives": [],
-      "description": "Proprietary runtime many programs depend on"
-    },
-    {
-      "name": ".NET",
-      "pattern": "^Microsoft (\\.NET|ASP\\.NET|Windows Desktop Runtime)",
-      "status": "free",
-      "description": "MIT-licensed runtime"
+      "description": "Proprietary runtime many programs depend on",
+      "reference": "https://en.wikipedia.org/wiki/Microsoft_Visual_C++"
     },
     {
       "name": "Microsoft Edge",
@@ -58,37 +49,989 @@
         "LibreWolf",
         "ungoogled-chromium"
       ],
-      "description": "Proprietary browser (and WebView2 runtime)"
+      "description": "Proprietary browser (and WebView2 runtime)",
+      "reference": "https://en.wikipedia.org/wiki/Microsoft_Edge"
     },
     {
       "name": "Microsoft Office",
-      "pattern": "^Microsoft (Office|365|Word|Excel|PowerPoint|Outlook|OneNote|Access|Publisher|Visio|Project)",
+      "pattern": "^Microsoft (Office|365|Word|Excel|PowerPoint|Outlook|OneNote|Access|Publisher|Visio|Project)\\b",
       "status": "nonfree",
       "alternatives": [
-        "LibreOffice",
-        "OnlyOffice"
+        "LibreOffice"
       ],
-      "description": "Proprietary office suite"
+      "description": "Proprietary office suite",
+      "reference": "https://en.wikipedia.org/wiki/Microsoft_Office"
     },
     {
       "name": "Microsoft Teams",
-      "pattern": "^(Microsoft )?Teams",
+      "pattern": "^(Microsoft )?Teams\\b",
       "status": "nonfree",
       "alternatives": [
         "Element",
         "Jitsi Meet"
       ],
-      "description": "Proprietary collaboration client"
+      "description": "Proprietary collaboration client",
+      "reference": "https://en.wikipedia.org/wiki/Microsoft_Teams"
     },
     {
-      "name": "OneDrive",
-      "pattern": "^Microsoft OneDrive",
+      "name": "SQL Server",
+      "pattern": "SQL Server|^Microsoft (ODBC|OLE DB) Driver",
+      "status": "nonfree",
+      "alternatives": [
+        "PostgreSQL",
+        "MariaDB"
+      ],
+      "description": "Proprietary database and drivers",
+      "reference": "https://en.wikipedia.org/wiki/Microsoft_SQL_Server"
+    },
+    {
+      "name": "Silverlight",
+      "pattern": "^Microsoft Silverlight",
+      "status": "nonfree",
+      "description": "Proprietary browser plugin",
+      "reference": "https://en.wikipedia.org/wiki/Microsoft_Silverlight"
+    },
+    {
+      "name": "Skype",
+      "pattern": "^Skype",
+      "status": "nonfree",
+      "alternatives": [
+        "Jami",
+        "Linphone"
+      ],
+      "description": "Proprietary VoIP client",
+      "reference": "https://en.wikipedia.org/wiki/Skype"
+    },
+    {
+      "name": "Google Chrome",
+      "pattern": "^Google Chrome",
+      "status": "nonfree",
+      "alternatives": [
+        "LibreWolf",
+        "ungoogled-chromium"
+      ],
+      "description": "Google's proprietary browser build",
+      "reference": "https://en.wikipedia.org/wiki/Google_Chrome"
+    },
+    {
+      "name": "Google Drive",
+      "pattern": "^Google Drive",
       "status": "nonfree",
       "alternatives": [
         "Syncthing",
         "Nextcloud"
       ],
-      "description": "Proprietary sync client"
+      "description": "Proprietary sync client",
+      "reference": "https://en.wikipedia.org/wiki/Google_Drive"
+    },
+    {
+      "name": "Google Earth",
+      "pattern": "^Google Earth",
+      "status": "nonfree",
+      "alternatives": [
+        "Marble"
+      ],
+      "description": "Proprietary",
+      "reference": "https://en.wikipedia.org/wiki/Google_Earth"
+    },
+    {
+      "name": "Google Play Games",
+      "pattern": "^Google Play Games",
+      "status": "nonfree",
+      "description": "Proprietary",
+      "reference": "https://www.wikidata.org/wiki/Q19864315"
+    },
+    {
+      "name": "Opera",
+      "pattern": "^Opera\\b",
+      "status": "nonfree",
+      "alternatives": [
+        "LibreWolf"
+      ],
+      "description": "Proprietary browser",
+      "reference": "https://en.wikipedia.org/wiki/Opera_(web_browser)"
+    },
+    {
+      "name": "Vivaldi",
+      "pattern": "^Vivaldi",
+      "status": "nonfree",
+      "alternatives": [
+        "LibreWolf"
+      ],
+      "description": "Proprietary UI on top of Chromium",
+      "reference": "https://en.wikipedia.org/wiki/Vivaldi_(web_browser)"
+    },
+    {
+      "name": "Firefox",
+      "pattern": "^Mozilla Firefox",
+      "status": "uses-nonfree",
+      "alternatives": [
+        "LibreWolf",
+        "IceCat"
+      ],
+      "description": "Free, but supports DRM and recommends nonfree add-ons",
+      "reference": "https://git.parabola.nu/abslibre/blacklist.git/tree/blacklist.txt"
+    },
+    {
+      "name": "Discord",
+      "pattern": "^Discord",
+      "status": "nonfree",
+      "alternatives": [
+        "Element",
+        "Dino"
+      ],
+      "description": "Proprietary chat client and service",
+      "reference": "https://en.wikipedia.org/wiki/Discord"
+    },
+    {
+      "name": "Slack",
+      "pattern": "^Slack",
+      "status": "nonfree",
+      "alternatives": [
+        "Element",
+        "Mattermost"
+      ],
+      "description": "Proprietary chat client and service",
+      "reference": "https://en.wikipedia.org/wiki/Slack_(software)"
+    },
+    {
+      "name": "Zoom",
+      "pattern": "^Zoom( Workplace)?$|^Zoom ",
+      "status": "nonfree",
+      "alternatives": [
+        "Jitsi Meet",
+        "Jami"
+      ],
+      "description": "Proprietary video conferencing",
+      "reference": "https://en.wikipedia.org/wiki/Zoom_(software)"
+    },
+    {
+      "name": "WhatsApp",
+      "pattern": "^WhatsApp",
+      "status": "nonfree",
+      "alternatives": [
+        "Signal",
+        "Element"
+      ],
+      "description": "Proprietary messenger",
+      "reference": "https://en.wikipedia.org/wiki/WhatsApp"
+    },
+    {
+      "name": "Spotify",
+      "pattern": "^Spotify",
+      "status": "nonfree",
+      "alternatives": [
+        "Strawberry"
+      ],
+      "description": "Proprietary music client with DRM",
+      "reference": "https://www.spotify.com/us/legal/end-user-agreement/"
+    },
+    {
+      "name": "iTunes",
+      "pattern": "^iTunes",
+      "status": "nonfree",
+      "alternatives": [
+        "Strawberry",
+        "VLC"
+      ],
+      "description": "Proprietary Apple software",
+      "reference": "https://en.wikipedia.org/wiki/ITunes"
+    },
+    {
+      "name": "iCloud",
+      "pattern": "^iCloud",
+      "status": "nonfree",
+      "alternatives": [
+        "Syncthing",
+        "Nextcloud"
+      ],
+      "description": "Proprietary Apple software",
+      "reference": "https://www.wikidata.org/wiki/Q283469"
+    },
+    {
+      "name": "Steam",
+      "pattern": "^Steam$",
+      "status": "nonfree",
+      "description": "Proprietary game client and DRM platform",
+      "reference": "https://en.wikipedia.org/wiki/Steam_(service)"
+    },
+    {
+      "name": "Epic Games Launcher",
+      "pattern": "^Epic Games Launcher",
+      "status": "nonfree",
+      "description": "Proprietary game store",
+      "reference": "https://en.wikipedia.org/wiki/Epic_Games_Store"
+    },
+    {
+      "name": "Battle.net",
+      "pattern": "^Battle\\.net",
+      "status": "nonfree",
+      "description": "Proprietary game store",
+      "reference": "https://en.wikipedia.org/wiki/Battle.net"
+    },
+    {
+      "name": "Ubisoft Connect",
+      "pattern": "^Ubisoft (Connect|Game Launcher)",
+      "status": "nonfree",
+      "description": "Proprietary game store",
+      "reference": "https://www.wikidata.org/wiki/Q7898372"
+    },
+    {
+      "name": "AMD Software",
+      "pattern": "^AMD Software",
+      "status": "nonfree",
+      "description": "Proprietary GPU software",
+      "reference": "https://en.wikipedia.org/wiki/AMD_Software"
+    },
+    {
+      "name": "Ryzen Master",
+      "pattern": "^AMD Ryzen Master",
+      "status": "nonfree",
+      "description": "Proprietary CPU tuning software",
+      "reference": "https://www.wikidata.org/wiki/Q125657043"
+    },
+    {
+      "name": "Adobe Acrobat",
+      "pattern": "^Adobe Acrobat",
+      "status": "nonfree",
+      "alternatives": [
+        "SumatraPDF",
+        "Okular"
+      ],
+      "description": "Proprietary PDF software",
+      "reference": "https://en.wikipedia.org/wiki/Adobe_Acrobat"
+    },
+    {
+      "name": "Adobe Premiere",
+      "pattern": "^Adobe Premiere",
+      "status": "nonfree",
+      "alternatives": [
+        "Kdenlive",
+        "Shotcut"
+      ],
+      "description": "Proprietary video editor",
+      "reference": "https://en.wikipedia.org/wiki/Adobe_Premiere"
+    },
+    {
+      "name": "Adobe Flash Player",
+      "pattern": "^Adobe Flash Player",
+      "status": "nonfree",
+      "description": "Proprietary, unmaintained plugin",
+      "reference": "https://en.wikipedia.org/wiki/Adobe_Flash_Player"
+    },
+    {
+      "name": "Foxit PDF Reader",
+      "pattern": "^Foxit",
+      "status": "nonfree",
+      "alternatives": [
+        "SumatraPDF",
+        "Okular"
+      ],
+      "description": "Proprietary PDF software",
+      "reference": "https://en.wikipedia.org/wiki/Foxit_PDF_Reader"
+    },
+    {
+      "name": "Nitro PDF",
+      "pattern": "^Nitro (PDF|Pro)",
+      "status": "nonfree",
+      "alternatives": [
+        "SumatraPDF",
+        "Okular"
+      ],
+      "description": "Proprietary PDF software",
+      "reference": "https://en.wikipedia.org/wiki/Nitro_Software"
+    },
+    {
+      "name": "PDF-XChange",
+      "pattern": "^PDF-XChange",
+      "status": "nonfree",
+      "alternatives": [
+        "SumatraPDF",
+        "Okular"
+      ],
+      "description": "Proprietary PDF software",
+      "reference": "https://en.wikipedia.org/wiki/PDF-XChange_Viewer"
+    },
+    {
+      "name": "WinRAR",
+      "pattern": "^WinRAR",
+      "status": "nonfree",
+      "description": "Proprietary archiver",
+      "reference": "https://en.wikipedia.org/wiki/WinRAR"
+    },
+    {
+      "name": "7-Zip",
+      "pattern": "^7-Zip",
+      "status": "semifree",
+      "description": "LGPL, but contains code under the unRAR license restriction",
+      "reference": "https://www.7-zip.org/license.txt"
+    },
+    {
+      "name": "Dropbox",
+      "pattern": "^Dropbox",
+      "status": "nonfree",
+      "alternatives": [
+        "Syncthing",
+        "Nextcloud"
+      ],
+      "description": "Proprietary sync client",
+      "reference": "https://en.wikipedia.org/wiki/Dropbox"
+    },
+    {
+      "name": "TeamViewer",
+      "pattern": "^TeamViewer",
+      "status": "nonfree",
+      "alternatives": [
+        "RustDesk",
+        "Remmina"
+      ],
+      "description": "Proprietary remote desktop",
+      "reference": "https://en.wikipedia.org/wiki/TeamViewer"
+    },
+    {
+      "name": "AnyDesk",
+      "pattern": "^AnyDesk",
+      "status": "nonfree",
+      "alternatives": [
+        "RustDesk",
+        "Remmina"
+      ],
+      "description": "Proprietary remote desktop",
+      "reference": "https://en.wikipedia.org/wiki/AnyDesk"
+    },
+    {
+      "name": "Parsec",
+      "pattern": "^Parsec",
+      "status": "nonfree",
+      "alternatives": [
+        "Sunshine + Moonlight"
+      ],
+      "description": "Proprietary remote desktop",
+      "reference": "https://en.wikipedia.org/wiki/Parsec_(software)"
+    },
+    {
+      "name": "Splashtop",
+      "pattern": "^Splashtop",
+      "status": "nonfree",
+      "alternatives": [
+        "RustDesk"
+      ],
+      "description": "Proprietary remote desktop",
+      "reference": "https://en.wikipedia.org/wiki/Splashtop"
+    },
+    {
+      "name": "JetBrains IDEs",
+      "pattern": "^(IntelliJ IDEA (Ultimate)?|PyCharm( Professional)?|WebStorm|PhpStorm|CLion|GoLand|Rider|RubyMine|DataGrip|RustRover|DataSpell|JetBrains Toolbox|Fleet)\\b(?!.*Community)",
+      "status": "nonfree",
+      "alternatives": [
+        "Neovim",
+        "Emacs",
+        "Eclipse IDE"
+      ],
+      "description": "Proprietary JetBrains IDE",
+      "reference": "https://en.wikipedia.org/wiki/IntelliJ_IDEA"
+    },
+    {
+      "name": "Sublime Text",
+      "pattern": "^Sublime Text",
+      "status": "nonfree",
+      "alternatives": [
+        "Notepad++",
+        "Kate",
+        "Neovim"
+      ],
+      "description": "Proprietary editor",
+      "reference": "https://en.wikipedia.org/wiki/Sublime_Text"
+    },
+    {
+      "name": "Cursor",
+      "pattern": "^Cursor\\b",
+      "status": "nonfree",
+      "alternatives": [
+        "VSCodium"
+      ],
+      "description": "Proprietary AI editor",
+      "reference": "https://cursor.com/terms-of-service"
+    },
+    {
+      "name": "Docker Desktop",
+      "pattern": "^Docker Desktop",
+      "status": "nonfree",
+      "alternatives": [
+        "Podman Desktop",
+        "Rancher Desktop"
+      ],
+      "description": "Docker Desktop is proprietary",
+      "reference": "https://docs.docker.com/subscription/desktop-license/"
+    },
+    {
+      "name": "VMware",
+      "pattern": "^VMware (Workstation|Player)",
+      "status": "nonfree",
+      "alternatives": [
+        "QEMU",
+        "VirtualBox (base, GPL)"
+      ],
+      "description": "Proprietary virtualization",
+      "reference": "https://en.wikipedia.org/wiki/VMware_Workstation"
+    },
+    {
+      "name": "Parallels",
+      "pattern": "^Parallels",
+      "status": "nonfree",
+      "alternatives": [
+        "QEMU"
+      ],
+      "description": "Proprietary virtualization",
+      "reference": "https://en.wikipedia.org/wiki/Parallels_Desktop_for_Mac"
+    },
+    {
+      "name": "VirtualBox Extension Pack",
+      "pattern": "^Oracle VM VirtualBox Extension|^VirtualBox Extension Pack",
+      "status": "nonfree",
+      "alternatives": [
+        "VirtualBox (base, GPL)"
+      ],
+      "description": "Oracle extension pack under the proprietary PUEL",
+      "reference": "https://www.virtualbox.org/wiki/VirtualBox_PUEL"
+    },
+    {
+      "name": "Oracle Java",
+      "pattern": "^Java( \\d+)?( Update \\d+)?( \\(64-bit\\))?$|^Java\\(TM\\)|^Java SE Development Kit|^Oracle Java",
+      "status": "nonfree",
+      "alternatives": [
+        "Eclipse Temurin",
+        "Microsoft Build of OpenJDK"
+      ],
+      "description": "Oracle Java under the Oracle No-Fee Terms / OTN license",
+      "reference": "https://www.oracle.com/downloads/licenses/no-fee-license.html"
+    },
+    {
+      "name": "Norton",
+      "pattern": "^Norton",
+      "status": "nonfree",
+      "alternatives": [
+        "ClamAV"
+      ],
+      "description": "Proprietary security software",
+      "reference": "https://en.wikipedia.org/wiki/Norton_AntiVirus"
+    },
+    {
+      "name": "Kaspersky",
+      "pattern": "^Kaspersky",
+      "status": "nonfree",
+      "alternatives": [
+        "ClamAV"
+      ],
+      "description": "Proprietary security software",
+      "reference": "https://en.wikipedia.org/wiki/Kaspersky_Anti-Virus"
+    },
+    {
+      "name": "ESET",
+      "pattern": "^ESET",
+      "status": "nonfree",
+      "alternatives": [
+        "ClamAV"
+      ],
+      "description": "Proprietary security software",
+      "reference": "https://en.wikipedia.org/wiki/ESET_NOD32"
+    },
+    {
+      "name": "Avast",
+      "pattern": "^Avast",
+      "status": "nonfree",
+      "alternatives": [
+        "ClamAV"
+      ],
+      "description": "Proprietary security software",
+      "reference": "https://en.wikipedia.org/wiki/Avast_Antivirus"
+    },
+    {
+      "name": "AVG",
+      "pattern": "^AVG\\b",
+      "status": "nonfree",
+      "alternatives": [
+        "ClamAV"
+      ],
+      "description": "Proprietary security software",
+      "reference": "https://en.wikipedia.org/wiki/AVG_AntiVirus"
+    },
+    {
+      "name": "McAfee",
+      "pattern": "^McAfee",
+      "status": "nonfree",
+      "alternatives": [
+        "ClamAV"
+      ],
+      "description": "Proprietary security software",
+      "reference": "https://en.wikipedia.org/wiki/McAfee_VirusScan"
+    },
+    {
+      "name": "Malwarebytes",
+      "pattern": "^Malwarebytes",
+      "status": "nonfree",
+      "alternatives": [
+        "ClamAV"
+      ],
+      "description": "Proprietary security software",
+      "reference": "https://en.wikipedia.org/wiki/Malwarebytes_(software)"
+    },
+    {
+      "name": "Avira",
+      "pattern": "^Avira",
+      "status": "nonfree",
+      "alternatives": [
+        "ClamAV"
+      ],
+      "description": "Proprietary security software",
+      "reference": "https://en.wikipedia.org/wiki/Avira"
+    },
+    {
+      "name": "Surfshark",
+      "pattern": "^Surfshark",
+      "status": "nonfree",
+      "alternatives": [
+        "WireGuard",
+        "OpenVPN"
+      ],
+      "description": "Proprietary VPN client",
+      "reference": "https://en.wikipedia.org/wiki/Surfshark_VPN"
+    },
+    {
+      "name": "1Password",
+      "pattern": "^1Password",
+      "status": "nonfree",
+      "alternatives": [
+        "KeePassXC",
+        "Bitwarden"
+      ],
+      "description": "Proprietary password manager",
+      "reference": "https://www.wikidata.org/wiki/Q2150861"
+    },
+    {
+      "name": "LastPass",
+      "pattern": "^LastPass",
+      "status": "nonfree",
+      "alternatives": [
+        "KeePassXC",
+        "Bitwarden"
+      ],
+      "description": "Proprietary password manager",
+      "reference": "https://www.wikidata.org/wiki/Q2418462"
+    },
+    {
+      "name": "Dashlane",
+      "pattern": "^Dashlane",
+      "status": "nonfree",
+      "alternatives": [
+        "KeePassXC",
+        "Bitwarden"
+      ],
+      "description": "Proprietary password manager",
+      "reference": "https://en.wikipedia.org/wiki/Dashlane"
+    },
+    {
+      "name": "RoboForm",
+      "pattern": "^RoboForm",
+      "status": "nonfree",
+      "alternatives": [
+        "KeePassXC",
+        "Bitwarden"
+      ],
+      "description": "Proprietary password manager",
+      "reference": "https://en.wikipedia.org/wiki/RoboForm"
+    },
+    {
+      "name": "FL Studio",
+      "pattern": "^FL Studio",
+      "status": "nonfree",
+      "alternatives": [
+        "LMMS",
+        "Ardour"
+      ],
+      "description": "Proprietary DAW",
+      "reference": "https://en.wikipedia.org/wiki/FL_Studio"
+    },
+    {
+      "name": "Ableton Live",
+      "pattern": "^Ableton",
+      "status": "nonfree",
+      "alternatives": [
+        "Ardour",
+        "LMMS"
+      ],
+      "description": "Proprietary DAW",
+      "reference": "https://en.wikipedia.org/wiki/Ableton_Live"
+    },
+    {
+      "name": "REAPER",
+      "pattern": "^REAPER\\b",
+      "status": "nonfree",
+      "alternatives": [
+        "Ardour"
+      ],
+      "description": "Proprietary DAW",
+      "reference": "https://en.wikipedia.org/wiki/REAPER"
+    },
+    {
+      "name": "Cubase",
+      "pattern": "^(Steinberg )?Cubase",
+      "status": "nonfree",
+      "alternatives": [
+        "Ardour"
+      ],
+      "description": "Proprietary DAW",
+      "reference": "https://en.wikipedia.org/wiki/Cubase"
+    },
+    {
+      "name": "Pro Tools",
+      "pattern": "^(Avid )?Pro Tools",
+      "status": "nonfree",
+      "alternatives": [
+        "Ardour"
+      ],
+      "description": "Proprietary DAW",
+      "reference": "https://en.wikipedia.org/wiki/Pro_Tools"
+    },
+    {
+      "name": "Sibelius",
+      "pattern": "^Sibelius",
+      "status": "nonfree",
+      "alternatives": [
+        "MuseScore"
+      ],
+      "description": "Proprietary scorewriter",
+      "reference": "https://en.wikipedia.org/wiki/Sibelius_(scorewriter)"
+    },
+    {
+      "name": "Bitwig Studio",
+      "pattern": "^Bitwig Studio",
+      "status": "nonfree",
+      "alternatives": [
+        "Ardour",
+        "LMMS"
+      ],
+      "description": "Proprietary DAW",
+      "reference": "https://en.wikipedia.org/wiki/Bitwig_Studio"
+    },
+    {
+      "name": "Camtasia",
+      "pattern": "^Camtasia",
+      "status": "nonfree",
+      "alternatives": [
+        "OBS Studio",
+        "Kdenlive"
+      ],
+      "description": "Proprietary video software",
+      "reference": "https://en.wikipedia.org/wiki/Camtasia"
+    },
+    {
+      "name": "DaVinci Resolve",
+      "pattern": "^DaVinci Resolve",
+      "status": "nonfree",
+      "alternatives": [
+        "Kdenlive",
+        "Shotcut"
+      ],
+      "description": "Proprietary video editor",
+      "reference": "https://en.wikipedia.org/wiki/DaVinci_Resolve"
+    },
+    {
+      "name": "CapCut",
+      "pattern": "^CapCut",
+      "status": "nonfree",
+      "alternatives": [
+        "Kdenlive",
+        "Shotcut"
+      ],
+      "description": "Proprietary video editor",
+      "reference": "https://en.wikipedia.org/wiki/CapCut"
+    },
+    {
+      "name": "Clipchamp",
+      "pattern": "^(Microsoft )?Clipchamp",
+      "status": "nonfree",
+      "alternatives": [
+        "Kdenlive",
+        "Shotcut"
+      ],
+      "description": "Proprietary video editor",
+      "reference": "https://en.wikipedia.org/wiki/Microsoft_Clipchamp"
+    },
+    {
+      "name": "Filmora",
+      "pattern": "^(Wondershare )?Filmora",
+      "status": "nonfree",
+      "alternatives": [
+        "Kdenlive",
+        "Shotcut"
+      ],
+      "description": "Proprietary video editor",
+      "reference": "https://en.wikipedia.org/wiki/Wondershare_Filmora"
+    },
+    {
+      "name": "Vegas Pro",
+      "pattern": "^(MAGIX )?VEGAS Pro|^Vegas Pro",
+      "status": "nonfree",
+      "alternatives": [
+        "Kdenlive",
+        "Shotcut"
+      ],
+      "description": "Proprietary video editor",
+      "reference": "https://en.wikipedia.org/wiki/Vegas_Pro"
+    },
+    {
+      "name": "Notion",
+      "pattern": "^Notion\\b",
+      "status": "nonfree",
+      "alternatives": [
+        "Logseq",
+        "AppFlowy",
+        "Joplin"
+      ],
+      "description": "Proprietary note-taking app",
+      "reference": "https://en.wikipedia.org/wiki/Notion_(productivity_software)"
+    },
+    {
+      "name": "Obsidian",
+      "pattern": "^Obsidian\\b",
+      "status": "nonfree",
+      "alternatives": [
+        "Logseq",
+        "Joplin"
+      ],
+      "description": "Proprietary note-taking app",
+      "reference": "https://en.wikipedia.org/wiki/Obsidian_(software)"
+    },
+    {
+      "name": "Evernote",
+      "pattern": "^Evernote",
+      "status": "nonfree",
+      "alternatives": [
+        "Joplin"
+      ],
+      "description": "Proprietary note-taking app",
+      "reference": "https://en.wikipedia.org/wiki/Evernote"
+    },
+    {
+      "name": "Todoist",
+      "pattern": "^Todoist",
+      "status": "nonfree",
+      "description": "Proprietary task manager",
+      "reference": "https://en.wikipedia.org/wiki/Todoist"
+    },
+    {
+      "name": "Grammarly",
+      "pattern": "^Grammarly",
+      "status": "nonfree",
+      "alternatives": [
+        "LanguageTool"
+      ],
+      "description": "Proprietary writing assistant",
+      "reference": "https://en.wikipedia.org/wiki/Grammarly"
+    },
+    {
+      "name": "Figma",
+      "pattern": "^Figma",
+      "status": "nonfree",
+      "alternatives": [
+        "Penpot",
+        "Inkscape"
+      ],
+      "description": "Proprietary design app",
+      "reference": "https://en.wikipedia.org/wiki/Figma"
+    },
+    {
+      "name": "Affinity",
+      "pattern": "^Affinity (Designer|Photo|Publisher)",
+      "status": "nonfree",
+      "alternatives": [
+        "Inkscape",
+        "Krita",
+        "Scribus"
+      ],
+      "description": "Proprietary design app",
+      "reference": "https://en.wikipedia.org/wiki/Affinity_(software)"
+    },
+    {
+      "name": "Paint.NET",
+      "pattern": "^paint\\.net",
+      "status": "nonfree",
+      "alternatives": [
+        "Krita",
+        "GIMP",
+        "Pinta"
+      ],
+      "description": "Proprietary (freeware) image editor",
+      "reference": "https://en.wikipedia.org/wiki/Paint.NET"
+    },
+    {
+      "name": "IrfanView",
+      "pattern": "^IrfanView",
+      "status": "nonfree",
+      "alternatives": [
+        "nomacs",
+        "qimgv"
+      ],
+      "description": "Proprietary (freeware) image viewer",
+      "reference": "https://en.wikipedia.org/wiki/IrfanView"
+    },
+    {
+      "name": "XnView",
+      "pattern": "^XnView",
+      "status": "nonfree",
+      "alternatives": [
+        "nomacs",
+        "qimgv"
+      ],
+      "description": "Proprietary (freeware) image viewer",
+      "reference": "https://en.wikipedia.org/wiki/XnView"
+    },
+    {
+      "name": "CCleaner",
+      "pattern": "^CCleaner",
+      "status": "nonfree",
+      "alternatives": [
+        "BleachBit"
+      ],
+      "description": "Proprietary system utility",
+      "reference": "https://en.wikipedia.org/wiki/CCleaner"
+    },
+    {
+      "name": "Revo Uninstaller",
+      "pattern": "^Revo Uninstaller",
+      "status": "nonfree",
+      "description": "Proprietary system utility",
+      "reference": "https://en.wikipedia.org/wiki/Revo_Uninstaller"
+    },
+    {
+      "name": "WinZip",
+      "pattern": "^WinZip",
+      "status": "nonfree",
+      "description": "Proprietary archiver",
+      "reference": "https://en.wikipedia.org/wiki/WinZip"
+    },
+    {
+      "name": "Snagit",
+      "pattern": "^Snagit",
+      "status": "nonfree",
+      "alternatives": [
+        "ShareX",
+        "Flameshot"
+      ],
+      "description": "Proprietary screenshot tool",
+      "reference": "https://en.wikipedia.org/wiki/Snagit"
+    },
+    {
+      "name": "Daemon Tools",
+      "pattern": "^DAEMON Tools",
+      "status": "nonfree",
+      "description": "Proprietary disc imaging tool",
+      "reference": "https://en.wikipedia.org/wiki/Daemon_Tools"
+    },
+    {
+      "name": "Postman",
+      "pattern": "^Postman",
+      "status": "nonfree",
+      "alternatives": [
+        "Bruno"
+      ],
+      "description": "Proprietary API client",
+      "reference": "https://www.postman.com/legal/terms/"
+    },
+    {
+      "name": "RealVNC",
+      "pattern": "^(RealVNC|VNC Viewer|VNC Server)",
+      "status": "nonfree",
+      "alternatives": [
+        "TigerVNC",
+        "Remmina"
+      ],
+      "description": "Proprietary VNC",
+      "reference": "https://en.wikipedia.org/wiki/RealVNC"
+    },
+    {
+      "name": "Liquibase",
+      "pattern": "^Liquibase [5-9]",
+      "status": "nonfree",
+      "alternatives": [
+        "Flyway Community",
+        "sqitch"
+      ],
+      "description": "Functional Source License since 5.0",
+      "reference": "https://www.liquibase.com/blog/liquibase-community-for-the-future-fsl"
+    },
+    {
+      "name": "HashiCorp Terraform",
+      "pattern": "^HashiCorp Terraform",
+      "status": "nonfree",
+      "alternatives": [
+        "OpenTofu"
+      ],
+      "description": "Business Source License since 1.6",
+      "reference": "https://raw.githubusercontent.com/hashicorp/terraform/main/LICENSE"
+    },
+    {
+      "name": "Claude Code",
+      "pattern": "^Claude Code",
+      "status": "nonfree",
+      "alternatives": [
+        "opencode",
+        "aider"
+      ],
+      "description": "Proprietary CLI",
+      "reference": "https://registry.npmjs.org/@anthropic-ai/claude-code/latest"
+    },
+    {
+      "name": "GitKraken",
+      "pattern": "^GitKraken",
+      "status": "nonfree",
+      "alternatives": [
+        "gitg",
+        "lazygit"
+      ],
+      "description": "Proprietary git client",
+      "reference": "https://www.gitkraken.com/eula"
+    },
+    {
+      "name": "Navicat",
+      "pattern": "^Navicat",
+      "status": "nonfree",
+      "alternatives": [
+        "DBeaver Community",
+        "pgAdmin"
+      ],
+      "description": "Proprietary database client",
+      "reference": "https://en.wikipedia.org/wiki/Navicat"
+    },
+    {
+      "name": "Beyond Compare",
+      "pattern": "^Beyond Compare",
+      "status": "nonfree",
+      "alternatives": [
+        "Meld",
+        "WinMerge"
+      ],
+      "description": "Proprietary diff tool",
+      "reference": "https://en.wikipedia.org/wiki/Beyond_Compare"
+    },
+    {
+      "name": "VeraCrypt",
+      "pattern": "^VeraCrypt",
+      "status": "nonfree",
+      "description": "Partially licensed under the TrueCrypt License 3.0, which is not free",
+      "reference": "https://labs.parabola.nu/issues/1139"
+    },
+    {
+      "name": "VSCodium",
+      "pattern": "^VSCodium",
+      "status": "free"
+    },
+    {
+      "name": ".NET",
+      "pattern": "^Microsoft (\\.NET|ASP\\.NET|Windows Desktop Runtime)",
+      "status": "free",
+      "description": "MIT-licensed runtime"
     },
     {
       "name": "PowerToys",
@@ -103,120 +1046,9 @@
       "description": "MIT"
     },
     {
-      "name": "Microsoft tooling",
-      "pattern": "^(Microsoft|Windows) (Update Health Tools|PC Health Check|SDK|Software Development Kit|GameInput|Web Deploy|ODBC|OLE DB|Azure|Intune|Defender|Silverlight|XNA|Kinect|Performance Toolkit)|SQL Server|^WPTx64",
-      "status": "nonfree",
-      "alternatives": [],
-      "description": "Proprietary Microsoft component"
-    },
-    {
-      "name": "Skype",
-      "pattern": "^Skype",
-      "status": "nonfree",
-      "alternatives": [
-        "Jami",
-        "Linphone"
-      ],
-      "description": "Proprietary VoIP client"
-    },
-    {
-      "name": "Google Chrome",
-      "pattern": "^Google Chrome",
-      "status": "nonfree",
-      "alternatives": [
-        "LibreWolf",
-        "ungoogled-chromium"
-      ],
-      "description": "Google's proprietary browser build"
-    },
-    {
-      "name": "Google software",
-      "pattern": "^Google (Drive|Earth|Update|Play Games)",
-      "status": "nonfree",
-      "alternatives": [],
-      "description": "Proprietary Google software"
-    },
-    {
-      "name": "Opera",
-      "pattern": "^Opera",
-      "status": "nonfree",
-      "alternatives": [
-        "LibreWolf"
-      ],
-      "description": "Proprietary browser"
-    },
-    {
-      "name": "Vivaldi",
-      "pattern": "^Vivaldi",
-      "status": "nonfree",
-      "alternatives": [
-        "LibreWolf"
-      ],
-      "description": "Proprietary UI on top of Chromium"
-    },
-    {
-      "name": "Firefox",
-      "pattern": "^Mozilla (Firefox|Thunderbird)",
-      "status": "uses-nonfree",
-      "alternatives": [
-        "LibreWolf",
-        "IceCat"
-      ],
-      "description": "Free, but supports DRM and recommends nonfree add-ons"
-    },
-    {
       "name": "LibreWolf",
       "pattern": "^LibreWolf",
       "status": "free"
-    },
-    {
-      "name": "Brave",
-      "pattern": "^Brave",
-      "status": "uses-nonfree",
-      "alternatives": [
-        "LibreWolf"
-      ],
-      "description": "Free (MPL), but promotes proprietary services"
-    },
-    {
-      "name": "Discord",
-      "pattern": "^Discord",
-      "status": "nonfree",
-      "alternatives": [
-        "Element",
-        "Dino"
-      ],
-      "description": "Proprietary chat client and service"
-    },
-    {
-      "name": "Slack",
-      "pattern": "^Slack",
-      "status": "nonfree",
-      "alternatives": [
-        "Element",
-        "Mattermost"
-      ],
-      "description": "Proprietary chat client and service"
-    },
-    {
-      "name": "Zoom",
-      "pattern": "^Zoom( Workplace)?$|^Zoom ",
-      "status": "nonfree",
-      "alternatives": [
-        "Jitsi Meet",
-        "Jami"
-      ],
-      "description": "Proprietary video conferencing"
-    },
-    {
-      "name": "WhatsApp",
-      "pattern": "^WhatsApp",
-      "status": "nonfree",
-      "alternatives": [
-        "Signal",
-        "Element"
-      ],
-      "description": "Proprietary messenger"
     },
     {
       "name": "Telegram",
@@ -231,220 +1063,15 @@
       "description": "AGPL-3.0"
     },
     {
-      "name": "Spotify",
-      "pattern": "^Spotify",
-      "status": "nonfree",
-      "alternatives": [
-        "Strawberry",
-        "Rhythmbox"
-      ],
-      "description": "Proprietary music client with DRM"
-    },
-    {
-      "name": "iTunes/Apple",
-      "pattern": "^(iTunes|iCloud|Apple (Mobile Device Support|Software Update|Application Support)|Bonjour|QuickTime)",
-      "status": "nonfree",
-      "alternatives": [
-        "Strawberry",
-        "VLC"
-      ],
-      "description": "Proprietary Apple software"
-    },
-    {
-      "name": "Steam",
-      "pattern": "^Steam$",
-      "status": "nonfree",
-      "alternatives": [
-        "itch",
-        "Lutris"
-      ],
-      "description": "Proprietary game client and DRM platform"
-    },
-    {
-      "name": "Game stores",
-      "pattern": "^(Epic Games Launcher|Battle\\.net|EA app|Origin|Ubisoft (Connect|Game Launcher)|GOG GALAXY|Riot Client|Xbox|Rockstar Games Launcher|Amazon Games)",
-      "status": "nonfree",
-      "alternatives": [
-        "itch",
-        "Lutris"
-      ],
-      "description": "Proprietary game store"
-    },
-    {
-      "name": "NVIDIA",
-      "pattern": "^NVIDIA ",
-      "status": "nonfree",
-      "alternatives": [],
-      "description": "Proprietary GPU driver/software"
-    },
-    {
-      "name": "AMD",
-      "pattern": "^AMD (Software|Chipset|Settings|Radeon|Ryzen Master)",
-      "status": "nonfree",
-      "alternatives": [],
-      "description": "Proprietary driver/software"
-    },
-    {
-      "name": "Intel",
-      "pattern": "^Intel(\\(R\\)|®)? ",
-      "status": "nonfree",
-      "alternatives": [],
-      "description": "Proprietary driver/software"
-    },
-    {
-      "name": "Realtek",
-      "pattern": "^Realtek",
-      "status": "nonfree",
-      "alternatives": [],
-      "description": "Proprietary driver"
-    },
-    {
-      "name": "Peripheral suites",
-      "pattern": "^(Logitech|Logi |Razer|Corsair|iCUE|SteelSeries|ASUS|Armoury|ROG|MSI|Gigabyte|Dell|HP |Lenovo|Synaptics|Elan|Dolby|DTS|Nahimic|Waves)",
-      "status": "nonfree",
-      "alternatives": [
-        "OpenRGB",
-        "Piper/libratbag"
-      ],
-      "description": "Proprietary vendor software"
-    },
-    {
-      "name": "Adobe",
-      "pattern": "^Adobe ",
-      "status": "nonfree",
-      "alternatives": [
-        "GIMP",
-        "Inkscape",
-        "Krita",
-        "Kdenlive",
-        "Okular"
-      ],
-      "description": "Proprietary creative software"
-    },
-    {
-      "name": "Foxit/Nitro",
-      "pattern": "^(Foxit|Nitro|PDF-XChange)",
-      "status": "nonfree",
-      "alternatives": [
-        "SumatraPDF",
-        "Okular"
-      ],
-      "description": "Proprietary PDF software"
-    },
-    {
       "name": "SumatraPDF",
       "pattern": "^SumatraPDF",
       "status": "free",
       "description": "GPL-3.0"
     },
     {
-      "name": "WinRAR",
-      "pattern": "^WinRAR",
-      "status": "nonfree",
-      "alternatives": [
-        "PeaZip",
-        "7-Zip"
-      ],
-      "description": "Proprietary archiver"
-    },
-    {
-      "name": "7-Zip",
-      "pattern": "^7-Zip",
-      "status": "semifree",
-      "alternatives": [
-        "PeaZip"
-      ],
-      "description": "LGPL, but contains nonfree unRAR code"
-    },
-    {
-      "name": "PeaZip",
-      "pattern": "^PeaZip",
-      "status": "free"
-    },
-    {
-      "name": "Dropbox",
-      "pattern": "^Dropbox",
-      "status": "nonfree",
-      "alternatives": [
-        "Syncthing",
-        "Nextcloud"
-      ],
-      "description": "Proprietary sync client"
-    },
-    {
-      "name": "Remote desktop",
-      "pattern": "^(TeamViewer|AnyDesk|Parsec|Splashtop|Chrome Remote Desktop)",
-      "status": "nonfree",
-      "alternatives": [
-        "RustDesk",
-        "Remmina"
-      ],
-      "description": "Proprietary remote desktop"
-    },
-    {
       "name": "RustDesk",
       "pattern": "^RustDesk",
       "status": "free"
-    },
-    {
-      "name": "JetBrains",
-      "pattern": "^(IntelliJ IDEA (Ultimate)?|PyCharm( Professional)?|WebStorm|PhpStorm|CLion|GoLand|Rider|RubyMine|DataGrip|RustRover|DataSpell|JetBrains Toolbox|Fleet)\\b(?!.*Community)",
-      "status": "nonfree",
-      "alternatives": [
-        "IntelliJ IDEA Community",
-        "PyCharm Community",
-        "Neovim"
-      ],
-      "description": "Proprietary JetBrains IDE"
-    },
-    {
-      "name": "Sublime",
-      "pattern": "^Sublime (Text|Merge)",
-      "status": "nonfree",
-      "alternatives": [
-        "Notepad++",
-        "Kate",
-        "Neovim"
-      ],
-      "description": "Proprietary editor"
-    },
-    {
-      "name": "Cursor",
-      "pattern": "^Cursor",
-      "status": "nonfree",
-      "alternatives": [
-        "VSCodium"
-      ],
-      "description": "Proprietary AI editor"
-    },
-    {
-      "name": "Windsurf",
-      "pattern": "^Windsurf",
-      "status": "nonfree",
-      "alternatives": [
-        "VSCodium"
-      ],
-      "description": "Proprietary AI editor"
-    },
-    {
-      "name": "Docker Desktop",
-      "pattern": "^Docker Desktop",
-      "status": "nonfree",
-      "alternatives": [
-        "Podman Desktop",
-        "Rancher Desktop"
-      ],
-      "description": "Docker Desktop is proprietary"
-    },
-    {
-      "name": "Virtualization",
-      "pattern": "^(VMware|Oracle VM VirtualBox Extension|Parallels)",
-      "status": "nonfree",
-      "alternatives": [
-        "QEMU",
-        "VirtualBox (base, GPL)"
-      ],
-      "description": "Proprietary virtualization"
     },
     {
       "name": "VirtualBox",
@@ -453,41 +1080,10 @@
       "description": "GPL base package"
     },
     {
-      "name": "Oracle Java",
-      "pattern": "^Java( \\d+)?( Update \\d+)?( \\(64-bit\\))?$|^Java\\(TM\\)|^Java SE Development Kit|^Oracle Java",
-      "status": "nonfree",
-      "alternatives": [
-        "Eclipse Temurin",
-        "Microsoft Build of OpenJDK"
-      ],
-      "description": "Oracle Java under the OTN / No-Fee Terms license"
-    },
-    {
       "name": "OpenJDK",
       "pattern": "^(Eclipse Temurin|Microsoft Build of OpenJDK|Azul Zulu|Amazon Corretto|Liberica|OpenJDK)",
       "status": "free",
       "description": "GPL-2.0 with Classpath exception"
-    },
-    {
-      "name": "Antivirus",
-      "pattern": "^(Malwarebytes|Avast|AVG|Norton|McAfee|Kaspersky|ESET|Bitdefender|Avira|Sophos|Webroot|Trend Micro)",
-      "status": "nonfree",
-      "alternatives": [
-        "Windows Defender is also nonfree; ClamAV"
-      ],
-      "description": "Proprietary security software"
-    },
-    {
-      "name": "VPN",
-      "pattern": "^(NordVPN|ExpressVPN|Surfshark|CyberGhost|Private Internet Access|Windscribe|Cloudflare WARP)",
-      "status": "nonfree",
-      "alternatives": [
-        "WireGuard",
-        "OpenVPN",
-        "Mullvad VPN",
-        "Proton VPN"
-      ],
-      "description": "Proprietary VPN client"
     },
     {
       "name": "Free VPN clients",
@@ -495,136 +1091,14 @@
       "status": "free"
     },
     {
-      "name": "Password managers",
-      "pattern": "^(1Password|LastPass|Dashlane|RoboForm|Keeper)",
-      "status": "nonfree",
-      "alternatives": [
-        "KeePassXC",
-        "Bitwarden"
-      ],
-      "description": "Proprietary password manager"
-    },
-    {
       "name": "Free password managers",
       "pattern": "^(KeePassXC|KeePass Password Safe|Bitwarden)",
       "status": "free"
     },
     {
-      "name": "Audio software",
-      "pattern": "^(FL Studio|Ableton|Reaper|Cubase|Steinberg|Sibelius|Avid|Pro Tools|ASIO4ALL|PACE License|iLok|Native Instruments|Waves Central|Serum)",
-      "status": "nonfree",
-      "alternatives": [
-        "Ardour",
-        "LMMS",
-        "MuseScore",
-        "Zrythm"
-      ],
-      "description": "Proprietary audio software / license manager"
-    },
-    {
-      "name": "Video software",
-      "pattern": "^(Camtasia|DaVinci Resolve|Blackmagic|CapCut|Clipchamp|Filmora|Vegas Pro|Premiere)",
-      "status": "nonfree",
-      "alternatives": [
-        "Kdenlive",
-        "Shotcut",
-        "OBS Studio"
-      ],
-      "description": "Proprietary video software"
-    },
-    {
-      "name": "Notes & productivity",
-      "pattern": "^(Notion|Obsidian|Evernote|Todoist|Microsoft To Do|Grammarly)",
-      "status": "nonfree",
-      "alternatives": [
-        "Logseq",
-        "Joplin",
-        "LanguageTool"
-      ],
-      "description": "Proprietary productivity app"
-    },
-    {
-      "name": "Design",
-      "pattern": "^(Figma|Canva|Sketch|Affinity)",
-      "status": "nonfree",
-      "alternatives": [
-        "Penpot",
-        "Inkscape",
-        "Krita"
-      ],
-      "description": "Proprietary design app"
-    },
-    {
-      "name": "Image editors",
-      "pattern": "^(Paint\\.NET|paint\\.net|IrfanView|XnView)",
-      "status": "nonfree",
-      "alternatives": [
-        "Krita",
-        "GIMP",
-        "Pinta"
-      ],
-      "description": "Proprietary (freeware) image editor"
-    },
-    {
-      "name": "System cleaners",
-      "pattern": "^(CCleaner|Revo Uninstaller|IObit|Driver Booster|Advanced SystemCare|Wise (Care|Disk)|Glary)",
-      "status": "nonfree",
-      "alternatives": [
-        "BleachBit"
-      ],
-      "description": "Proprietary system utility"
-    },
-    {
-      "name": "Freeware utilities",
-      "pattern": "^(WinZip|Everything|TreeSize|WizTree|Postman|Snagit|Wondershare|HiSuite|Synology|RealVNC|VNC Viewer|Surge|AnyToISO|PowerISO|UltraISO|Daemon Tools)",
-      "status": "nonfree",
-      "alternatives": [
-        "PeaZip",
-        "ShareX",
-        "TigerVNC",
-        "Bruno",
-        "Filelight"
-      ],
-      "description": "Proprietary utility"
-    },
-    {
-      "name": "Proprietary dev tools",
-      "pattern": "^(Liquibase [5-9]|HashiCorp |Claude Code|Cursor|GitKraken|Tower|Navicat|DBeaver (EE|Enterprise)|DataGrip|Beyond Compare|SmartGit)",
-      "status": "nonfree",
-      "alternatives": [
-        "OpenTofu",
-        "DBeaver Community",
-        "Meld",
-        "opencode"
-      ],
-      "description": "Proprietary or source-available developer tool"
-    },
-    {
-      "name": "VeraCrypt",
-      "pattern": "^VeraCrypt",
-      "status": "semifree",
-      "alternatives": [
-        "cryptsetup (on GNU/Linux)"
-      ],
-      "description": "Apache 2.0 plus the TrueCrypt License 3.0, which is not free"
-    },
-    {
-      "name": "Cloud CLIs",
-      "pattern": "^(AWS Command Line Interface|Google Cloud SDK|Azure CLI|Microsoft Azure CLI|vultr-cli|Doctl)",
-      "status": "uses-nonfree",
-      "description": "Free client for a proprietary cloud service"
-    },
-    {
       "name": "Free applications",
       "pattern": "^(Git( version|$)|Python \\d|Python Launcher|Node\\.js|Go Programming Language|Rust|rustup|LLVM|CMake|Neovim|Vim |GNU Emacs|Notepad\\+\\+|VLC|OBS Studio|GIMP|Inkscape|Krita|Blender|Audacity|LibreOffice|Thunderbird|KeePassXC|PuTTY|WinSCP|FileZilla|qBittorrent|mpv|HandBrake|ShareX|Rufus|Ventoy|Wireshark|Npcap|MSYS2|Cygwin|Kdenlive|Shotcut|darktable|digiKam|Calibre|Zotero|Syncthing|Nextcloud|Element|Jami|Joplin|Logseq|Tor Browser|Mullvad Browser|PowerShell \\d|Windows Subsystem for Linux|WinMerge|Greenshot|Flameshot|Ollama|Jan|Podman|Rancher Desktop|Strawberry|GnuPG|GNU Privacy Guard|GitHub CLI|Graphviz|ImageMagick|FFmpeg|Poppler|Tesseract-OCR|Universal Ctags|Wget2?|yt-dlp|Clink|AutoHotkey|DB Browser for SQLite|DuckDB|iPerf3|Nmap [1-7]\\.[0-8]|PostgreSQL|PostGIS|PgBouncer|pgAgent|PEM-HTTPD|MySQL|TigerVNC|WezTerm|OpenTofu|Fast Node Manager|Deno|USBPcap|Freenet|Mozilla Maintenance Service|rotki|oneAPI Level Zero|ezwinports|RipGrep|Chafa|MediaInfo|LSDeluxe|Bruno|opencode|Lazydocker|Yazi|(bat|fd|fzf|jq|yq|lf|glow|gping|hyperfine|tokei|scc|procs|Dust|duf|bottom|xh|Just|gitui|act|less|zoxide|csvlens|qrcp|psmux|witr|FileQL|GitQL)$)",
       "status": "free"
-    },
-    {
-      "name": "Microsoft (other)",
-      "pattern": "\\bMicrosoft\\b|^Update for .*Windows|\\(KB\\d+\\)|^MSXML|^vs_",
-      "status": "nonfree",
-      "alternatives": [],
-      "description": "Proprietary Microsoft component"
     }
   ]
 }
