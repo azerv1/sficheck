@@ -30,7 +30,7 @@ class Cargo(Source):
             if match := _CARGO_LINE.match(line):
                 name, version = match.groups()
                 manifest = next(registry_src.glob(f"*/{name}-{version}/Cargo.toml"), None)
-                yield self.pkg(name, version, meta.toml_license(manifest) if manifest else None)
+                yield self.pkg(name, version, meta.cargo_license(manifest) if manifest else None)
 
 
 def _go_escape(module: str) -> str:

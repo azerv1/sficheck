@@ -3,18 +3,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 
-class Status(str, Enum):
+class Status(StrEnum):
     NONFREE = "nonfree"
     SEMIFREE = "semifree"
     USES_NONFREE = "uses-nonfree"
     FREE = "free"
     UNKNOWN = "unknown"
-
-    def __str__(self) -> str:
-        return self.value
 
     @property
     def is_proprietary(self) -> bool:

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import tomllib
 import xml.etree.ElementTree as ET
 from email.parser import HeaderParser
 from pathlib import Path
@@ -16,7 +17,6 @@ _LICENSE_URL_ID = re.compile(
     r"(?:opensource\.org/licenses?|spdx\.org/licenses|choosealicense\.com/licenses)/([A-Za-z0-9.+-]+?)(?:\.html|\.php|/)?$",
     re.IGNORECASE,
 )
-_TOML_LICENSE = re.compile(r'^\s*license\s*=\s*"([^"]+)"', re.MULTILINE)
 
 
 def read_json(path: Path) -> Any:
@@ -144,10 +144,12 @@ def site_packages_dists(site: Path) -> list[tuple[str, str, str | None]]:
     return found
 
 
-def toml_license(path: Path) -> str | None:
-    """The ``license = "..."`` line of a Cargo.toml / pyproject-like file (no TOML parser needed)."""
+def cargo_license(path: Path) -> str | None:
+    """``package.license`` from a Cargo.toml."""
     try:
-        match = _TOML_LICENSE.search(path.read_text(encoding="utf-8", errors="replace"))
-    except OSError:
+        with path.open("rb") as fh:
+            manifest = tomllib.load(fh)
+    except (OSError, tomllib.TOMLDecodeError):
         return None
-    return match.group(1) if match else None
+    lic = manifest.get("package", {}).get("license")
+    return lic if isinstance(lic, str) else None

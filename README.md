@@ -2,7 +2,7 @@
 
 Proprietary software detector. It audits everything installed through your system package manager, your language package managers and your container engine, then prints your Stallman Freedom Index (free / classified).
 
-It runs on GNU/Linux (Arch, Debian, Ubuntu, NixOS and anything with flatpak/snap/brew), Windows and macOS. Python 3.10+, no dependencies.
+It runs on GNU/Linux (Arch, Debian, Ubuntu, NixOS and anything with flatpak/snap/brew), Windows and macOS. Python 3.11+, no dependencies.
 
 ## Install
 
