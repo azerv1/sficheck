@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import StrEnum
+from enum import IntEnum, StrEnum
 
 
 class Status(StrEnum):
@@ -16,6 +16,20 @@ class Status(StrEnum):
     @property
     def is_proprietary(self) -> bool:
         return self in (Status.NONFREE, Status.SEMIFREE, Status.USES_NONFREE)
+
+
+class Ring(IntEnum):
+    """The CPU protection ring a program runs in; lower rings see and control more.
+
+    Rings 1 and 2 go unused by mainstream OSes. The negative rings are the usual names
+    for what sits below the kernel.
+    """
+
+    ME = -3  # Intel ME, AMD PSP, CPU microcode: runs even while the OS is off
+    FIRMWARE = -2  # BIOS/UEFI and System Management Mode
+    HYPERVISOR = -1
+    KERNEL = 0  # kernel modules and drivers, kernel-level anticheat
+    USER = 3
 
 
 @dataclass(frozen=True, slots=True)
@@ -40,6 +54,7 @@ class Entry:
     description: str = ""
     origin: str = ""
     reference: str = ""
+    ring: Ring | None = None  # None: the scanning source's default
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,6 +68,8 @@ class Finding:
     description: str = ""
     # Where the status claim comes from (license page, Parabola issue, ...).
     reference: str = ""
+    # Set on proprietary findings: how deep into the machine the software reaches.
+    ring: Ring | None = None
 
     @classmethod
     def from_entry(cls, package: Package, entry: Entry) -> Finding:
@@ -63,6 +80,7 @@ class Finding:
             alternatives=entry.alternatives,
             description=entry.description,
             reference=entry.reference,
+            ring=entry.ring,
         )
 
 
