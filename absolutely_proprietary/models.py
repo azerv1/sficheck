@@ -51,6 +51,8 @@ class Finding:
     reason: str = ""
     alternatives: tuple[str, ...] = ()
     description: str = ""
+    # Where the status claim comes from (license page, Parabola issue, ...).
+    reference: str = ""
 
     @classmethod
     def from_entry(cls, package: Package, entry: Entry) -> Finding:
@@ -60,6 +62,7 @@ class Finding:
             reason=entry.origin,
             alternatives=entry.alternatives,
             description=entry.description,
+            reference=entry.reference,
         )
 
 

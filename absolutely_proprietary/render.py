@@ -147,9 +147,12 @@ def markdown(findings: Sequence[Finding], reports: Sequence[SourceReport], unkno
         lines.append(
             f"| {r.source} | {r.total} | {r.proprietary} | {r.unknown} | {_fmt_index(r.freedom_index(unknown_as_nonfree))} |"
         )
-    lines += ["", "| " + " | ".join(HEADERS) + " |", "|" + "---|" * len(HEADERS)]
-    for src, name, ver, status, alts, desc in map(_row, findings):
-        lines.append("| " + " | ".join(esc(x) for x in (src, name, ver, status, "<br>".join(alts), desc)) + " |")
+    headers = (*HEADERS, "Reference")
+    lines += ["", "| " + " | ".join(headers) + " |", "|" + "---|" * len(headers)]
+    for f in findings:
+        src, name, ver, status, alts, desc = _row(f)
+        ref = f"[source]({f.reference})" if f.reference else ""
+        lines.append("| " + " | ".join(esc(x) for x in (src, name, ver, status, "<br>".join(alts), desc, ref)) + " |")
     return "\n".join(lines) + "\n"
 
 
@@ -184,6 +187,7 @@ def as_json(findings: Sequence[Finding], reports: Sequence[SourceReport], unknow
                 "alternatives": list(f.alternatives),
                 "description": f.description,
                 "reason": f.reason,
+                "reference": f.reference or None,
             }
             for f in findings
         ],
@@ -194,8 +198,9 @@ def as_json(findings: Sequence[Finding], reports: Sequence[SourceReport], unknow
 def as_csv(findings: Sequence[Finding]) -> str:
     buf = io.StringIO()
     writer = csv.writer(buf, lineterminator="\n")
-    writer.writerow([*HEADERS, "License", "Reason"])
+    writer.writerow([*HEADERS, "License", "Reason", "Reference"])
     for f in findings:
         src, name, ver, status, alts, _ = _row(f)
-        writer.writerow([src, name, ver, status, "; ".join(alts), f.description, f.package.license or "", f.reason])
+        row = [src, name, ver, status, "; ".join(alts), f.description, f.package.license or "", f.reason, f.reference]
+        writer.writerow(row)
     return buf.getvalue()
