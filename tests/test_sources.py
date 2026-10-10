@@ -315,6 +315,7 @@ def test_kernel_modules_use_the_taint_flag(
         (tmp_path / "sys" / name / "taint").write_text(taint + "\n")
         if version:
             (tmp_path / "sys" / name / "version").write_text(version + "\n")
+    monkeypatch.setattr(kernel, "IS_WINDOWS", False)
     monkeypatch.setattr(kernel, "PROC_MODULES", proc_modules)
     monkeypatch.setattr(kernel, "SYS_MODULE", tmp_path / "sys")
     found = scan(Kernel(ctx), fetcher)
@@ -322,3 +323,46 @@ def test_kernel_modules_use_the_taint_flag(
     assert found["nvidia"].package.version == "550.78" and found["nvidia"].ring is Ring.KERNEL
     assert found["wl"].status is Status.NONFREE and found["wl"].reason == "kernel taint P"
     assert found["ext4"].status is Status.FREE and found["ext4"].ring is None
+
+
+def test_windows_drivers_keep_third_party_ones_in_use(
+    monkeypatch: pytest.MonkeyPatch, fetcher: StubFetcher, ctx: Context
+) -> None:
+    services = [
+        ("vgk", "", 1, 0),  # loads at system start
+        ("EasyAntiCheat", r"\??\C:\Program Files\EAC\eac.sys", 3, 0),  # on demand, outside Windows
+        ("igfxn", "", 3, 1),  # bound to a device
+        ("megasas", "", 0, 0),  # inbox boot driver, no such controller here
+        ("disk", "", 0, 1),  # Microsoft's
+        ("gone", r"\??\C:\Games\gone.sys", 3, 0),  # registry leftover, file deleted
+        ("NDKPerf", "", 3, 1),  # inbox file without version info
+    ]
+    infos = {
+        r"C:\Windows\System32\drivers\vgk.sys": {"CompanyName": "Riot Games, Inc.", "FileVersion": "1.17"},
+        r"C:\Program Files\EAC\eac.sys": {},
+        r"C:\Windows\System32\drivers\igfxn.sys": {
+            "CompanyName": "Intel Corporation",
+            "ProductName": "Intel HD Graphics",
+        },
+        r"C:\Windows\System32\drivers\megasas.sys": {"CompanyName": "Avago Technologies"},
+        r"C:\Windows\System32\drivers\disk.sys": {"CompanyName": "Microsoft Corporation"},
+        r"C:\Windows\System32\drivers\NDKPerf.sys": {},
+    }
+    monkeypatch.setattr(kernel, "IS_WINDOWS", True)
+    monkeypatch.setenv("SYSTEMROOT", r"C:\Windows")
+    monkeypatch.setattr(kernel, "_windows_driver_services", lambda: iter(services))
+    monkeypatch.setattr(kernel, "_file_info", infos.get)
+    found = scan(Kernel(ctx), fetcher)
+    assert sorted(found) == ["EasyAntiCheat", "igfxn", "vgk"]
+    assert found["igfxn"].status is Status.NONFREE and found["igfxn"].ring is Ring.KERNEL
+    assert found["igfxn"].description == "Intel HD Graphics (Intel Corporation)"
+    assert found["vgk"].package.version == "1.17"
+    assert found["EasyAntiCheat"].description == "Driver from an unnamed vendor"
+
+
+def test_image_paths_resolve_to_files() -> None:
+    root = r"C:\Windows"
+    assert kernel._image_path("vgk", "", root) == r"C:\Windows\System32\drivers\vgk.sys"
+    assert kernel._image_path("x", r"\??\D:\x.sys", root) == r"D:\x.sys"
+    assert kernel._image_path("x", r"\SystemRoot\System32\x.sys", root) == r"C:\Windows\System32\x.sys"
+    assert kernel._image_path("x", r"System32\drivers\x.sys", root) == r"C:\Windows\System32\drivers\x.sys"
