@@ -52,12 +52,27 @@ Statuses:
 - *uses-nonfree* — free, but depends on, recommends or integrates with nonfree software or services.
 - *unknown* — no license information could be found.
 
+### How deep it reaches: protection rings
+
+Proprietary findings also carry the CPU protection ring the software runs in. A proprietary calendar can only see what you give it. A kernel anticheat sees everything the OS does, and the Intel ME keeps running while the machine is off.
+
+| Ring | Runs as | Examples |
+|---|---|---|
+| -3 me | a coprocessor or the CPU itself, below the OS | Intel ME, AMD PSP, CPU microcode |
+| -2 firmware | system firmware | BIOS/UEFI |
+| -1 hypervisor | underneath every OS on the machine | VMware, Parallels, the VirtualBox Extension Pack |
+| 0 kernel | the kernel | Riot Vanguard, Easy Anti-Cheat, BattlEye, FACEIT AC, nvidia, Windows itself |
+| 3 user | an ordinary program | everything else |
+
+Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entry names its ring; anything else proprietary is assumed to be userspace. `--sort ring` lists the deepest first, and `--max-ring 0` shows only the kernel and below.
+
 ## Options
 
 ```
 --sources A,B / --skip A,B / --kind system|lang              what to scan
 --status S (repeatable) / -f, --full / --all / --show-unknown  what to show (default: nonfree)
---sort source|name|status|alternatives  (-s, -a shortcuts)  -r   ordering
+--sort source|name|status|ring|alternatives  (-s, -a shortcuts)  -r   ordering
+--max-ring N                                                  only ring N or deeper (-3 … 3)
 --format table|markdown|json|csv  -o FILE                     output
 --blacklist PATH|URL (repeatable)  --ignore PKG  --no-bundled list control
 --online-licenses  --offline  --refresh  --cache-ttl HOURS    network and cache
@@ -85,6 +100,7 @@ Downloads (Parabola lists, registry lookups, `winget show` output) are cached fo
 
 Your system is infected with 5 proprietary packages out of 1311 found (8 unknown) across 11 sources.
 Your Stallman Freedom Index is 99.62
+By protection ring: 3 user: 5
 
 +--------+----------+-------------+---------+---------------+
 | Source | Packages | Proprietary | Unknown | Freedom index |
@@ -93,11 +109,11 @@ Your Stallman Freedom Index is 99.62
 | pip    | 131      | 0           | 4       | 100.00        |
 | gem    | 95       | 0           | 2       | 100.00        |
 ...
-+--------+-------+------------+---------+--------------------+--------------------------------------------+
-| Source | Name  | Version    | Status  | Libre alternatives | Description                                |
-+--------+-------+------------+---------+--------------------+--------------------------------------------+
-| dpkg   | nikto | 1:2.1.5-3  | nonfree |                    | in Debian's non-free archive area          |
-+--------+-------+------------+---------+--------------------+--------------------------------------------+
++--------+-------+------------+---------+--------+--------------------+--------------------------------------------+
+| Source | Name  | Version    | Status  | Ring   | Libre alternatives | Description                                |
++--------+-------+------------+---------+--------+--------------------+--------------------------------------------+
+| dpkg   | nikto | 1:2.1.5-3  | nonfree | 3 user |                    | in Debian's non-free archive area          |
++--------+-------+------------+---------+--------+--------------------+--------------------------------------------+
 ```
 
 ## Contributing to the lists
@@ -107,6 +123,8 @@ Curated entries live in `absolutely_proprietary/data/lists/*.json`, one object p
 ```json
 {"name": "zoom", "status": "nonfree", "alternatives": ["jitsi-meet-desktop"], "description": "Proprietary video conferencing", "reference": "https://en.wikipedia.org/wiki/Zoom_(software)"}
 ```
+
+Add `"ring"` (-3, -2, -1, 0 or 3) when the software runs below userspace, such as a kernel driver or a hypervisor.
 
 Add `"pattern"` (a case-insensitive regex) instead of an exact name for fuzzy matches, such as Windows display names. In pattern lists the first match in file order wins.
 
