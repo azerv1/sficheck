@@ -128,7 +128,7 @@ class Kernel(Source):
     name = "kernel"
     kind = "system"
     description = "Kernel modules and drivers running in ring 0"
-    lists = ("common",)
+    lists = ("common", "kernel")
     default_ring = Ring.KERNEL
     default_enabled = False
 

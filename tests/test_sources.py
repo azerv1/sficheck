@@ -330,7 +330,7 @@ def test_windows_drivers_keep_third_party_ones_in_use(
 ) -> None:
     services = [
         ("vgk", "", 1, 0),  # loads at system start
-        ("EasyAntiCheat", r"\??\C:\Program Files\EAC\eac.sys", 3, 0),  # on demand, outside Windows
+        ("mystery", r"\??\C:\Program Files\Game\ac.sys", 3, 0),  # on demand, outside Windows
         ("igfxn", "", 3, 1),  # bound to a device
         ("megasas", "", 0, 0),  # inbox boot driver, no such controller here
         ("disk", "", 0, 1),  # Microsoft's
@@ -339,7 +339,7 @@ def test_windows_drivers_keep_third_party_ones_in_use(
     ]
     infos = {
         r"C:\Windows\System32\drivers\vgk.sys": {"CompanyName": "Riot Games, Inc.", "FileVersion": "1.17"},
-        r"C:\Program Files\EAC\eac.sys": {},
+        r"C:\Program Files\Game\ac.sys": {},
         r"C:\Windows\System32\drivers\igfxn.sys": {
             "CompanyName": "Intel Corporation",
             "ProductName": "Intel HD Graphics",
@@ -353,11 +353,12 @@ def test_windows_drivers_keep_third_party_ones_in_use(
     monkeypatch.setattr(kernel, "_windows_driver_services", lambda: iter(services))
     monkeypatch.setattr(kernel, "_file_info", infos.get)
     found = scan(Kernel(ctx), fetcher)
-    assert sorted(found) == ["EasyAntiCheat", "igfxn", "vgk"]
+    assert sorted(found) == ["igfxn", "mystery", "vgk"]
     assert found["igfxn"].status is Status.NONFREE and found["igfxn"].ring is Ring.KERNEL
     assert found["igfxn"].description == "Intel HD Graphics (Intel Corporation)"
     assert found["vgk"].package.version == "1.17"
-    assert found["EasyAntiCheat"].description == "Driver from an unnamed vendor"
+    assert found["mystery"].description == "Driver from an unnamed vendor"
+    assert found["vgk"].description.startswith("Riot Vanguard")  # curated entry wins over the fallback
 
 
 def test_image_paths_resolve_to_files() -> None:

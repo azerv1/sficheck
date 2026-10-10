@@ -115,6 +115,13 @@ def test_kernel_anticheat_is_ring_zero() -> None:
     assert hit is not None and hit.status is Status.NONFREE and hit.ring is Ring.KERNEL
 
 
+def test_kernel_list_names_anticheat_and_free_drivers() -> None:
+    drivers = load_bundled("kernel")
+    vgk, tap = drivers.lookup("vgk"), drivers.lookup("tap0901")
+    assert vgk is not None and vgk.status is Status.NONFREE and vgk.ring is Ring.KERNEL
+    assert tap is not None and tap.status is Status.FREE
+
+
 def test_merged_overrides() -> None:
     a, b = Blacklist(), Blacklist()
     a.add(Entry("x", Status.NONFREE))

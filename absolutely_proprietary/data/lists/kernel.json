@@ -1,0 +1,21 @@
+{
+  "_comment": "Kernel drivers and modules, matched by exact Windows driver service name or Linux module name. Only used by the 'kernel' source. Unlisted third-party Windows drivers count as nonfree, so list free drivers here as 'free'; Linux modules are judged by the kernel's own taint flag.",
+  "entries": [
+    {"name": "vgk", "status": "nonfree", "ring": 0, "description": "Riot Vanguard kernel anticheat, loaded at boot", "reference": "https://en.wikipedia.org/wiki/Riot_Vanguard"},
+    {"name": "EasyAntiCheat", "status": "nonfree", "ring": 0, "description": "Easy Anti-Cheat kernel anticheat", "reference": "https://en.wikipedia.org/wiki/Kernel-level_anti-cheat"},
+    {"name": "EasyAntiCheat_EOS", "status": "nonfree", "ring": 0, "description": "Easy Anti-Cheat kernel anticheat (Epic Online Services)", "reference": "https://en.wikipedia.org/wiki/Kernel-level_anti-cheat"},
+    {"name": "BEDaisy", "status": "nonfree", "ring": 0, "description": "BattlEye kernel anticheat", "reference": "https://en.wikipedia.org/wiki/BattlEye"},
+    {"name": "FACEIT", "status": "nonfree", "ring": 0, "description": "FACEIT kernel anticheat", "reference": "https://support.faceit.com/hc/en-us/articles/9394666828188-What-is-FACEIT-Anti-cheat-and-how-does-it-work"},
+    {"name": "Denuvo Anti-Cheat", "status": "nonfree", "ring": 0, "description": "Denuvo kernel anticheat", "reference": "https://en.wikipedia.org/wiki/Kernel-level_anti-cheat"},
+    {"name": "veracrypt", "status": "nonfree", "ring": 0, "alternatives": ["cryptsetup", "zulucrypt"], "description": "Partially licensed under the TrueCrypt License 3.0, which is not free", "reference": "https://labs.parabola.nu/issues/1139"},
+    {"name": "tap0901", "status": "free", "description": "OpenVPN TAP-Windows adapter (GPL-2.0)", "reference": "https://github.com/OpenVPN/tap-windows6"},
+    {"name": "WireGuard", "status": "free", "description": "WireGuard for Windows kernel driver (GPL-2.0)", "reference": "https://git.zx2c4.com/wireguard-nt/about/"},
+    {"name": "USBPcap", "status": "free", "description": "USB packet capture driver (BSD-2-Clause)", "reference": "https://github.com/desowin/usbpcap"},
+    {"name": "PawnIO", "status": "free", "description": "Scriptable kernel I/O driver (GPL-2.0)", "reference": "https://github.com/namazso/PawnIO"},
+    {"name": "WinFsp", "status": "free", "description": "Windows File System Proxy (GPL-3.0 with exception)", "reference": "https://github.com/winfsp/winfsp"},
+    {"name": "VBoxSup", "status": "free", "description": "VirtualBox support driver (GPL-3.0 base package)", "reference": "https://www.virtualbox.org/wiki/Licensing_FAQ"},
+    {"name": "VBoxNetAdp", "status": "free", "description": "VirtualBox host-only network driver (GPL-3.0 base package)", "reference": "https://www.virtualbox.org/wiki/Licensing_FAQ"},
+    {"name": "VBoxNetLwf", "status": "free", "description": "VirtualBox bridged network driver (GPL-3.0 base package)", "reference": "https://www.virtualbox.org/wiki/Licensing_FAQ"},
+    {"name": "VBoxUSBMon", "status": "free", "description": "VirtualBox USB monitor driver (GPL-3.0 base package)", "reference": "https://www.virtualbox.org/wiki/Licensing_FAQ"}
+  ]
+}
