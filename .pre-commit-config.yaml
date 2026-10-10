@@ -28,6 +28,12 @@ repos:
         language: system
         pass_filenames: false
         verbose: true
+      - id: vulture
+        name: vulture
+        entry: uv run python hooks/timed.py vulture vulture
+        language: system
+        pass_filenames: false
+        verbose: true
       - id: pytest
         name: pytest
         entry: uv run python hooks/timed.py pytest pytest
