@@ -1,0 +1,15 @@
+abiword:abiword:::[semifree] Hard-codes nonfree fonts, and has non-privacy search engines e.g. Google
+acpi_call:acpi_call:::[technical] adapted to nonfree linux kernel
+angband:angband:::[semifree] [FIXME:description] Sounds are "freeware"
+archey3:paraboley:::[branding] [FIXME:package] TODO: package archey3 with https://github.com/lclarkmichalek/archey3/pull/40
+archinstall::parabola:3260:[uses-nonfree]: archlinux CLI installer
+archlinux-appstream-data::parabola:813:[uses-nonfree][FIXME:package] promotes nonfree packages and Arch repositories
+chromium::parabola:1167:[uses-nonfree][FIXME:package] links to proprietary plugins - unattended phone-home" queries - not entirely built from sources - see https://lists.nongnu.org/archive/html/gnu-linux-libre/2018-03/msg00098.html
+discord::parabola:2489::[nonfree] No source code available - redistribution-only license
+firefox:iceweasel:fsf:firefox:[uses-nonfree] supports DRM, recommends nonfree add-ons, non-privacy search engines
+licenses:licenses:::[uses-nonfree] Remove non-free CC -NC and -ND licenses (also add WTFPL)
+steam::::[nonfree] binary package
+unrar::fsf:unrar:[nonfree] no replacement necessary - other packages already provide the same functionality
+winetricks:winetricks-libre:parabola:366:[uses-nonfree] recommends and installs nonfree software
+
+# a comment
