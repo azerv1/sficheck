@@ -122,6 +122,13 @@ def test_kernel_list_names_anticheat_and_free_drivers() -> None:
     assert tap is not None and tap.status is Status.FREE
 
 
+def test_hypervisor_list_rings_the_nonfree_ones() -> None:
+    hypervisors = load_bundled("hypervisors")
+    hyperv, kvm = hypervisors.lookup("hyper-v"), hypervisors.lookup("kvm")
+    assert hyperv is not None and hyperv.status is Status.NONFREE and hyperv.ring is Ring.HYPERVISOR
+    assert kvm is not None and kvm.status is Status.FREE
+
+
 def test_merged_overrides() -> None:
     a, b = Blacklist(), Blacklist()
     a.add(Entry("x", Status.NONFREE))

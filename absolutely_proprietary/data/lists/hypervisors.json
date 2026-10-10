@@ -1,0 +1,12 @@
+{
+  "_comment": "Hypervisors by the short name the 'hypervisors' source reports: the one this OS runs on, and the ones installed here. Only used by that source.",
+  "entries": [
+    {"name": "hyper-v", "status": "nonfree", "ring": -1, "alternatives": ["kvm", "xen"], "description": "Microsoft Hyper-V; Windows itself runs on top of it whenever virtualization-based security, WSL 2 or Hyper-V is on", "reference": "https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/reference/hyper-v-architecture"},
+    {"name": "vmware", "status": "nonfree", "ring": -1, "alternatives": ["kvm", "qemu"], "description": "VMware hypervisor (Workstation, Fusion, ESXi)", "reference": "https://en.wikipedia.org/wiki/VMware_Workstation"},
+    {"name": "parallels", "status": "nonfree", "ring": -1, "alternatives": ["qemu", "utm"], "description": "Parallels Desktop hypervisor", "reference": "https://en.wikipedia.org/wiki/Parallels_Desktop_for_Mac"},
+    {"name": "virtualbox", "status": "free", "description": "VirtualBox base package (GPL-3.0); the Extension Pack is separate and nonfree", "reference": "https://www.virtualbox.org/wiki/Licensing_FAQ"},
+    {"name": "kvm", "status": "free", "description": "Linux Kernel-based Virtual Machine (GPL-2.0)", "reference": "https://www.linux-kvm.org/page/Main_Page"},
+    {"name": "qemu", "status": "free", "description": "QEMU machine emulator and virtualizer (GPL-2.0)", "reference": "https://www.qemu.org/docs/master/about/license.html"},
+    {"name": "xen", "status": "free", "description": "Xen Project hypervisor (GPL-2.0)", "reference": "https://xenproject.org/"}
+  ]
+}
