@@ -98,6 +98,15 @@ def test_ignore_and_user_blacklist(capsys: pytest.CaptureFixture[str], tmp_path:
     assert found == ["good"]
 
 
+def test_max_ring_and_ring_sort(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
+    custom = tmp_path / "mine.json"
+    custom.write_text(json.dumps({"entries": [{"name": "half", "status": "nonfree", "ring": 0}]}))
+    base = ("--sources", "fake", "--blacklist", str(custom))
+    assert names(run_json(capsys, *base, "-f", "--max-ring", "0")) == ["half"]
+    assert names(run_json(capsys, *base, "-f", "--max-ring", "3")) == ["evil|pipe", "half"]
+    assert names(run_json(capsys, *base, "--all", "--sort", "ring")) == ["half", "evil|pipe", "good", "mystery"]
+
+
 def test_exit_code(capsys: pytest.CaptureFixture[str]) -> None:
     assert cli.main(["-q", "--sources", "fake", "--exit-code", "--format", "csv"]) == 1
     assert cli.main(["-q", "--sources", "fake", "--format", "csv"]) == 0

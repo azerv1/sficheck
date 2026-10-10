@@ -16,7 +16,7 @@ from typing import Any
 from absolutely_proprietary import __version__, render
 from absolutely_proprietary.blacklist import Blacklist, load_user
 from absolutely_proprietary.classify import Classifier
-from absolutely_proprietary.models import Finding, SourceReport, Status
+from absolutely_proprietary.models import Finding, Ring, SourceReport, Status
 from absolutely_proprietary.net import Fetcher
 from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, Context, Source
 
@@ -27,6 +27,8 @@ SORT_KEYS = {
     "source": lambda f: (f.package.source, f.package.name.lower()),
     "name": lambda f: f.package.name.lower(),
     "status": lambda f: (f.status.value, f.package.name.lower()),
+    # Deepest ring first; findings without one (free, unknown) last.
+    "ring": lambda f: (f.ring is None, f.ring or 0, f.package.name.lower()),
     "alternatives": lambda f: (", ".join(f.alternatives).lower(), f.package.name.lower()),
 }
 
@@ -76,6 +78,14 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--show-unknown", action="store_true", help="also show packages that couldn't be classified")
     g.add_argument(
         "--unknown-as-nonfree", action="store_true", help="count unknown packages as proprietary in the index"
+    )
+    g.add_argument(
+        "--max-ring",
+        type=int,
+        choices=[r.value for r in Ring],
+        metavar="N",
+        help="only show findings at protection ring N or deeper: -3 ME/microcode, -2 BIOS/UEFI, "
+        "-1 hypervisor, 0 kernel, 3 userspace (e.g. 0 = kernel and below)",
     )
     g.add_argument("--sort", choices=list(SORT_KEYS), default="source", help="sort column (default: source)")
     g.add_argument(
@@ -169,6 +179,8 @@ def shown_findings(args: argparse.Namespace, reports: list[SourceReport]) -> lis
     """The findings the report lists, filtered and sorted as the options ask."""
     statuses = wanted_statuses(args)
     shown = [f for r in reports for f in r.findings if f.status.value in statuses]
+    if args.max_ring is not None:
+        shown = [f for f in shown if f.ring is not None and f.ring <= args.max_ring]
     shown.sort(key=SORT_KEYS[args.sort], reverse=args.reverse)
     return shown
 
