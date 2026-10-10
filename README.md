@@ -105,10 +105,14 @@ Your Stallman Freedom Index is 99.62
 Curated entries live in `absolutely_proprietary/data/lists/*.json`, one object per entry:
 
 ```json
-{"name": "zoom", "status": "nonfree", "alternatives": ["jitsi-meet-desktop"], "description": "Proprietary video conferencing"}
+{"name": "zoom", "status": "nonfree", "alternatives": ["jitsi-meet-desktop"], "description": "Proprietary video conferencing", "reference": "https://en.wikipedia.org/wiki/Zoom_(software)"}
 ```
 
 Add `"pattern"` (a case-insensitive regex) instead of an exact name for fuzzy matches, such as Windows display names. In pattern lists the first match in file order wins.
+
+Every entry that isn't `free` must have a `reference`: a page that states the license. In order of preference, that's Parabola's blacklist or issue tracker, the Debian package tracker, the project's own license or terms page, a registry license field (npm, PyPI), or the Wikipedia infobox / Wikidata license. The tests fail without one, and the reference is shown in JSON, CSV and markdown output. If a claim can't be sourced, leave the entry out. An unknown result is better than an unsourced one.
+
+Alternatives must be free software, a real replacement for the same job, and a valid package name or id in that list's ecosystem. Free-text hints go in parentheses. `python scripts/check_lists.py` checks references offline. `--online` also checks that each reference resolves and looks each alternative up on Repology, Flathub or winget-pkgs. Repology misses are only warnings, because Repology uses its own project names.
 
 **Lists**
 - `common.json` — cross-platform apps by package name (pacman/deb/flatpak/snap/brew/winget ids)
@@ -121,5 +125,6 @@ Add `"pattern"` (a case-insensitive regex) instead of an exact name for fuzzy ma
 
 ```sh
 python -m venv .venv && .venv/bin/pip install -e '.[dev]'
-pytest && ruff check . && ruff format --check . && mypy absolutely_proprietary tests
+pytest && ruff check . && ruff format --check . && mypy absolutely_proprietary tests scripts
+python scripts/check_lists.py --online   # after editing the lists
 ```

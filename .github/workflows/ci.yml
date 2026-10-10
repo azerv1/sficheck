@@ -20,7 +20,7 @@ jobs:
       - run: python -m pip install -e ".[dev]"
       - run: ruff check .
       - run: ruff format --check .
-      - run: mypy absolutely_proprietary tests
+      - run: mypy absolutely_proprietary tests scripts
       - run: pytest -q
       - name: Smoke test against the real machine
         run: absolutely-proprietary --list-sources && absolutely-proprietary -q --format json --skip winget > /dev/null
