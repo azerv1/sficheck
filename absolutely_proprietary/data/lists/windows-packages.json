@@ -2,18 +2,60 @@
   "_comment": "Windows package ids (winget, scoop, Chocolatey) whose declared license is missing or misleading. Regexes match the whole id, case-insensitively.",
   "entries": [
     {
-      "name": "Microsoft runtimes (winget)",
-      "pattern": "^Microsoft\\.(VCRedist|VCLibs|WindowsAppRuntime|msodbcsql|SQLServer|CLRTypesSQLServer|VisualStudio\\.|Office|Outlook|Teams|OneDrive|Edge|WinDbg|AppInstaller|DirectX|WebView2|Skype|Whiteboard|ToDo|Clipchamp)",
+      "name": "Visual C++ runtimes",
+      "pattern": "^Microsoft\\.(VCRedist|VCLibs)\\.|^vcredist",
       "status": "nonfree",
-      "alternatives": [],
-      "description": "Proprietary Microsoft component"
+      "description": "Proprietary Microsoft runtime",
+      "reference": "https://en.wikipedia.org/wiki/Microsoft_Visual_C++"
     },
     {
-      "name": "Microsoft runtimes and updates (choco)",
-      "pattern": "^(vcredist.*|dotnetfx|dotnet4\\.\\d.*|netfx-.*|KB\\d+.*|directx|chocolatey-windowsupdate\\.extension)$",
+      "name": "SQL Server",
+      "pattern": "^Microsoft\\.(msodbcsql|SQLServer|CLRTypesSQLServer)\\b",
       "status": "nonfree",
-      "alternatives": [],
-      "description": "Proprietary Microsoft runtime or update"
+      "alternatives": [
+        "PostgreSQL.PostgreSQL",
+        "MariaDB.Server"
+      ],
+      "description": "Proprietary database and drivers",
+      "reference": "https://en.wikipedia.org/wiki/Microsoft_SQL_Server"
+    },
+    {
+      "name": "Visual Studio",
+      "pattern": "^Microsoft\\.VisualStudio\\.",
+      "status": "nonfree",
+      "description": "Proprietary IDE/toolchain",
+      "reference": "https://en.wikipedia.org/wiki/Visual_Studio"
+    },
+    {
+      "name": "Microsoft Office",
+      "pattern": "^Microsoft\\.(Office|Outlook)\\b",
+      "status": "nonfree",
+      "alternatives": [
+        "TheDocumentFoundation.LibreOffice"
+      ],
+      "description": "Proprietary office suite",
+      "reference": "https://en.wikipedia.org/wiki/Microsoft_Office"
+    },
+    {
+      "name": "WebView2",
+      "pattern": "^Microsoft\\.EdgeWebView2Runtime$",
+      "status": "nonfree",
+      "description": "Proprietary browser runtime",
+      "reference": "https://en.wikipedia.org/wiki/Microsoft_Edge"
+    },
+    {
+      "name": "Skype",
+      "pattern": "^Microsoft\\.Skype\\b",
+      "status": "nonfree",
+      "description": "Proprietary VoIP client",
+      "reference": "https://en.wikipedia.org/wiki/Skype"
+    },
+    {
+      "name": "Windows updates (choco)",
+      "pattern": "^KB\\d+",
+      "status": "nonfree",
+      "description": "Proprietary Windows update",
+      "reference": "https://en.wikipedia.org/wiki/Microsoft_Windows"
     },
     {
       "name": "Ubuntu (WSL)",
@@ -21,9 +63,11 @@
       "status": "uses-nonfree",
       "alternatives": [
         "Trisquel",
-        "Debian"
+        "Parabola",
+        "Guix System"
       ],
-      "description": "Mostly free distro that ships and recommends nonfree software (winget metadata says 'Freeware')"
+      "description": "Not endorsed by the FSF: ships and recommends nonfree software",
+      "reference": "https://www.gnu.org/distros/common-distros.html"
     },
     {
       "name": "Liquibase",
@@ -33,14 +77,8 @@
         "Flyway Community",
         "sqitch"
       ],
-      "description": "Functional Source License since 5.0"
-    },
-    {
-      "name": "Huawei HiSuite",
-      "pattern": "^Huawei\\.",
-      "status": "nonfree",
-      "alternatives": [],
-      "description": "Proprietary vendor software"
+      "description": "Functional Source License since 5.0",
+      "reference": "https://www.liquibase.com/blog/liquibase-community-for-the-future-fsl"
     },
     {
       "name": "Known free (missing license metadata)",
