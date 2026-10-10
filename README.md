@@ -32,6 +32,9 @@ Arch users can use the [AUR package](https://aur.archlinux.org/packages/absolute
 - `kernel` (`--kernel`) — what runs in ring 0.
   - Linux: loaded modules from `/proc/modules`. A module the kernel taints with `P` (license not GPL-compatible) is nonfree, the rest free.
   - Windows: third-party kernel drivers from the registry's service keys, counting only those in use: bound to a device, loaded at system or auto start, or installed outside `C:\Windows`. Microsoft's own drivers are skipped (Windows itself is already reported), as are leftover entries whose file is gone. Vendor and version come from the driver file. A driver not in `kernel.json` counts as nonfree, since free drivers are listed there.
+- `hypervisors` (`--hypervisors`) — what runs in ring -1.
+  - The hypervisor this OS runs on. Linux reads the CPU's `hypervisor` flag, `/sys/hypervisor/type` and the DMI vendor. Windows asks the kernel whether a hypervisor is present and reads the machine's manufacturer: a VM vendor names the host, and on real hardware it is Hyper-V, which Windows runs on whenever virtualization-based security, WSL 2 or Hyper-V is on.
+  - Hypervisors installed here, found by their kernel driver or module: VMware (`vmx86`, `vmmon`), VirtualBox (`VBoxSup`, `vboxdrv`) and KVM (`kvm`).
 
 **Languages** (global installs, not project dependencies)
 - Python: `pip` (default interpreter), `uv` tools, `pipx`
@@ -65,7 +68,7 @@ Proprietary findings also carry the CPU protection ring the software runs in. A 
 |---|---|---|
 | -3 me | a coprocessor or the CPU itself, below the OS | Intel ME, AMD PSP, CPU microcode |
 | -2 firmware | system firmware | BIOS/UEFI |
-| -1 hypervisor | underneath every OS on the machine | VMware, Parallels, the VirtualBox Extension Pack |
+| -1 hypervisor | underneath every OS on the machine | Hyper-V, VMware, Parallels, the VirtualBox Extension Pack |
 | 0 kernel | the kernel | Riot Vanguard, Easy Anti-Cheat, BattlEye, FACEIT AC, nvidia, Windows itself |
 | 3 user | an ordinary program | everything else |
 
@@ -76,6 +79,7 @@ Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entr
 ```
 --sources A,B / --skip A,B / --kind system|lang              what to scan
 --kernel                                                      also scan kernel modules and drivers
+--hypervisors                                                 also scan the hypervisor underneath and installed ones
 --status S (repeatable) / -f, --full / --all / --show-unknown  what to show (default: nonfree)
 --sort source|name|status|ring|alternatives  (-s, -a shortcuts)  -r   ordering
 --max-ring N                                                  only ring N or deeper (-3 … 3)
@@ -145,6 +149,7 @@ Alternatives must be free software, a real replacement for the same job, and a v
 - `windows-packages.json` — winget/scoop/choco id regexes
 - `lang.json` — language packages with missing or misleading metadata
 - `kernel.json` — kernel drivers and modules by service or module name: anticheats, and the free drivers
+- `hypervisors.json` — hypervisors by short name (`hyper-v`, `vmware`, `kvm`…)
 
 ## Development
 
