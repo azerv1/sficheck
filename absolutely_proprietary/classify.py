@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from absolutely_proprietary import licenses, registries
 from absolutely_proprietary.blacklist import Blacklist, load_bundled
@@ -18,6 +18,13 @@ def _from_license(package: Package, license_expr: str | None, origin: str) -> Fi
     if status is Status.UNKNOWN:
         return None
     return Finding(package, status, reason=origin, description=license_expr or "")
+
+
+def _with_ring(source: Source, finding: Finding) -> Finding:
+    """Proprietary findings without a ring from their entry get the source's default."""
+    if finding.ring is None and finding.status.is_proprietary:
+        return replace(finding, ring=source.default_ring)
+    return finding
 
 
 @dataclass(slots=True)
@@ -75,7 +82,7 @@ class Classifier:
             with ThreadPoolExecutor(self.jobs) as pool:
                 for package, finding in zip(pending, pool.map(lambda p: self._online(source, p), pending), strict=True):
                     findings.append(finding or self._fallback(source, package))
-        return findings
+        return [_with_ring(source, f) for f in findings]
 
     @staticmethod
     def _fallback(source: Source, package: Package) -> Finding:

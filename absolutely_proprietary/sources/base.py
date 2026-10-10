@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import ClassVar
 
-from absolutely_proprietary.models import Finding, Package, Status
+from absolutely_proprietary.models import Finding, Package, Ring, Status
 from absolutely_proprietary.net import Fetcher
 
 
@@ -40,6 +40,8 @@ class Source:
     # Status for packages nothing else could classify. Distros that vet their
     # main archive (Arch/Parabola, Debian main) treat unflagged packages as free.
     fallback_status: ClassVar[Status] = Status.UNKNOWN
+    # Ring for proprietary findings whose curated entry doesn't name one.
+    default_ring: ClassVar[Ring] = Ring.USER
     # Caches (maven, gradle, nuget) can hold thousands of entries; only scan on request.
     default_enabled: ClassVar[bool] = True
 

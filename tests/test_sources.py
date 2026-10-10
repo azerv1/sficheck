@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from pathlib import Path
 
 import pytest
 
+from absolutely_proprietary.blacklist import Blacklist
 from absolutely_proprietary.classify import Classifier
-from absolutely_proprietary.models import Finding, Status
+from absolutely_proprietary.models import Entry, Finding, Package, Ring, Status
 from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME
 from absolutely_proprietary.sources.base import Context, Source
 from absolutely_proprietary.sources.compiled import Cargo, Go
@@ -277,3 +279,24 @@ def test_dpkg_unavailable_without_tool(fake_run: FakeRun, ctx: Context) -> None:
     fake_run({})
     assert not Dpkg(ctx).available()
     assert not Pacman(ctx).available()
+
+
+class _Platform(Source):
+    name = "platform-test"
+    default_ring = Ring.HYPERVISOR
+
+    def available(self) -> bool:
+        return True
+
+    def packages(self) -> Iterable[Package]:
+        return [self.pkg("blob", license="Proprietary"), self.pkg("calendar"), self.pkg("bash", license="GPL-3.0")]
+
+
+def test_ring_comes_from_entry_else_source_default(fetcher: StubFetcher, ctx: Context) -> None:
+    user = Blacklist()
+    user.add(Entry("calendar", Status.NONFREE, ring=Ring.USER))
+    source = _Platform(ctx)
+    found = {f.package.name: f for f in Classifier(fetcher=fetcher, user=user).run(source, source.packages())}
+    assert found["blob"].ring is Ring.HYPERVISOR
+    assert found["calendar"].ring is Ring.USER
+    assert found["bash"].ring is None  # free software gets no severity
