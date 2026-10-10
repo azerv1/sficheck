@@ -1,0 +1,26 @@
+{
+  "_comment": "Language-ecosystem packages whose declared license metadata is missing or misleading. Matched by package name across all language sources.",
+  "entries": [
+    {"name": "@anthropic-ai/claude-code", "status": "nonfree", "alternatives": ["aider", "opencode", "@openai/codex"], "description": "Proprietary CLI (\"SEE LICENSE IN README.md\")"},
+    {"name": "@github/copilot", "status": "nonfree", "alternatives": ["aider", "opencode"], "description": "Proprietary CLI"},
+    {"name": "@githubnext/github-copilot-cli", "status": "nonfree", "alternatives": ["aider"], "description": "Proprietary CLI"},
+    {"name": "@cursor/cli", "status": "nonfree", "alternatives": ["aider"], "description": "Proprietary CLI"},
+    {"name": "@sourcegraph/amp", "status": "nonfree", "alternatives": ["aider", "opencode"], "description": "Proprietary CLI"},
+    {"name": "ngrok", "status": "uses-nonfree", "alternatives": ["bore-cli", "frp"], "description": "Wrapper that downloads the proprietary ngrok binary"},
+    {"name": "pyngrok", "status": "uses-nonfree", "alternatives": ["bore-cli", "frp"], "description": "Wrapper that downloads the proprietary ngrok binary"},
+    {"name": "vercel", "status": "uses-nonfree", "alternatives": [], "description": "Free client tied to a proprietary hosting service"},
+    {"name": "netlify-cli", "status": "uses-nonfree", "alternatives": [], "description": "Free client tied to a proprietary hosting service"},
+    {"name": "unrar", "status": "nonfree", "alternatives": ["libarchive-c", "unar"], "description": "Bindings to the nonfree unRAR library"},
+    {"name": "pattern:nvidia-pypi", "pattern": "^nvidia-(cuda|cublas|cudnn|cufft|curand|cusolver|cusparse|cusparselt|nccl|nvjitlink|nvtx|cufile|nvshmem)", "status": "nonfree", "alternatives": ["CPU/ROCm builds of your framework"], "description": "NVIDIA proprietary libraries (NVIDIA EULA)"},
+    {"name": "mkl", "status": "nonfree", "alternatives": ["openblas"], "description": "Intel Simplified Software License"},
+    {"name": "intel-openmp", "status": "nonfree", "alternatives": ["llvm-openmp"], "description": "Intel Simplified Software License"},
+    {"name": "tensorrt", "status": "nonfree", "alternatives": [], "description": "NVIDIA proprietary"},
+    {"name": "cudatoolkit", "status": "nonfree", "alternatives": [], "description": "NVIDIA proprietary"},
+    {"name": "pattern:llama-weights", "pattern": "^(llama[-_]?(2|3|4)|meta-llama)", "status": "nonfree", "alternatives": ["OLMo", "Mistral (Apache-2.0) models"], "description": "Llama community license is not free"},
+    {"name": "mongodb", "status": "nonfree", "alternatives": [], "description": "SSPL"},
+    {"name": "com.oracle.database.jdbc:ojdbc8", "status": "nonfree", "alternatives": ["PostgreSQL JDBC"], "description": "Oracle Free Use Terms and Conditions"},
+    {"name": "com.oracle.database.jdbc:ojdbc11", "status": "nonfree", "alternatives": ["PostgreSQL JDBC"], "description": "Oracle Free Use Terms and Conditions"},
+    {"name": "oracledb", "status": "uses-nonfree", "alternatives": [], "description": "Thick mode requires proprietary Oracle Client"},
+    {"name": "cx_Oracle", "status": "uses-nonfree", "alternatives": [], "description": "Requires proprietary Oracle Client"}
+  ]
+}

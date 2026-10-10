@@ -1,0 +1,630 @@
+{
+  "_comment": "Windows registry programs, matched by regex against DisplayName. First match in file order wins, so put specific patterns before general ones. 'free' entries let the index count known free software. Only used by the 'windows' source; package ids (winget/scoop/choco) use windows-packages.json.",
+  "entries": [
+    {
+      "name": "Microsoft Windows",
+      "pattern": "^Microsoft Windows (\\d|Server)",
+      "status": "nonfree",
+      "alternatives": [
+        "Trisquel",
+        "Parabola",
+        "Guix System",
+        "Debian"
+      ],
+      "description": "The operating system itself is proprietary"
+    },
+    {
+      "name": "Visual Studio Code",
+      "pattern": "^Microsoft Visual Studio Code",
+      "status": "nonfree",
+      "alternatives": [
+        "VSCodium"
+      ],
+      "description": "Microsoft's VS Code build is under a proprietary license with telemetry"
+    },
+    {
+      "name": "VSCodium",
+      "pattern": "^VSCodium",
+      "status": "free"
+    },
+    {
+      "name": "Visual Studio",
+      "pattern": "^(Microsoft )?Visual Studio (Community|Professional|Enterprise|Build Tools|Installer)",
+      "status": "nonfree",
+      "alternatives": [
+        "MSYS2/MinGW-w64",
+        "LLVM/Clang"
+      ],
+      "description": "Proprietary IDE/toolchain"
+    },
+    {
+      "name": "Visual C++ Redistributable",
+      "pattern": "^Microsoft Visual C\\+\\+ .*Redistributable",
+      "status": "nonfree",
+      "alternatives": [],
+      "description": "Proprietary runtime many programs depend on"
+    },
+    {
+      "name": ".NET",
+      "pattern": "^Microsoft (\\.NET|ASP\\.NET|Windows Desktop Runtime)",
+      "status": "free",
+      "description": "MIT-licensed runtime"
+    },
+    {
+      "name": "Microsoft Edge",
+      "pattern": "^Microsoft Edge",
+      "status": "nonfree",
+      "alternatives": [
+        "LibreWolf",
+        "ungoogled-chromium"
+      ],
+      "description": "Proprietary browser (and WebView2 runtime)"
+    },
+    {
+      "name": "Microsoft Office",
+      "pattern": "^Microsoft (Office|365|Word|Excel|PowerPoint|Outlook|OneNote|Access|Publisher|Visio|Project)",
+      "status": "nonfree",
+      "alternatives": [
+        "LibreOffice",
+        "OnlyOffice"
+      ],
+      "description": "Proprietary office suite"
+    },
+    {
+      "name": "Microsoft Teams",
+      "pattern": "^(Microsoft )?Teams",
+      "status": "nonfree",
+      "alternatives": [
+        "Element",
+        "Jitsi Meet"
+      ],
+      "description": "Proprietary collaboration client"
+    },
+    {
+      "name": "OneDrive",
+      "pattern": "^Microsoft OneDrive",
+      "status": "nonfree",
+      "alternatives": [
+        "Syncthing",
+        "Nextcloud"
+      ],
+      "description": "Proprietary sync client"
+    },
+    {
+      "name": "PowerToys",
+      "pattern": "^PowerToys",
+      "status": "free",
+      "description": "MIT"
+    },
+    {
+      "name": "Windows Terminal",
+      "pattern": "^Windows Terminal",
+      "status": "free",
+      "description": "MIT"
+    },
+    {
+      "name": "Microsoft tooling",
+      "pattern": "^(Microsoft|Windows) (Update Health Tools|PC Health Check|SDK|Software Development Kit|GameInput|Web Deploy|ODBC|OLE DB|Azure|Intune|Defender|Silverlight|XNA|Kinect|Performance Toolkit)|SQL Server|^WPTx64",
+      "status": "nonfree",
+      "alternatives": [],
+      "description": "Proprietary Microsoft component"
+    },
+    {
+      "name": "Skype",
+      "pattern": "^Skype",
+      "status": "nonfree",
+      "alternatives": [
+        "Jami",
+        "Linphone"
+      ],
+      "description": "Proprietary VoIP client"
+    },
+    {
+      "name": "Google Chrome",
+      "pattern": "^Google Chrome",
+      "status": "nonfree",
+      "alternatives": [
+        "LibreWolf",
+        "ungoogled-chromium"
+      ],
+      "description": "Google's proprietary browser build"
+    },
+    {
+      "name": "Google software",
+      "pattern": "^Google (Drive|Earth|Update|Play Games)",
+      "status": "nonfree",
+      "alternatives": [],
+      "description": "Proprietary Google software"
+    },
+    {
+      "name": "Opera",
+      "pattern": "^Opera",
+      "status": "nonfree",
+      "alternatives": [
+        "LibreWolf"
+      ],
+      "description": "Proprietary browser"
+    },
+    {
+      "name": "Vivaldi",
+      "pattern": "^Vivaldi",
+      "status": "nonfree",
+      "alternatives": [
+        "LibreWolf"
+      ],
+      "description": "Proprietary UI on top of Chromium"
+    },
+    {
+      "name": "Firefox",
+      "pattern": "^Mozilla (Firefox|Thunderbird)",
+      "status": "uses-nonfree",
+      "alternatives": [
+        "LibreWolf",
+        "IceCat"
+      ],
+      "description": "Free, but supports DRM and recommends nonfree add-ons"
+    },
+    {
+      "name": "LibreWolf",
+      "pattern": "^LibreWolf",
+      "status": "free"
+    },
+    {
+      "name": "Brave",
+      "pattern": "^Brave",
+      "status": "uses-nonfree",
+      "alternatives": [
+        "LibreWolf"
+      ],
+      "description": "Free (MPL), but promotes proprietary services"
+    },
+    {
+      "name": "Discord",
+      "pattern": "^Discord",
+      "status": "nonfree",
+      "alternatives": [
+        "Element",
+        "Dino"
+      ],
+      "description": "Proprietary chat client and service"
+    },
+    {
+      "name": "Slack",
+      "pattern": "^Slack",
+      "status": "nonfree",
+      "alternatives": [
+        "Element",
+        "Mattermost"
+      ],
+      "description": "Proprietary chat client and service"
+    },
+    {
+      "name": "Zoom",
+      "pattern": "^Zoom( Workplace)?$|^Zoom ",
+      "status": "nonfree",
+      "alternatives": [
+        "Jitsi Meet",
+        "Jami"
+      ],
+      "description": "Proprietary video conferencing"
+    },
+    {
+      "name": "WhatsApp",
+      "pattern": "^WhatsApp",
+      "status": "nonfree",
+      "alternatives": [
+        "Signal",
+        "Element"
+      ],
+      "description": "Proprietary messenger"
+    },
+    {
+      "name": "Telegram",
+      "pattern": "^Telegram Desktop",
+      "status": "free",
+      "description": "GPL-3.0 client"
+    },
+    {
+      "name": "Signal",
+      "pattern": "^Signal",
+      "status": "free",
+      "description": "AGPL-3.0"
+    },
+    {
+      "name": "Spotify",
+      "pattern": "^Spotify",
+      "status": "nonfree",
+      "alternatives": [
+        "Strawberry",
+        "Rhythmbox"
+      ],
+      "description": "Proprietary music client with DRM"
+    },
+    {
+      "name": "iTunes/Apple",
+      "pattern": "^(iTunes|iCloud|Apple (Mobile Device Support|Software Update|Application Support)|Bonjour|QuickTime)",
+      "status": "nonfree",
+      "alternatives": [
+        "Strawberry",
+        "VLC"
+      ],
+      "description": "Proprietary Apple software"
+    },
+    {
+      "name": "Steam",
+      "pattern": "^Steam$",
+      "status": "nonfree",
+      "alternatives": [
+        "itch",
+        "Lutris"
+      ],
+      "description": "Proprietary game client and DRM platform"
+    },
+    {
+      "name": "Game stores",
+      "pattern": "^(Epic Games Launcher|Battle\\.net|EA app|Origin|Ubisoft (Connect|Game Launcher)|GOG GALAXY|Riot Client|Xbox|Rockstar Games Launcher|Amazon Games)",
+      "status": "nonfree",
+      "alternatives": [
+        "itch",
+        "Lutris"
+      ],
+      "description": "Proprietary game store"
+    },
+    {
+      "name": "NVIDIA",
+      "pattern": "^NVIDIA ",
+      "status": "nonfree",
+      "alternatives": [],
+      "description": "Proprietary GPU driver/software"
+    },
+    {
+      "name": "AMD",
+      "pattern": "^AMD (Software|Chipset|Settings|Radeon|Ryzen Master)",
+      "status": "nonfree",
+      "alternatives": [],
+      "description": "Proprietary driver/software"
+    },
+    {
+      "name": "Intel",
+      "pattern": "^Intel(\\(R\\)|®)? ",
+      "status": "nonfree",
+      "alternatives": [],
+      "description": "Proprietary driver/software"
+    },
+    {
+      "name": "Realtek",
+      "pattern": "^Realtek",
+      "status": "nonfree",
+      "alternatives": [],
+      "description": "Proprietary driver"
+    },
+    {
+      "name": "Peripheral suites",
+      "pattern": "^(Logitech|Logi |Razer|Corsair|iCUE|SteelSeries|ASUS|Armoury|ROG|MSI|Gigabyte|Dell|HP |Lenovo|Synaptics|Elan|Dolby|DTS|Nahimic|Waves)",
+      "status": "nonfree",
+      "alternatives": [
+        "OpenRGB",
+        "Piper/libratbag"
+      ],
+      "description": "Proprietary vendor software"
+    },
+    {
+      "name": "Adobe",
+      "pattern": "^Adobe ",
+      "status": "nonfree",
+      "alternatives": [
+        "GIMP",
+        "Inkscape",
+        "Krita",
+        "Kdenlive",
+        "Okular"
+      ],
+      "description": "Proprietary creative software"
+    },
+    {
+      "name": "Foxit/Nitro",
+      "pattern": "^(Foxit|Nitro|PDF-XChange)",
+      "status": "nonfree",
+      "alternatives": [
+        "SumatraPDF",
+        "Okular"
+      ],
+      "description": "Proprietary PDF software"
+    },
+    {
+      "name": "SumatraPDF",
+      "pattern": "^SumatraPDF",
+      "status": "free",
+      "description": "GPL-3.0"
+    },
+    {
+      "name": "WinRAR",
+      "pattern": "^WinRAR",
+      "status": "nonfree",
+      "alternatives": [
+        "PeaZip",
+        "7-Zip"
+      ],
+      "description": "Proprietary archiver"
+    },
+    {
+      "name": "7-Zip",
+      "pattern": "^7-Zip",
+      "status": "semifree",
+      "alternatives": [
+        "PeaZip"
+      ],
+      "description": "LGPL, but contains nonfree unRAR code"
+    },
+    {
+      "name": "PeaZip",
+      "pattern": "^PeaZip",
+      "status": "free"
+    },
+    {
+      "name": "Dropbox",
+      "pattern": "^Dropbox",
+      "status": "nonfree",
+      "alternatives": [
+        "Syncthing",
+        "Nextcloud"
+      ],
+      "description": "Proprietary sync client"
+    },
+    {
+      "name": "Remote desktop",
+      "pattern": "^(TeamViewer|AnyDesk|Parsec|Splashtop|Chrome Remote Desktop)",
+      "status": "nonfree",
+      "alternatives": [
+        "RustDesk",
+        "Remmina"
+      ],
+      "description": "Proprietary remote desktop"
+    },
+    {
+      "name": "RustDesk",
+      "pattern": "^RustDesk",
+      "status": "free"
+    },
+    {
+      "name": "JetBrains",
+      "pattern": "^(IntelliJ IDEA (Ultimate)?|PyCharm( Professional)?|WebStorm|PhpStorm|CLion|GoLand|Rider|RubyMine|DataGrip|RustRover|DataSpell|JetBrains Toolbox|Fleet)\\b(?!.*Community)",
+      "status": "nonfree",
+      "alternatives": [
+        "IntelliJ IDEA Community",
+        "PyCharm Community",
+        "Neovim"
+      ],
+      "description": "Proprietary JetBrains IDE"
+    },
+    {
+      "name": "Sublime",
+      "pattern": "^Sublime (Text|Merge)",
+      "status": "nonfree",
+      "alternatives": [
+        "Notepad++",
+        "Kate",
+        "Neovim"
+      ],
+      "description": "Proprietary editor"
+    },
+    {
+      "name": "Cursor",
+      "pattern": "^Cursor",
+      "status": "nonfree",
+      "alternatives": [
+        "VSCodium"
+      ],
+      "description": "Proprietary AI editor"
+    },
+    {
+      "name": "Windsurf",
+      "pattern": "^Windsurf",
+      "status": "nonfree",
+      "alternatives": [
+        "VSCodium"
+      ],
+      "description": "Proprietary AI editor"
+    },
+    {
+      "name": "Docker Desktop",
+      "pattern": "^Docker Desktop",
+      "status": "nonfree",
+      "alternatives": [
+        "Podman Desktop",
+        "Rancher Desktop"
+      ],
+      "description": "Docker Desktop is proprietary"
+    },
+    {
+      "name": "Virtualization",
+      "pattern": "^(VMware|Oracle VM VirtualBox Extension|Parallels)",
+      "status": "nonfree",
+      "alternatives": [
+        "QEMU",
+        "VirtualBox (base, GPL)"
+      ],
+      "description": "Proprietary virtualization"
+    },
+    {
+      "name": "VirtualBox",
+      "pattern": "^Oracle VirtualBox|^Oracle VM VirtualBox",
+      "status": "free",
+      "description": "GPL base package"
+    },
+    {
+      "name": "Oracle Java",
+      "pattern": "^Java( \\d+)?( Update \\d+)?( \\(64-bit\\))?$|^Java\\(TM\\)|^Java SE Development Kit|^Oracle Java",
+      "status": "nonfree",
+      "alternatives": [
+        "Eclipse Temurin",
+        "Microsoft Build of OpenJDK"
+      ],
+      "description": "Oracle Java under the OTN / No-Fee Terms license"
+    },
+    {
+      "name": "OpenJDK",
+      "pattern": "^(Eclipse Temurin|Microsoft Build of OpenJDK|Azul Zulu|Amazon Corretto|Liberica|OpenJDK)",
+      "status": "free",
+      "description": "GPL-2.0 with Classpath exception"
+    },
+    {
+      "name": "Antivirus",
+      "pattern": "^(Malwarebytes|Avast|AVG|Norton|McAfee|Kaspersky|ESET|Bitdefender|Avira|Sophos|Webroot|Trend Micro)",
+      "status": "nonfree",
+      "alternatives": [
+        "Windows Defender is also nonfree; ClamAV"
+      ],
+      "description": "Proprietary security software"
+    },
+    {
+      "name": "VPN",
+      "pattern": "^(NordVPN|ExpressVPN|Surfshark|CyberGhost|Private Internet Access|Windscribe|Cloudflare WARP)",
+      "status": "nonfree",
+      "alternatives": [
+        "WireGuard",
+        "OpenVPN",
+        "Mullvad VPN",
+        "Proton VPN"
+      ],
+      "description": "Proprietary VPN client"
+    },
+    {
+      "name": "Free VPN clients",
+      "pattern": "^(WireGuard|OpenVPN|Mullvad VPN|Proton VPN|ProtonVPN)",
+      "status": "free"
+    },
+    {
+      "name": "Password managers",
+      "pattern": "^(1Password|LastPass|Dashlane|RoboForm|Keeper)",
+      "status": "nonfree",
+      "alternatives": [
+        "KeePassXC",
+        "Bitwarden"
+      ],
+      "description": "Proprietary password manager"
+    },
+    {
+      "name": "Free password managers",
+      "pattern": "^(KeePassXC|KeePass Password Safe|Bitwarden)",
+      "status": "free"
+    },
+    {
+      "name": "Audio software",
+      "pattern": "^(FL Studio|Ableton|Reaper|Cubase|Steinberg|Sibelius|Avid|Pro Tools|ASIO4ALL|PACE License|iLok|Native Instruments|Waves Central|Serum)",
+      "status": "nonfree",
+      "alternatives": [
+        "Ardour",
+        "LMMS",
+        "MuseScore",
+        "Zrythm"
+      ],
+      "description": "Proprietary audio software / license manager"
+    },
+    {
+      "name": "Video software",
+      "pattern": "^(Camtasia|DaVinci Resolve|Blackmagic|CapCut|Clipchamp|Filmora|Vegas Pro|Premiere)",
+      "status": "nonfree",
+      "alternatives": [
+        "Kdenlive",
+        "Shotcut",
+        "OBS Studio"
+      ],
+      "description": "Proprietary video software"
+    },
+    {
+      "name": "Notes & productivity",
+      "pattern": "^(Notion|Obsidian|Evernote|Todoist|Microsoft To Do|Grammarly)",
+      "status": "nonfree",
+      "alternatives": [
+        "Logseq",
+        "Joplin",
+        "LanguageTool"
+      ],
+      "description": "Proprietary productivity app"
+    },
+    {
+      "name": "Design",
+      "pattern": "^(Figma|Canva|Sketch|Affinity)",
+      "status": "nonfree",
+      "alternatives": [
+        "Penpot",
+        "Inkscape",
+        "Krita"
+      ],
+      "description": "Proprietary design app"
+    },
+    {
+      "name": "Image editors",
+      "pattern": "^(Paint\\.NET|paint\\.net|IrfanView|XnView)",
+      "status": "nonfree",
+      "alternatives": [
+        "Krita",
+        "GIMP",
+        "Pinta"
+      ],
+      "description": "Proprietary (freeware) image editor"
+    },
+    {
+      "name": "System cleaners",
+      "pattern": "^(CCleaner|Revo Uninstaller|IObit|Driver Booster|Advanced SystemCare|Wise (Care|Disk)|Glary)",
+      "status": "nonfree",
+      "alternatives": [
+        "BleachBit"
+      ],
+      "description": "Proprietary system utility"
+    },
+    {
+      "name": "Freeware utilities",
+      "pattern": "^(WinZip|Everything|TreeSize|WizTree|Postman|Snagit|Wondershare|HiSuite|Synology|RealVNC|VNC Viewer|Surge|AnyToISO|PowerISO|UltraISO|Daemon Tools)",
+      "status": "nonfree",
+      "alternatives": [
+        "PeaZip",
+        "ShareX",
+        "TigerVNC",
+        "Bruno",
+        "Filelight"
+      ],
+      "description": "Proprietary utility"
+    },
+    {
+      "name": "Proprietary dev tools",
+      "pattern": "^(Liquibase [5-9]|HashiCorp |Claude Code|Cursor|GitKraken|Tower|Navicat|DBeaver (EE|Enterprise)|DataGrip|Beyond Compare|SmartGit)",
+      "status": "nonfree",
+      "alternatives": [
+        "OpenTofu",
+        "DBeaver Community",
+        "Meld",
+        "opencode"
+      ],
+      "description": "Proprietary or source-available developer tool"
+    },
+    {
+      "name": "VeraCrypt",
+      "pattern": "^VeraCrypt",
+      "status": "semifree",
+      "alternatives": [
+        "cryptsetup (on GNU/Linux)"
+      ],
+      "description": "Apache 2.0 plus the TrueCrypt License 3.0, which is not free"
+    },
+    {
+      "name": "Cloud CLIs",
+      "pattern": "^(AWS Command Line Interface|Google Cloud SDK|Azure CLI|Microsoft Azure CLI|vultr-cli|Doctl)",
+      "status": "uses-nonfree",
+      "description": "Free client for a proprietary cloud service"
+    },
+    {
+      "name": "Free applications",
+      "pattern": "^(Git( version|$)|Python \\d|Python Launcher|Node\\.js|Go Programming Language|Rust|rustup|LLVM|CMake|Neovim|Vim |GNU Emacs|Notepad\\+\\+|VLC|OBS Studio|GIMP|Inkscape|Krita|Blender|Audacity|LibreOffice|Thunderbird|KeePassXC|PuTTY|WinSCP|FileZilla|qBittorrent|mpv|HandBrake|ShareX|Rufus|Ventoy|Wireshark|Npcap|MSYS2|Cygwin|Kdenlive|Shotcut|darktable|digiKam|Calibre|Zotero|Syncthing|Nextcloud|Element|Jami|Joplin|Logseq|Tor Browser|Mullvad Browser|PowerShell \\d|Windows Subsystem for Linux|WinMerge|Greenshot|Flameshot|Ollama|Jan|Podman|Rancher Desktop|Strawberry|GnuPG|GNU Privacy Guard|GitHub CLI|Graphviz|ImageMagick|FFmpeg|Poppler|Tesseract-OCR|Universal Ctags|Wget2?|yt-dlp|Clink|AutoHotkey|DB Browser for SQLite|DuckDB|iPerf3|Nmap [1-7]\\.[0-8]|PostgreSQL|PostGIS|PgBouncer|pgAgent|PEM-HTTPD|MySQL|TigerVNC|WezTerm|OpenTofu|Fast Node Manager|Deno|USBPcap|Freenet|Mozilla Maintenance Service|rotki|oneAPI Level Zero|ezwinports|RipGrep|Chafa|MediaInfo|LSDeluxe|Bruno|opencode|Lazydocker|Yazi|(bat|fd|fzf|jq|yq|lf|glow|gping|hyperfine|tokei|scc|procs|Dust|duf|bottom|xh|Just|gitui|act|less|zoxide|csvlens|qrcp|psmux|witr|FileQL|GitQL)$)",
+      "status": "free"
+    },
+    {
+      "name": "Microsoft (other)",
+      "pattern": "\\bMicrosoft\\b|^Update for .*Windows|\\(KB\\d+\\)|^MSXML|^vs_",
+      "status": "nonfree",
+      "alternatives": [],
+      "description": "Proprietary Microsoft component"
+    }
+  ]
+}

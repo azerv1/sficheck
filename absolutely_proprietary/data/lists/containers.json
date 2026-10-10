@@ -1,0 +1,20 @@
+{
+  "_comment": "Container images matched by repository (no tag/registry-insensitive regex). Most images declare no license label, so this list does the heavy lifting.",
+  "entries": [
+    {"name": "mssql", "pattern": "(^|/)mssql/(server|rhel/server)$", "status": "nonfree", "alternatives": ["postgres", "mariadb"], "description": "Proprietary database"},
+    {"name": "oracle-db", "pattern": "(^|/)(oracle/database|database/enterprise|gvenzl/oracle-(xe|free))$", "status": "nonfree", "alternatives": ["postgres"], "description": "Proprietary database"},
+    {"name": "mongo", "pattern": "(^|/)(mongo|mongodb/mongodb-(community|enterprise)-server)$", "status": "nonfree", "alternatives": ["postgres", "ferretdb/ferretdb"], "description": "SSPL is not a free license"},
+    {"name": "hashicorp", "pattern": "(^|/)hashicorp/(terraform|vault|consul|nomad|packer|boundary|waypoint)$", "status": "nonfree", "alternatives": ["opentofu/opentofu", "openbao/openbao"], "description": "Business Source License"},
+    {"name": "confluent", "pattern": "(^|/)confluentinc/cp-(kafka-rest|schema-registry|ksqldb-server|server|enterprise-.*)$", "status": "nonfree", "alternatives": ["apache/kafka"], "description": "Confluent Community / Enterprise license"},
+    {"name": "portainer-ee", "pattern": "(^|/)portainer/portainer-ee$", "status": "nonfree", "alternatives": ["portainer/portainer-ce"], "description": "Proprietary edition"},
+    {"name": "docker-desktop", "pattern": "^docker/desktop-", "status": "nonfree", "alternatives": [], "description": "Docker Desktop internals"},
+    {"name": "nvidia", "pattern": "^nvcr\\.io/|(^|/)nvidia/(cuda|tensorrt)", "status": "nonfree", "alternatives": [], "description": "NVIDIA proprietary libraries"},
+    {"name": "sonarqube", "pattern": "(^|/)sonarqube$", "status": "semifree", "alternatives": [], "description": "Community build is LGPL, other editions proprietary"},
+    {"name": "plex", "pattern": "(^|/)plexinc/pms-docker$", "status": "nonfree", "alternatives": ["jellyfin/jellyfin"], "description": "Proprietary media server"},
+    {"name": "emby", "pattern": "(^|/)emby/embyserver$", "status": "nonfree", "alternatives": ["jellyfin/jellyfin"], "description": "Proprietary media server"},
+    {"name": "couchbase", "pattern": "(^|/)couchbase(/server)?$", "status": "nonfree", "alternatives": [], "description": "BSL / proprietary enterprise"},
+    {"name": "cockroach", "pattern": "(^|/)cockroachdb/cockroach$", "status": "nonfree", "alternatives": ["postgres", "yugabytedb/yugabyte"], "description": "CockroachDB Software License"},
+    {"name": "elastic", "pattern": "(^|/)(elasticsearch|kibana|logstash)$|docker\\.elastic\\.co/", "status": "semifree", "alternatives": ["opensearchproject/opensearch"], "description": "AGPL option exists but default distribution includes Elastic-licensed features"},
+    {"name": "postgres", "pattern": "(^|/)(postgres|mariadb|mysql|valkey/valkey|nginx|httpd|alpine|debian|ubuntu|fedora|archlinux|busybox|python|node|golang|rust|ruby|php|openjdk|eclipse-temurin|traefik|caddy|grafana/grafana|prom/prometheus|jellyfin/jellyfin)$", "status": "free"}
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "_comment": "Windows package ids (winget, scoop, Chocolatey) whose declared license is missing or misleading. Regexes match the whole id, case-insensitively.",
+  "entries": [
+    {
+      "name": "Microsoft runtimes (winget)",
+      "pattern": "^Microsoft\\.(VCRedist|VCLibs|WindowsAppRuntime|msodbcsql|SQLServer|CLRTypesSQLServer|VisualStudio\\.|Office|Outlook|Teams|OneDrive|Edge|WinDbg|AppInstaller|DirectX|WebView2|Skype|Whiteboard|ToDo|Clipchamp)",
+      "status": "nonfree",
+      "alternatives": [],
+      "description": "Proprietary Microsoft component"
+    },
+    {
+      "name": "Microsoft runtimes and updates (choco)",
+      "pattern": "^(vcredist.*|dotnetfx|dotnet4\\.\\d.*|netfx-.*|KB\\d+.*|directx|chocolatey-windowsupdate\\.extension)$",
+      "status": "nonfree",
+      "alternatives": [],
+      "description": "Proprietary Microsoft runtime or update"
+    },
+    {
+      "name": "Ubuntu (WSL)",
+      "pattern": "^Canonical\\.Ubuntu",
+      "status": "uses-nonfree",
+      "alternatives": [
+        "Trisquel",
+        "Debian"
+      ],
+      "description": "Mostly free distro that ships and recommends nonfree software (winget metadata says 'Freeware')"
+    },
+    {
+      "name": "Liquibase",
+      "pattern": "^Liquibase\\.Liquibase$",
+      "status": "nonfree",
+      "alternatives": [
+        "Flyway Community",
+        "sqitch"
+      ],
+      "description": "Functional Source License since 5.0"
+    },
+    {
+      "name": "Huawei HiSuite",
+      "pattern": "^Huawei\\.",
+      "status": "nonfree",
+      "alternatives": [],
+      "description": "Proprietary vendor software"
+    },
+    {
+      "name": "Known free (missing license metadata)",
+      "pattern": "^(GitHub\\.cli|Mozilla\\.Thunderbird|Python\\.Python\\.\\d+|shinchiro\\.mpv|MediaArea\\.MediaInfo|Git\\.Git|Neovim\\.Neovim|VideoLAN\\.VLC|PostgreSQL\\.PostgreSQL(\\.\\d+)?|ffmpeg|maven|neovim|tesseract|git|python3?|nodejs(\\.install)?|golang|rust|vlc)$",
+      "status": "free"
+    }
+  ]
+}
