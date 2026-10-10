@@ -165,6 +165,14 @@ def wanted_statuses(args: argparse.Namespace) -> set[str]:
     return statuses
 
 
+def shown_findings(args: argparse.Namespace, reports: list[SourceReport]) -> list[Finding]:
+    """The findings the report lists, filtered and sorted as the options ask."""
+    statuses = wanted_statuses(args)
+    shown = [f for r in reports for f in r.findings if f.status.value in statuses]
+    shown.sort(key=SORT_KEYS[args.sort], reverse=args.reverse)
+    return shown
+
+
 def select_sources(args: argparse.Namespace, ctx: Context) -> list[Source]:
     classes = [BY_NAME[n] for n in args.sources] if args.sources else [c for c in ALL_SOURCES if c.default_enabled]
     classes = [c for c in classes if c.name not in args.skip and (not args.kind or c.kind in args.kind)]
@@ -268,9 +276,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     reports = scan(sources, classifier, args.jobs)
 
-    statuses = wanted_statuses(args)
-    shown = [f for r in reports for f in r.findings if f.status.value in statuses]
-    shown.sort(key=SORT_KEYS[args.sort], reverse=args.reverse)
+    shown = shown_findings(args, reports)
 
     if args.output:
         text = render_report(args, reports, shown, color=False)
