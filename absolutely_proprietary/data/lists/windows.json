@@ -5,6 +5,7 @@
       "name": "Microsoft Windows",
       "pattern": "^Microsoft Windows (\\d|Server)",
       "status": "nonfree",
+      "ring": 0,
       "alternatives": [
         "Trisquel",
         "Parabola",
@@ -280,6 +281,7 @@
       "name": "AMD Software",
       "pattern": "^AMD Software",
       "status": "nonfree",
+      "ring": 0,
       "description": "Proprietary GPU software",
       "reference": "https://en.wikipedia.org/wiki/AMD_Software"
     },
@@ -287,6 +289,7 @@
       "name": "Ryzen Master",
       "pattern": "^AMD Ryzen Master",
       "status": "nonfree",
+      "ring": 0,
       "description": "Proprietary CPU tuning software",
       "reference": "https://www.wikidata.org/wiki/Q125657043"
     },
@@ -468,6 +471,7 @@
       "name": "VMware",
       "pattern": "^VMware (Workstation|Player)",
       "status": "nonfree",
+      "ring": -1,
       "alternatives": [
         "QEMU",
         "VirtualBox (base, GPL)"
@@ -479,6 +483,7 @@
       "name": "Parallels",
       "pattern": "^Parallels",
       "status": "nonfree",
+      "ring": -1,
       "alternatives": [
         "QEMU"
       ],
@@ -489,6 +494,7 @@
       "name": "VirtualBox Extension Pack",
       "pattern": "^Oracle VM VirtualBox Extension|^VirtualBox Extension Pack",
       "status": "nonfree",
+      "ring": -1,
       "alternatives": [
         "VirtualBox (base, GPL)"
       ],
