@@ -22,6 +22,8 @@ from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, Context, Source
 
 log = logging.getLogger("absolutely_proprietary")
 
+# Opt-in flags for what runs below userspace; each turns on the source of the same name.
+LAYER_FLAGS = ("kernel",)
 PROPRIETARY = [Status.NONFREE.value, Status.SEMIFREE.value, Status.USES_NONFREE.value]
 SORT_KEYS = {
     "source": lambda f: (f.package.source, f.package.name.lower()),
@@ -62,6 +64,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="append",
         help="only scan sources of this kind (repeatable)",
     )
+    g.add_argument("--kernel", action="store_true", help="also scan kernel modules and third-party drivers (ring 0)")
     g.add_argument(
         "--list-sources", action="store_true", help="show every source and whether it's available here, then exit"
     )
@@ -187,6 +190,7 @@ def shown_findings(args: argparse.Namespace, reports: list[SourceReport]) -> lis
 
 def select_sources(args: argparse.Namespace, ctx: Context) -> list[Source]:
     classes = [BY_NAME[n] for n in args.sources] if args.sources else [c for c in ALL_SOURCES if c.default_enabled]
+    classes += [BY_NAME[flag] for flag in LAYER_FLAGS if getattr(args, flag) and BY_NAME[flag] not in classes]
     classes = [c for c in classes if c.name not in args.skip and (not args.kind or c.kind in args.kind)]
     return [src for src in (c(ctx) for c in classes) if src.available()]
 

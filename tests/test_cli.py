@@ -35,10 +35,19 @@ class BrokenSource(FakeSource):
         raise RuntimeError("boom")
 
 
+class FakeKernel(FakeSource):
+    name = "kernel"
+    default_enabled = False
+    default_ring = Ring.KERNEL
+
+    def packages(self) -> Iterable[Package]:
+        yield self.pkg("vgk", "1.0", "Proprietary")
+
+
 @pytest.fixture(autouse=True)
 def isolated(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    monkeypatch.setattr(cli, "ALL_SOURCES", (FakeSource, BrokenSource))
-    monkeypatch.setattr(cli, "BY_NAME", {"fake": FakeSource, "broken": BrokenSource})
+    monkeypatch.setattr(cli, "ALL_SOURCES", (FakeSource, BrokenSource, FakeKernel))
+    monkeypatch.setattr(cli, "BY_NAME", {"fake": FakeSource, "broken": BrokenSource, "kernel": FakeKernel})
     monkeypatch.setattr(cli, "config_path", lambda: tmp_path / "config.json")
     monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "cache"))
     monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
@@ -105,6 +114,12 @@ def test_max_ring_and_ring_sort(capsys: pytest.CaptureFixture[str], tmp_path: Pa
     assert names(run_json(capsys, *base, "-f", "--max-ring", "0")) == ["half"]
     assert names(run_json(capsys, *base, "-f", "--max-ring", "3")) == ["evil|pipe", "half"]
     assert names(run_json(capsys, *base, "--all", "--sort", "ring")) == ["half", "evil|pipe", "good", "mystery"]
+
+
+def test_kernel_flag_adds_the_opt_in_kernel_source(capsys: pytest.CaptureFixture[str]) -> None:
+    assert "vgk" not in names(run_json(capsys, "--skip", "broken"))
+    assert "vgk" in names(run_json(capsys, "--skip", "broken", "--kernel"))
+    assert names(run_json(capsys, "--sources", "fake", "--kernel", "--max-ring", "0")) == ["vgk"]
 
 
 def test_exit_code(capsys: pytest.CaptureFixture[str]) -> None:
