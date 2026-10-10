@@ -30,7 +30,7 @@ classifiers = [
 dependencies = []
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.10"]
+dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.10", "complexipy>=8.0.1"]
 
 [project.urls]
 Homepage = "https://github.com/vmavromatis/absolutely-proprietary"
@@ -64,6 +64,11 @@ files = ["absolutely_proprietary", "tests", "scripts"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.complexipy]
+paths = ["absolutely_proprietary"]  # scripts/ holds one-off maintenance scripts, not core code
+max-complexity-allowed = 20  # cli.main sits at 20
+failed = true  # list only the functions over the limit
 
 [tool.commitizen]
 name = "cz_conventional_commits"

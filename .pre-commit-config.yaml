@@ -22,6 +22,12 @@ repos:
         language: system
         pass_filenames: false
         verbose: true
+      - id: complexipy
+        name: complexipy
+        entry: uv run python hooks/timed.py complexipy complexipy
+        language: system
+        pass_filenames: false
+        verbose: true
       - id: pytest
         name: pytest
         entry: uv run python hooks/timed.py pytest pytest
