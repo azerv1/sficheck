@@ -60,6 +60,7 @@ ignore = ["E501", "RUF001"]
 python_version = "3.11"
 strict = true
 warn_unreachable = true
+files = ["absolutely_proprietary", "tests", "scripts"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
