@@ -34,6 +34,12 @@ repos:
         language: system
         pass_filenames: false
         verbose: true
+      - id: deptry
+        name: deptry
+        entry: uv run python hooks/timed.py deptry deptry .
+        language: system
+        pass_filenames: false
+        verbose: true
       - id: pytest
         name: pytest
         entry: uv run python hooks/timed.py pytest pytest

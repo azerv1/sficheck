@@ -30,7 +30,7 @@ classifiers = [
 dependencies = []
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.10", "complexipy>=8.0.1", "vulture>=2.16"]
+dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.10", "complexipy>=8.0.1", "vulture>=2.16", "deptry>=0.25.1"]
 
 [project.urls]
 Homepage = "https://github.com/vmavromatis/absolutely-proprietary"
@@ -69,6 +69,10 @@ testpaths = ["tests"]
 paths = ["absolutely_proprietary"]  # scripts/ holds one-off maintenance scripts, not core code
 max-complexity-allowed = 20  # cli.main sits at 20
 failed = true  # list only the functions over the limit
+
+[tool.deptry]
+extend_exclude = ["tests", "hooks"]
+known_first_party = ["absolutely_proprietary"]
 
 [tool.vulture]
 paths = ["absolutely_proprietary", "scripts", "tests"]
