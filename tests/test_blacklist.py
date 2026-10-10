@@ -118,6 +118,14 @@ def test_every_bundled_list_loads() -> None:
     assert all(e.status in Status for e in bl.by_name.values())
 
 
+@pytest.mark.parametrize("name", bundled_names())
+def test_every_nonfree_curated_entry_cites_a_source(name: str) -> None:
+    bl = load_bundled(name)
+    entries = [*bl.by_name.values(), *(entry for _, entry in bl.patterns)]
+    unsourced = [e.name for e in entries if e.status is not Status.FREE and not e.reference]
+    assert unsourced == [], f"{name}.json entries need a 'reference': {unsourced}"
+
+
 def test_load_user_json_and_text(tmp_path: Path) -> None:
     fetcher = Fetcher(root=tmp_path / "cache", offline=True)
     js = tmp_path / "mine.json"
