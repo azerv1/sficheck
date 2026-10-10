@@ -28,6 +28,11 @@ Arch users can use the [AUR package](https://aur.archlinux.org/packages/absolute
 - `windows` — programs in the registry's Uninstall keys, plus Windows itself.
 - `winget`, `scoop`, `choco` — license from `winget show` (cached), scoop manifests, Chocolatey nuspecs.
 
+**Below userspace** (opt-in)
+- `kernel` (`--kernel`) — what runs in ring 0.
+  - Linux: loaded modules from `/proc/modules`. A module the kernel taints with `P` (license not GPL-compatible) is nonfree, the rest free.
+  - Windows: third-party kernel drivers from the registry's service keys, counting only those in use: bound to a device, loaded at system or auto start, or installed outside `C:\Windows`. Microsoft's own drivers are skipped (Windows itself is already reported), as are leftover entries whose file is gone. Vendor and version come from the driver file. A driver not in `kernel.json` counts as nonfree, since free drivers are listed there.
+
 **Languages** (global installs, not project dependencies)
 - Python: `pip` (default interpreter), `uv` tools, `pipx`
 - JavaScript/TypeScript: `npm`, `pnpm`, `yarn`, `bun`, `deno`
@@ -70,6 +75,7 @@ Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entr
 
 ```
 --sources A,B / --skip A,B / --kind system|lang              what to scan
+--kernel                                                      also scan kernel modules and drivers
 --status S (repeatable) / -f, --full / --all / --show-unknown  what to show (default: nonfree)
 --sort source|name|status|ring|alternatives  (-s, -a shortcuts)  -r   ordering
 --max-ring N                                                  only ring N or deeper (-3 … 3)
@@ -138,6 +144,7 @@ Alternatives must be free software, a real replacement for the same job, and a v
 - `windows.json` — registry DisplayName regexes
 - `windows-packages.json` — winget/scoop/choco id regexes
 - `lang.json` — language packages with missing or misleading metadata
+- `kernel.json` — kernel drivers and modules by service or module name: anticheats, and the free drivers
 
 ## Development
 
