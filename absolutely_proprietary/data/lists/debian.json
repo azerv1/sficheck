@@ -19,7 +19,7 @@
     {"name": "realvnc-vnc-viewer", "status": "nonfree", "alternatives": ["tigervnc-viewer", "remmina"], "description": "Proprietary VNC", "reference": "https://en.wikipedia.org/wiki/RealVNC"},
     {"name": "plexmediaserver", "status": "nonfree", "alternatives": ["jellyfin"], "description": "Proprietary media server", "reference": "https://www.plex.tv/about/privacy-legal/plex-terms-of-service/"},
     {"name": "emby-server", "status": "uses-nonfree", "alternatives": ["jellyfin"], "description": "Depends on nonfree reference assemblies", "reference": "https://labs.parabola.nu/issues/1334"},
-    {"name": "insync", "status": "nonfree", "alternatives": ["rclone"], "description": "Proprietary sync client", "reference": "https://git.parabola.nu/abslibre/blacklist.git/tree/aur-blacklist.txt"},
+    {"name": "insync", "status": "nonfree", "alternatives": ["rclone"], "description": "Proprietary sync client", "reference": "https://www.insynchq.com/terms"},
     {"name": "veracrypt", "status": "nonfree", "alternatives": ["cryptsetup", "zulucrypt"], "description": "Partially licensed under the TrueCrypt License 3.0, which is not free", "reference": "https://labs.parabola.nu/issues/1139"}
   ]
 }
