@@ -9,9 +9,10 @@ import pytest
 from absolutely_proprietary.blacklist import Blacklist
 from absolutely_proprietary.classify import Classifier
 from absolutely_proprietary.models import Entry, Finding, Package, Ring, Status
-from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, kernel
+from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, hypervisors, kernel
 from absolutely_proprietary.sources.base import Context, Source
 from absolutely_proprietary.sources.compiled import Cargo, Go
+from absolutely_proprietary.sources.hypervisors import Hypervisors
 from absolutely_proprietary.sources.javascript import Npm
 from absolutely_proprietary.sources.jvm import Maven, Sdkman
 from absolutely_proprietary.sources.kernel import Kernel
@@ -367,3 +368,40 @@ def test_image_paths_resolve_to_files() -> None:
     assert kernel._image_path("x", r"\??\D:\x.sys", root) == r"D:\x.sys"
     assert kernel._image_path("x", r"\SystemRoot\System32\x.sys", root) == r"C:\Windows\System32\x.sys"
     assert kernel._image_path("x", r"System32\drivers\x.sys", root) == r"C:\Windows\System32\drivers\x.sys"
+
+
+def test_linux_guest_names_its_hypervisor_and_installed_ones(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fetcher: StubFetcher, ctx: Context
+) -> None:
+    (tmp_path / "cpuinfo").write_text("processor\t: 0\nflags\t\t: fpu vme hypervisor lahf_lm\n")
+    (tmp_path / "dmi").mkdir()
+    (tmp_path / "dmi" / "sys_vendor").write_text("Microsoft Corporation\n")
+    (tmp_path / "dmi" / "product_name").write_text("Virtual Machine\n")
+    (tmp_path / "modules").write_text("kvm_intel 1 0 - Live 0x0\nkvm 2 1 kvm_intel, Live 0x0\nvmmon 3 0 - Live 0x0\n")
+    monkeypatch.setattr(hypervisors, "IS_WINDOWS", False)
+    monkeypatch.setattr(hypervisors, "CPUINFO", tmp_path / "cpuinfo")
+    monkeypatch.setattr(hypervisors, "DMI", tmp_path / "dmi")
+    monkeypatch.setattr(hypervisors, "XEN", tmp_path / "missing")
+    monkeypatch.setattr(hypervisors, "PROC_MODULES", tmp_path / "modules")
+    found = scan(Hypervisors(ctx), fetcher)
+    assert sorted(found) == ["hyper-v", "kvm", "vmware"]
+    assert found["hyper-v"].status is Status.NONFREE and found["hyper-v"].ring is Ring.HYPERVISOR
+    assert found["hyper-v"].package.extra["role"] == "running underneath this OS"
+    assert found["kvm"].status is Status.FREE and found["vmware"].package.extra["role"] == "installed"
+
+
+def test_windows_on_bare_metal_with_a_hypervisor_runs_on_hyper_v(
+    monkeypatch: pytest.MonkeyPatch, fetcher: StubFetcher, ctx: Context
+) -> None:
+    machine = {"SystemManufacturer": "HP", "SystemProductName": "HP Pavilion Laptop"}
+    monkeypatch.setattr(hypervisors, "IS_WINDOWS", True)
+    monkeypatch.setattr(hypervisors, "_windows_hypervisor_present", lambda: True)
+    monkeypatch.setattr(hypervisors, "_windows_value", lambda key, name: machine.get(name, ""))
+    monkeypatch.setattr(hypervisors, "_windows_services", lambda: {"VBoxSup"})
+    found = scan(Hypervisors(ctx), fetcher)
+    assert sorted(found) == ["hyper-v", "virtualbox"]
+    assert found["hyper-v"].status is Status.NONFREE
+    machine["SystemManufacturer"] = "VMware, Inc."  # Windows as a guest
+    assert "vmware" in scan(Hypervisors(ctx), fetcher)
+    monkeypatch.setattr(hypervisors, "_windows_hypervisor_present", lambda: False)
+    assert sorted(scan(Hypervisors(ctx), fetcher)) == ["virtualbox"]
