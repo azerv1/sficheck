@@ -33,7 +33,7 @@ class Classifier:
 
     1. user blacklists  2. the source's own verdict (Parabola, Debian section, nixpkgs meta)
     3. bundled curated lists  4. declared license  5. online registry (opt-in)
-    6. the source's fallback (free for vetted distro archives, unknown otherwise)
+    6. the source's fallback (free for vetted distro archives, unknown otherwise; see Source.fallback)
     """
 
     fetcher: Fetcher
@@ -77,14 +77,9 @@ class Classifier:
             elif self.online and source.registry:
                 pending.append(package)
             else:
-                findings.append(self._fallback(source, package))
+                findings.append(source.fallback(package))
         if pending:
             with ThreadPoolExecutor(self.jobs) as pool:
                 for package, finding in zip(pending, pool.map(lambda p: self._online(source, p), pending), strict=True):
-                    findings.append(finding or self._fallback(source, package))
+                    findings.append(finding or source.fallback(package))
         return [_with_ring(source, f) for f in findings]
-
-    @staticmethod
-    def _fallback(source: Source, package: Package) -> Finding:
-        reason = "not blacklisted" if source.fallback_status is Status.FREE else "no license information"
-        return Finding(package, source.fallback_status, reason=reason, description=package.license or "")

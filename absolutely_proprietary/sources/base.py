@@ -57,6 +57,11 @@ class Source:
     def verdict(self, package: Package) -> Finding | None:
         return None
 
+    def fallback(self, package: Package) -> Finding:
+        """The finding for a package nothing else could classify."""
+        reason = "not blacklisted" if self.fallback_status is Status.FREE else "no license information"
+        return Finding(package, self.fallback_status, reason=reason, description=package.license or "")
+
     def pkg(self, name: str, version: str = "", license: str | None = None, **extra: str) -> Package:
         return Package(name=name, source=self.name, version=version, license=license or None, extra=extra)
 
