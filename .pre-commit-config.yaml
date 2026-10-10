@@ -40,6 +40,23 @@ repos:
         language: system
         pass_filenames: false
         verbose: true
+      - id: jscpd
+        name: jscpd
+        entry: uv run python hooks/timed.py jscpd npx --yes jscpd@4 absolutely_proprietary scripts tests
+        language: system
+        pass_filenames: false
+        verbose: true
+        stages: [pre-push]
+      - id: pip-audit
+        name: pip-audit
+        entry: >-
+          uv run python hooks/timed.py pip-audit
+          uv export --frozen --no-emit-project --quiet -o build/audit-req.txt
+          && pip-audit -r build/audit-req.txt --disable-pip
+        language: system
+        pass_filenames: false
+        verbose: true
+        stages: [pre-push]
       - id: pytest
         name: pytest
         entry: uv run python hooks/timed.py pytest pytest
