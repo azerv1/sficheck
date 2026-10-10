@@ -271,6 +271,38 @@
       "reference": "https://en.wikipedia.org/wiki/Battle.net"
     },
     {
+      "name": "Riot Vanguard",
+      "pattern": "^Riot Vanguard",
+      "status": "nonfree",
+      "ring": 0,
+      "description": "Kernel-level anticheat driver (vgk.sys), loaded at boot",
+      "reference": "https://en.wikipedia.org/wiki/Riot_Vanguard"
+    },
+    {
+      "name": "Easy Anti-Cheat",
+      "pattern": "^Easy ?Anti-?Cheat",
+      "status": "nonfree",
+      "ring": 0,
+      "description": "Kernel-level anticheat driver",
+      "reference": "https://en.wikipedia.org/wiki/Kernel-level_anti-cheat"
+    },
+    {
+      "name": "BattlEye",
+      "pattern": "^BattlEye",
+      "status": "nonfree",
+      "ring": 0,
+      "description": "Kernel-level anticheat driver (BEDaisy.sys)",
+      "reference": "https://en.wikipedia.org/wiki/BattlEye"
+    },
+    {
+      "name": "FACEIT Anti-Cheat",
+      "pattern": "^FACEIT (AC|Anti-?Cheat)",
+      "status": "nonfree",
+      "ring": 0,
+      "description": "Kernel-level anticheat driver (FACEIT.sys)",
+      "reference": "https://support.faceit.com/hc/en-us/articles/9394666828188-What-is-FACEIT-Anti-cheat-and-how-does-it-work"
+    },
+    {
       "name": "Ubisoft Connect",
       "pattern": "^Ubisoft (Connect|Game Launcher)",
       "status": "nonfree",

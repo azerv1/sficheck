@@ -110,6 +110,11 @@ def test_json_ring_is_optional_and_validated() -> None:
         Blacklist().load_json({"entries": [{"name": "bad", "ring": 2}]}, "test")
 
 
+def test_kernel_anticheat_is_ring_zero() -> None:
+    hit = load_bundled("windows").lookup("Riot Vanguard")
+    assert hit is not None and hit.status is Status.NONFREE and hit.ring is Ring.KERNEL
+
+
 def test_merged_overrides() -> None:
     a, b = Blacklist(), Blacklist()
     a.add(Entry("x", Status.NONFREE))
