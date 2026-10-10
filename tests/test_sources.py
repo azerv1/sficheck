@@ -9,11 +9,12 @@ import pytest
 from absolutely_proprietary.blacklist import Blacklist
 from absolutely_proprietary.classify import Classifier
 from absolutely_proprietary.models import Entry, Finding, Package, Ring, Status
-from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME
+from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, kernel
 from absolutely_proprietary.sources.base import Context, Source
 from absolutely_proprietary.sources.compiled import Cargo, Go
 from absolutely_proprietary.sources.javascript import Npm
 from absolutely_proprietary.sources.jvm import Maven, Sdkman
+from absolutely_proprietary.sources.kernel import Kernel
 from absolutely_proprietary.sources.python import Pip
 from absolutely_proprietary.sources.scripting import CranR, Gem, GhcPkg
 from absolutely_proprietary.sources.system import Brew, Dpkg, Nix, Pacman, Snap
@@ -300,3 +301,24 @@ def test_ring_comes_from_entry_else_source_default(fetcher: StubFetcher, ctx: Co
     assert found["blob"].ring is Ring.HYPERVISOR
     assert found["calendar"].ring is Ring.USER
     assert found["bash"].ring is None  # free software gets no severity
+
+
+def test_kernel_modules_use_the_taint_flag(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fetcher: StubFetcher, ctx: Context
+) -> None:
+    proc_modules = tmp_path / "modules"
+    proc_modules.write_text(
+        "nvidia 54001664 0 - Live 0x0 (POE)\nwl 6365184 0 - Live 0x0 (POE)\next4 1081344 1 - Live 0x0\n"
+    )
+    for name, taint, version in [("nvidia", "POE", "550.78"), ("wl", "POE", ""), ("ext4", "", "")]:
+        (tmp_path / "sys" / name).mkdir(parents=True)
+        (tmp_path / "sys" / name / "taint").write_text(taint + "\n")
+        if version:
+            (tmp_path / "sys" / name / "version").write_text(version + "\n")
+    monkeypatch.setattr(kernel, "PROC_MODULES", proc_modules)
+    monkeypatch.setattr(kernel, "SYS_MODULE", tmp_path / "sys")
+    found = scan(Kernel(ctx), fetcher)
+    assert found["nvidia"].status is Status.NONFREE and found["nvidia"].alternatives  # curated: nouveau
+    assert found["nvidia"].package.version == "550.78" and found["nvidia"].ring is Ring.KERNEL
+    assert found["wl"].status is Status.NONFREE and found["wl"].reason == "kernel taint P"
+    assert found["ext4"].status is Status.FREE and found["ext4"].ring is None

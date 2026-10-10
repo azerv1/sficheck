@@ -6,6 +6,7 @@ from absolutely_proprietary.sources.base import Context, Source
 from absolutely_proprietary.sources.compiled import Cargo, Conan, DotnetTools, Go, Mint, NugetCache, Vcpkg
 from absolutely_proprietary.sources.javascript import Bun, Deno, Npm, Pnpm, Yarn
 from absolutely_proprietary.sources.jvm import Coursier, Gradle, Maven, Sdkman
+from absolutely_proprietary.sources.kernel import Kernel
 from absolutely_proprietary.sources.python import Pip, Pipx, UvTools
 from absolutely_proprietary.sources.scripting import Composer, Cpan, CranR, Gem, GhcPkg, Julia, LuaRocks, Mix, Pub
 from absolutely_proprietary.sources.system import Brew, Dpkg, Flatpak, Nix, Pacman, Snap
@@ -23,6 +24,7 @@ ALL_SOURCES: tuple[type[Source], ...] = (
     Winget,
     Scoop,
     Chocolatey,
+    Kernel,
     # languages
     Pip,
     UvTools,
