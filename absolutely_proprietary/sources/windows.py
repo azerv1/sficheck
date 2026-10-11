@@ -12,7 +12,7 @@ from pathlib import Path
 
 from absolutely_proprietary import proc
 from absolutely_proprietary.models import Package
-from absolutely_proprietary.sources import meta
+from absolutely_proprietary.sources import _registry, meta
 from absolutely_proprietary.sources.base import IS_WINDOWS, Source
 
 UNINSTALL_KEY = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
@@ -22,48 +22,23 @@ PACKAGE_LISTS = ("common", "windows-packages")
 
 def _registry_programs() -> Iterator[tuple[str, str]]:
     """(DisplayName, DisplayVersion) for every visible Uninstall entry."""
-    if sys.platform != "win32":
-        return
-    import winreg
-
-    views = [
-        (winreg.HKEY_LOCAL_MACHINE, winreg.KEY_WOW64_64KEY),
-        (winreg.HKEY_LOCAL_MACHINE, winreg.KEY_WOW64_32KEY),
-        (winreg.HKEY_CURRENT_USER, 0),
-    ]
-    for hive, view in views:
-        try:
-            root = winreg.OpenKey(hive, UNINSTALL_KEY, 0, winreg.KEY_READ | view)
-        except OSError:
-            continue
-        with root:
-            for i in range(winreg.QueryInfoKey(root)[0]):
-                try:
-                    with winreg.OpenKey(root, winreg.EnumKey(root, i)) as key:
-                        values = {}
-                        for j in range(winreg.QueryInfoKey(key)[1]):
-                            vname, value, _ = winreg.EnumValue(key, j)
-                            values[vname] = value
-                except OSError:
-                    continue
-                name = str(values.get("DisplayName", "")).strip()
-                # Hidden components and updates belonging to another product aren't "programs".
-                if not name or values.get("SystemComponent") == 1 or values.get("ParentKeyName"):
-                    continue
-                yield name, str(values.get("DisplayVersion", ""))
+    for hive, view in (("HKLM", _registry.WOW64_64), ("HKLM", _registry.WOW64_32), ("HKCU", 0)):
+        for subkey in _registry.subkeys(UNINSTALL_KEY, hive, view):
+            values = _registry.values(rf"{UNINSTALL_KEY}\{subkey}", hive, view)
+            name = str(values.get("DisplayName", "")).strip()
+            # Hidden components and updates belonging to another product aren't "programs".
+            if not name or values.get("SystemComponent") == 1 or values.get("ParentKeyName"):
+                continue
+            yield name, str(values.get("DisplayVersion", ""))
 
 
 def _windows_edition() -> tuple[str, str]:
     if sys.platform != "win32":
         return "", ""
-    import winreg
-
-    try:
-        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion") as key:
-            product = str(winreg.QueryValueEx(key, "ProductName")[0])
-            build = str(winreg.QueryValueEx(key, "CurrentBuild")[0])
-    except OSError:
+    values = _registry.values(r"SOFTWARE\Microsoft\Windows NT\CurrentVersion")
+    if not values:
         return "Microsoft Windows", ""
+    product, build = str(values.get("ProductName", "")), str(values.get("CurrentBuild", ""))
     # Windows 11 still reports "Windows 10" in ProductName; the build number tells them apart.
     if build.isdigit() and int(build) >= 22000:
         product = product.replace("Windows 10", "Windows 11")

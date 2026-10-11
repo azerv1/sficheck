@@ -12,8 +12,8 @@ from pathlib import Path
 from absolutely_proprietary import proc
 from absolutely_proprietary.blacklist import Blacklist, load_bundled
 from absolutely_proprietary.models import Finding, Package, Ring, Status
+from absolutely_proprietary.sources import _registry
 from absolutely_proprietary.sources.base import IS_WINDOWS, Source
-from absolutely_proprietary.sources.firmware import _windows_values
 from absolutely_proprietary.sources.kernel import PROC_MODULES, SYS_MODULE, _read, _windows_drivers
 
 SYS_BUS = Path("/sys/bus")
@@ -69,18 +69,6 @@ def _blobs(driver: str) -> list[str]:
     return [blob for blob in declared if any((FIRMWARE_DIR / (blob + s)).is_file() for s in BLOB_SUFFIXES)]
 
 
-def _subkeys(key: str) -> list[str]:
-    if sys.platform != "win32":
-        return []
-    import winreg
-
-    try:
-        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key) as handle:
-            return [winreg.EnumKey(handle, i) for i in range(winreg.QueryInfoKey(handle)[0])]
-    except OSError:
-        return []
-
-
 def _windows_devices() -> Iterator[tuple[str, str]]:
     """(device name, driver service) for every PCI, USB and HD Audio device plugged in now."""
     if sys.platform != "win32":
@@ -90,12 +78,12 @@ def _windows_devices() -> Iterator[tuple[str, str]]:
 
     locate, node = ctypes.WinDLL("cfgmgr32").CM_Locate_DevNodeW, wintypes.DWORD()
     for bus in WINDOWS_BUSES:
-        for device in _subkeys(rf"{ENUM_KEY}\{bus}"):
-            for instance in _subkeys(rf"{ENUM_KEY}\{bus}\{device}"):
+        for device in _registry.subkeys(rf"{ENUM_KEY}\{bus}"):
+            for instance in _registry.subkeys(rf"{ENUM_KEY}\{bus}\{device}"):
                 path = rf"{bus}\{device}\{instance}"
                 if locate(ctypes.byref(node), path, 0) != 0:  # the registry remembers unplugged devices too
                     continue
-                values = _windows_values(rf"{ENUM_KEY}\{path}")
+                values = _registry.values(rf"{ENUM_KEY}\{path}")
                 if service := str(values.get("Service", "")):
                     # "@oem12.inf,%desc%;Intel(R) Wi-Fi 6 AX201" -> the part after the last ;
                     yield str(values.get("DeviceDesc", device)).rpartition(";")[2], service

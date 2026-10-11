@@ -7,6 +7,7 @@ from collections.abc import Iterable
 from pathlib import Path
 
 from absolutely_proprietary.models import Package, Ring
+from absolutely_proprietary.sources import _registry
 from absolutely_proprietary.sources.base import IS_WINDOWS, Source
 from absolutely_proprietary.sources.kernel import PROC_MODULES, SERVICES_KEY, _read
 
@@ -35,18 +36,6 @@ def _vm_vendor(machine: str) -> str:
     return next((hypervisor for text, hypervisor in VM_VENDORS if text in machine), "unidentified")
 
 
-def _windows_value(key: str, name: str) -> str:
-    if sys.platform != "win32":
-        return ""
-    import winreg
-
-    try:
-        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key) as handle:
-            return str(winreg.QueryValueEx(handle, name)[0])
-    except OSError:
-        return ""
-
-
 def _windows_hypervisor_present() -> bool:
     if sys.platform != "win32":
         return False
@@ -58,7 +47,7 @@ def _windows_hypervisor_present() -> bool:
 
 
 def _windows_services() -> set[str]:
-    return {name for name in ENGINES if _windows_value(rf"{SERVICES_KEY}\{name}", "Type")}
+    return {name for name in ENGINES if _registry.value(rf"{SERVICES_KEY}\{name}", "Type")}
 
 
 def _underneath() -> str | None:
@@ -66,7 +55,7 @@ def _underneath() -> str | None:
     if IS_WINDOWS:
         if not _windows_hypervisor_present():
             return None
-        machine = " ".join(_windows_value(SYSTEM_INFO_KEY, v) for v in ("SystemManufacturer", "SystemProductName"))
+        machine = " ".join(_registry.value(SYSTEM_INFO_KEY, v) for v in ("SystemManufacturer", "SystemProductName"))
         vendor = _vm_vendor(machine)
         # On real hardware Windows runs as Hyper-V's root partition (VBS, WSL 2, Hyper-V).
         return "hyper-v" if vendor == "unidentified" else vendor

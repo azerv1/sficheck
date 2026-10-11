@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import sys
 from collections.abc import Iterable
 from pathlib import Path
 
 from absolutely_proprietary.models import Finding, Package, Ring, Status
+from absolutely_proprietary.sources import _registry
 from absolutely_proprietary.sources.base import IS_WINDOWS, Source
 from absolutely_proprietary.sources.hypervisors import CPUINFO, DMI
 from absolutely_proprietary.sources.kernel import _read
@@ -19,21 +19,6 @@ COPROCESSORS = {"GenuineIntel": "intel-me", "AuthenticAMD": "amd-psp"}
 MICROCODE = {"GenuineIntel": "intel-microcode", "AuthenticAMD": "amd-microcode"}
 
 
-def _windows_values(key: str) -> dict[str, object]:
-    if sys.platform != "win32":
-        return {}
-    import winreg
-
-    try:
-        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key) as handle:
-            return {
-                name: value
-                for name, value, _ in (winreg.EnumValue(handle, i) for i in range(winreg.QueryInfoKey(handle)[1]))
-            }
-    except OSError:
-        return {}
-
-
 def _revision(raw: object) -> str:
     """Windows' "Update Revision": the microcode revision, in the high half when it's 8 bytes long."""
     if not isinstance(raw, bytes) or not any(raw):
@@ -43,7 +28,7 @@ def _revision(raw: object) -> str:
 
 
 def _windows_platform() -> dict[str, str]:
-    bios, cpu = _windows_values(BIOS_KEY), _windows_values(CPU_KEY)
+    bios, cpu = _registry.values(BIOS_KEY), _registry.values(CPU_KEY)
     return {
         "bios_vendor": str(bios.get("BIOSVendor", "")),
         "bios_version": str(bios.get("BIOSVersion", "")),

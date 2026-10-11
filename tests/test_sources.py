@@ -9,7 +9,7 @@ import pytest
 from absolutely_proprietary.blacklist import Blacklist
 from absolutely_proprietary.classify import Classifier
 from absolutely_proprietary.models import Entry, Finding, Package, Ring, Status
-from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, firmware, hardware, hypervisors, kernel
+from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, _registry, firmware, hardware, hypervisors, kernel
 from absolutely_proprietary.sources.base import Context, Source
 from absolutely_proprietary.sources.compiled import Cargo, Go
 from absolutely_proprietary.sources.firmware import Firmware
@@ -398,7 +398,7 @@ def test_windows_on_bare_metal_with_a_hypervisor_runs_on_hyper_v(
     machine = {"SystemManufacturer": "HP", "SystemProductName": "HP Pavilion Laptop"}
     monkeypatch.setattr(hypervisors, "IS_WINDOWS", True)
     monkeypatch.setattr(hypervisors, "_windows_hypervisor_present", lambda: True)
-    monkeypatch.setattr(hypervisors, "_windows_value", lambda key, name: machine.get(name, ""))
+    monkeypatch.setattr(_registry, "value", lambda key, name: machine.get(name, ""))
     monkeypatch.setattr(hypervisors, "_windows_services", lambda: {"VBoxSup"})
     found = scan(Hypervisors(ctx), fetcher)
     assert sorted(found) == ["hyper-v", "virtualbox"]
@@ -439,7 +439,7 @@ def test_windows_firmware_reads_the_registry(
         firmware.CPU_KEY: {"VendorIdentifier": "AuthenticAMD", "Update Revision": b"\0\0\0\0\x15\x01\x20\x0a"},
     }
     monkeypatch.setattr(firmware, "IS_WINDOWS", True)
-    monkeypatch.setattr(firmware, "_windows_values", lambda key: keys[key])
+    monkeypatch.setattr(_registry, "values", lambda key: keys[key])
     found = scan(Firmware(ctx), fetcher)
     assert found["coreboot"].status is Status.USES_NONFREE  # curated: free, but with blobs
     assert found["amd-psp"].status is Status.NONFREE and found["amd-psp"].ring is Ring.ME

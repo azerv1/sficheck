@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from absolutely_proprietary.models import Finding, Package, Ring, Status
+from absolutely_proprietary.sources import _registry
 from absolutely_proprietary.sources.base import IS_WINDOWS, Source
 
 PROC_MODULES = Path("/proc/modules")
@@ -34,29 +35,12 @@ def _linux_modules() -> Iterator[tuple[str, str, str]]:
 
 def _windows_driver_services() -> Iterator[tuple[str, str, int, int]]:
     """(service name, ImagePath, Start, devices bound to it) for every kernel driver service."""
-    if sys.platform != "win32":
-        return
-    import winreg
-
-    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, SERVICES_KEY) as root:
-        for i in range(winreg.QueryInfoKey(root)[0]):
-            name = winreg.EnumKey(root, i)
-            try:
-                with winreg.OpenKey(root, name) as key:
-                    values = {
-                        winreg.EnumValue(key, j)[0]: winreg.EnumValue(key, j)[1]
-                        for j in range(winreg.QueryInfoKey(key)[1])
-                    }
-            except OSError:
-                continue
-            if values.get("Type") not in (KERNEL_DRIVER, FILE_SYSTEM_DRIVER):
-                continue
-            try:
-                with winreg.OpenKey(root, name + r"\Enum") as enum:
-                    bound = int(winreg.QueryValueEx(enum, "Count")[0])
-            except OSError:
-                bound = 0
-            yield name, str(values.get("ImagePath", "")), int(values.get("Start", 3)), bound
+    for name in _registry.subkeys(SERVICES_KEY):
+        values = _registry.values(rf"{SERVICES_KEY}\{name}")
+        if values.get("Type") not in (KERNEL_DRIVER, FILE_SYSTEM_DRIVER):
+            continue
+        bound = int(_registry.value(rf"{SERVICES_KEY}\{name}\Enum", "Count") or 0)
+        yield name, str(values.get("ImagePath", "")), int(str(values.get("Start", 3))), bound
 
 
 def _image_path(service: str, image_path: str, system_root: str) -> str:
