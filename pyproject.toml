@@ -32,6 +32,7 @@ dependencies = [
     "httpx2>=2.9",
     "license-expression>=30",
     "msgspec>=0.19",
+    "spdx-license-list>=3.27",
 ]
 
 [dependency-groups]
@@ -81,7 +82,7 @@ files = ["absolutely_proprietary", "tests", "scripts"]
 
 [[tool.mypy.overrides]]
 # Runtime dependencies that ship without type information.
-module = ["license_expression"]
+module = ["license_expression", "spdx_license_list"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

@@ -34,7 +34,10 @@ def _data() -> dict[str, Any]:
 
 @cache
 def _free_ids() -> frozenset[str]:
-    return frozenset(_SUFFIXES.sub("", i).lower() for i in _data()["free_spdx"])
+    from spdx_license_list import LICENSES
+
+    ids = [i for i, lic in LICENSES.items() if lic.fsf_libre or lic.osi_approved] + _data()["extra_free_spdx"]
+    return frozenset(_SUFFIXES.sub("", i).lower() for i in ids)
 
 
 def _keyword_pattern(words: tuple[str, ...]) -> re.Pattern[str]:
