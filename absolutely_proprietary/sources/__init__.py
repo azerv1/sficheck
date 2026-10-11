@@ -5,6 +5,7 @@ from __future__ import annotations
 from absolutely_proprietary.sources.base import Context, Source
 from absolutely_proprietary.sources.compiled import Cargo, Conan, DotnetTools, Go, Mint, NugetCache, Vcpkg
 from absolutely_proprietary.sources.firmware import Firmware
+from absolutely_proprietary.sources.hardware import Hardware
 from absolutely_proprietary.sources.hypervisors import Hypervisors
 from absolutely_proprietary.sources.javascript import Bun, Deno, Npm, Pnpm, Yarn
 from absolutely_proprietary.sources.jvm import Coursier, Gradle, Maven, Sdkman
@@ -29,6 +30,7 @@ ALL_SOURCES: tuple[type[Source], ...] = (
     Kernel,
     Hypervisors,
     Firmware,
+    Hardware,
     # languages
     Pip,
     UvTools,

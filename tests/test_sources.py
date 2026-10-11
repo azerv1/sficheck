@@ -9,10 +9,11 @@ import pytest
 from absolutely_proprietary.blacklist import Blacklist
 from absolutely_proprietary.classify import Classifier
 from absolutely_proprietary.models import Entry, Finding, Package, Ring, Status
-from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, firmware, hypervisors, kernel
+from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, firmware, hardware, hypervisors, kernel
 from absolutely_proprietary.sources.base import Context, Source
 from absolutely_proprietary.sources.compiled import Cargo, Go
 from absolutely_proprietary.sources.firmware import Firmware
+from absolutely_proprietary.sources.hardware import Hardware
 from absolutely_proprietary.sources.hypervisors import Hypervisors
 from absolutely_proprietary.sources.javascript import Npm
 from absolutely_proprietary.sources.jvm import Maven, Sdkman
@@ -444,3 +445,59 @@ def test_windows_firmware_reads_the_registry(
     assert found["amd-psp"].status is Status.NONFREE and found["amd-psp"].ring is Ring.ME
     assert found["amd-microcode"].package.version == "0xa200115"
     assert firmware._revision(b"\xac\0\0\0") == "0xac" and firmware._revision(b"\0" * 8) == ""
+
+
+def test_linux_hardware_judges_devices_by_driver_and_firmware(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fake_run: FakeRun, fetcher: StubFetcher, ctx: Context
+) -> None:
+    def device(bus: str, name: str, uevent: str, **files: str) -> None:
+        path = tmp_path / "bus" / bus / "devices" / name
+        path.mkdir(parents=True)
+        (path / "uevent").write_text(uevent)
+        for file, text in files.items():
+            (path / file).write_text(text + "\n")
+
+    device("pci", "gpu", "DRIVER=nvidia\nPCI_ID=10DE:2504\nPCI_SLOT_NAME=0000:01:00.0\n")
+    device("pci", "wifi", "DRIVER=iwlwifi\nPCI_ID=8086:A0F0\nPCI_SLOT_NAME=0000:00:14.3\n")
+    device("pci", "nic", "DRIVER=r8169\nPCI_ID=10EC:8168\nPCI_SLOT_NAME=0000:02:00.0\n")
+    device("pci", "bridge", "DRIVER=pcieport\nPCI_SLOT_NAME=0000:00:1c.0\n")
+    device("pci", "unbound", "PCI_ID=8086:A0A3\nPCI_SLOT_NAME=0000:00:1f.4\n")
+    device(
+        "usb",
+        "dongle",
+        "DEVTYPE=usb_device\nDRIVER=usb\nPRODUCT=bda/8179/0\n",
+        manufacturer="Realtek",
+        product="802.11n",
+    )
+    device("usb", "dongle-if", "DEVTYPE=usb_interface\nDRIVER=wl\nPRODUCT=bda/8179/0\n")
+    device("usb", "hub-if", "DEVTYPE=usb_interface\nDRIVER=hub\nPRODUCT=1d6b/2/0\n")
+    (tmp_path / "module" / "wl").mkdir(parents=True)
+    (tmp_path / "module" / "wl" / "taint").write_text("POE\n")
+    (tmp_path / "firmware").mkdir()
+    for blob in ("iwlwifi-so-a0-gf-a0-72.ucode.zst", "iwlwifi-so-a0-gf-a0.pnvm", "rtl_nic/rtl8168h-2.fw"):
+        (tmp_path / "firmware" / blob).parent.mkdir(exist_ok=True)
+        (tmp_path / "firmware" / blob).write_bytes(b"\0")
+    fake_run(
+        {
+            "lspci -mmD": '0000:00:14.3 "Network controller" "Intel Corporation" "Wi-Fi 6 AX201" -r20\n',
+            "modinfo -F firmware iwlwifi": "iwlwifi-so-a0-gf-a0-72.ucode\niwlwifi-so-a0-gf-a0.pnvm\niwlwifi-ty-a0.ucode\n",
+            "modinfo -F firmware r8169": "",
+        }
+    )
+    monkeypatch.setattr(hardware, "SYS_BUS", tmp_path / "bus")
+    monkeypatch.setattr(hardware, "SYS_MODULE", tmp_path / "module")
+    monkeypatch.setattr(hardware, "FIRMWARE_DIR", tmp_path / "firmware")
+    found = scan(Hardware(ctx), fetcher)
+    assert sorted(found) == [
+        "Intel Corporation Wi-Fi 6 AX201",
+        "PCI device 10DE:2504",
+        "PCI device 10EC:8168",
+        "Realtek 802.11n",
+    ]
+    gpu, wifi = found["PCI device 10DE:2504"], found["Intel Corporation Wi-Fi 6 AX201"]
+    assert gpu.status is Status.NONFREE and gpu.ring is Ring.KERNEL and gpu.alternatives  # curated nvidia entry
+    assert wifi.status is Status.USES_NONFREE and wifi.description == (
+        "iwlwifi loads iwlwifi-so-a0-gf-a0-72.ucode, iwlwifi-so-a0-gf-a0.pnvm"
+    )
+    assert found["Realtek 802.11n"].status is Status.NONFREE and found["Realtek 802.11n"].reason == "kernel taint P"
+    assert found["PCI device 10EC:8168"].status is Status.FREE
