@@ -484,6 +484,7 @@ def test_linux_hardware_judges_devices_by_driver_and_firmware(
             "modinfo -F firmware r8169": "",
         }
     )
+    monkeypatch.setattr(hardware, "IS_WINDOWS", False)
     monkeypatch.setattr(hardware, "SYS_BUS", tmp_path / "bus")
     monkeypatch.setattr(hardware, "SYS_MODULE", tmp_path / "module")
     monkeypatch.setattr(hardware, "FIRMWARE_DIR", tmp_path / "firmware")
@@ -501,3 +502,30 @@ def test_linux_hardware_judges_devices_by_driver_and_firmware(
     )
     assert found["Realtek 802.11n"].status is Status.NONFREE and found["Realtek 802.11n"].reason == "kernel taint P"
     assert found["PCI device 10EC:8168"].status is Status.FREE
+
+
+def test_windows_hardware_flags_devices_on_third_party_drivers(
+    monkeypatch: pytest.MonkeyPatch, fetcher: StubFetcher, ctx: Context
+) -> None:
+    devices = [
+        ("Intel(R) Wi-Fi 6 AX201 160MHz", "Netwtw10"),
+        ("USB xHCI Compliant Host Controller", "USBXHCI"),  # Microsoft's inbox driver
+        ("WireGuard Tunnel", "wireguard"),
+        ("ASIX USB to Gigabit Ethernet", "AX88179A"),
+        ("ASIX USB to Gigabit Ethernet", "AX88179A"),  # a second instance
+    ]
+    drivers = [
+        ("Netwtw10", {"CompanyName": "Intel Corporation"}),
+        ("WireGuard", {"CompanyName": "WireGuard LLC"}),
+        ("AX88179A", {}),
+    ]
+    monkeypatch.setattr(hardware, "IS_WINDOWS", True)
+    monkeypatch.setattr(hardware, "_windows_devices", lambda: iter(devices))
+    monkeypatch.setattr(hardware, "_windows_drivers", lambda jobs: iter(drivers))
+    found = scan(Hardware(ctx), fetcher)
+    assert sorted(found) == ["ASIX USB to Gigabit Ethernet", "Intel(R) Wi-Fi 6 AX201 160MHz", "WireGuard Tunnel"]
+    wifi = found["Intel(R) Wi-Fi 6 AX201 160MHz"]
+    assert wifi.status is Status.NONFREE and wifi.ring is Ring.KERNEL
+    assert wifi.description == "Needs Netwtw10 from Intel Corporation"
+    assert found["ASIX USB to Gigabit Ethernet"].description == "Needs AX88179A from an unnamed vendor"
+    assert found["WireGuard Tunnel"].status is Status.FREE  # curated in kernel.json

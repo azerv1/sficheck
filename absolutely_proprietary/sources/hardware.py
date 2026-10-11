@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import shlex
+import sys
 from collections.abc import Iterable, Iterator
 from concurrent.futures import ThreadPoolExecutor
 from functools import cache
@@ -11,12 +12,15 @@ from pathlib import Path
 from absolutely_proprietary import proc
 from absolutely_proprietary.blacklist import Blacklist, load_bundled
 from absolutely_proprietary.models import Finding, Package, Ring, Status
-from absolutely_proprietary.sources.base import Source
-from absolutely_proprietary.sources.kernel import PROC_MODULES, SYS_MODULE, _read
+from absolutely_proprietary.sources.base import IS_WINDOWS, Source
+from absolutely_proprietary.sources.firmware import _windows_values
+from absolutely_proprietary.sources.kernel import PROC_MODULES, SYS_MODULE, _read, _windows_drivers
 
 SYS_BUS = Path("/sys/bus")
 FIRMWARE_DIR = Path("/lib/firmware")
 BLOB_SUFFIXES = ("", ".xz", ".zst")  # distros often compress linux-firmware
+ENUM_KEY = r"SYSTEM\CurrentControlSet\Enum"
+WINDOWS_BUSES = ("PCI", "USB", "HDAUDIO")
 
 
 @cache
@@ -65,6 +69,38 @@ def _blobs(driver: str) -> list[str]:
     return [blob for blob in declared if any((FIRMWARE_DIR / (blob + s)).is_file() for s in BLOB_SUFFIXES)]
 
 
+def _subkeys(key: str) -> list[str]:
+    if sys.platform != "win32":
+        return []
+    import winreg
+
+    try:
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key) as handle:
+            return [winreg.EnumKey(handle, i) for i in range(winreg.QueryInfoKey(handle)[0])]
+    except OSError:
+        return []
+
+
+def _windows_devices() -> Iterator[tuple[str, str]]:
+    """(device name, driver service) for every PCI, USB and HD Audio device plugged in now."""
+    if sys.platform != "win32":
+        return
+    import ctypes
+    from ctypes import wintypes
+
+    locate, node = ctypes.WinDLL("cfgmgr32").CM_Locate_DevNodeW, wintypes.DWORD()
+    for bus in WINDOWS_BUSES:
+        for device in _subkeys(rf"{ENUM_KEY}\{bus}"):
+            for instance in _subkeys(rf"{ENUM_KEY}\{bus}\{device}"):
+                path = rf"{bus}\{device}\{instance}"
+                if locate(ctypes.byref(node), path, 0) != 0:  # the registry remembers unplugged devices too
+                    continue
+                values = _windows_values(rf"{ENUM_KEY}\{path}")
+                if service := str(values.get("Service", "")):
+                    # "@oem12.inf,%desc%;Intel(R) Wi-Fi 6 AX201" -> the part after the last ;
+                    yield str(values.get("DeviceDesc", device)).rpartition(";")[2], service
+
+
 class Hardware(Source):
     name = "hardware"
     kind = "system"
@@ -74,9 +110,16 @@ class Hardware(Source):
     default_enabled = False
 
     def available(self) -> bool:
-        return PROC_MODULES.is_file()
+        return IS_WINDOWS or PROC_MODULES.is_file()
 
     def packages(self) -> Iterable[Package]:
+        if IS_WINDOWS:
+            # Devices on Microsoft's inbox drivers are covered by Windows itself.
+            third_party = {service.lower(): info for service, info in _windows_drivers(self.ctx.jobs)}
+            for name, service in dict.fromkeys(_windows_devices()):
+                if (info := third_party.get(service.lower())) is not None:
+                    yield self.pkg(name, driver=service, company=info.get("CompanyName", ""))
+            return
         devices = list(dict.fromkeys([*_linux_pci(), *_linux_usb()]))
         drivers = sorted({driver for _, driver in devices})
         with ThreadPoolExecutor(max(1, self.ctx.jobs)) as pool:
@@ -93,6 +136,11 @@ class Hardware(Source):
 
     def fallback(self, package: Package) -> Finding:
         driver = package.extra["driver"]
+        if "company" in package.extra:
+            vendor = package.extra["company"] or "an unnamed vendor"
+            return Finding(
+                package, Status.NONFREE, reason="third-party driver", description=f"Needs {driver} from {vendor}"
+            )
         if "P" in package.extra.get("taint", ""):
             return Finding(
                 package, Status.NONFREE, reason="kernel taint P", description=f"Needs the nonfree {driver} module"
