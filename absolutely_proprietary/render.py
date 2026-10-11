@@ -16,7 +16,9 @@ HEADERS = ("Source", "Name", "Version", "Status", "Ring", "Libre alternatives", 
 
 
 def ring_label(ring: Ring | None) -> str:
-    return "" if ring is None else f"{ring.value} {ring.name.lower()}"
+    if ring is None:
+        return ""
+    return f"{ring.value} {ring.name if ring is Ring.ME else ring.name.lower()}"  # ME is an acronym
 
 
 @dataclass(frozen=True, slots=True)

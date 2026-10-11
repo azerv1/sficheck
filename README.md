@@ -73,7 +73,7 @@ Proprietary findings also carry the CPU protection ring the software runs in. A 
 
 | Ring | Runs as | Examples |
 |---|---|---|
-| -3 me | a coprocessor or the CPU itself, below the OS | Intel ME, AMD PSP, CPU microcode |
+| -3 ME | a coprocessor (ME = Management Engine) or the CPU itself, below the OS | Intel ME, AMD PSP, CPU microcode |
 | -2 firmware | system firmware | BIOS/UEFI |
 | -1 hypervisor | underneath every OS on the machine | Hyper-V, VMware, Parallels, the VirtualBox Extension Pack |
 | 0 kernel | the kernel | Riot Vanguard, Easy Anti-Cheat, BattlEye, FACEIT AC, nvidia, Windows itself |

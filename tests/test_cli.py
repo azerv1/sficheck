@@ -235,20 +235,20 @@ def test_ring_in_every_format() -> None:
     ]
     reports = [SourceReport("fake", "lang", findings)]
     plain = render.table(findings, render.Palette(False), 200)
-    assert "-3 me" in plain and "0 kernel" in plain
+    assert "-3 ME" in plain and "0 kernel" in plain
     colored = render.table(findings, render.Palette(True), 200)
-    assert "\033[1;31m-3 me" in colored  # below the kernel: bold red
+    assert "\033[1;31m-3 ME" in colored  # below the kernel: bold red
     for code in ("\033[1;31m", "\033[31m", "\033[32m", "\033[0m"):
         colored = colored.replace(code, "")
     assert colored == plain
     summary = render.summary_text(reports, render.Palette(False), False)
-    assert "By protection ring: -3 me: 1, 0 kernel: 1" in summary
+    assert "By protection ring: -3 ME: 1, 0 kernel: 1" in summary
     doc = json.loads(render.as_json(findings, reports, False))
     assert [f["ring"] for f in doc["findings"]] == [-3, 0, None]
     assert doc["summary"]["by_ring"] == {"-3": 1, "0": 1}
     rows = list(csv.DictReader(io.StringIO(render.as_csv(findings))))
     assert [r["Ring"] for r in rows] == ["-3", "0", ""]
-    assert "| -3 me |" in render.markdown(findings, reports, False)
+    assert "| -3 ME |" in render.markdown(findings, reports, False)
 
 
 def test_empty_sources_are_left_out_of_the_summaries() -> None:
