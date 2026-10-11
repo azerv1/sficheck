@@ -43,6 +43,8 @@ from absolutely_proprietary.models import Status
         ("MS-LPL", Status.UNKNOWN),  # Windows-only
         ("Watcom-1.0", Status.UNKNOWN),
         ("2.0", Status.UNKNOWN),  # a ScanCode alias, not a license
+        ("()", Status.UNKNOWN),  # crashed the expression parser
+        ("(|0", Status.UNKNOWN),
         ("Combined GPLv2 and proprietary software", Status.SEMIFREE),
         ("SEE LICENSE IN README.md", Status.UNKNOWN),
         ("NOASSERTION", Status.UNKNOWN),

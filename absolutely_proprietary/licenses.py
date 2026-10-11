@@ -9,7 +9,7 @@ from importlib import resources
 from pathlib import Path
 from typing import Any
 
-from license_expression import ExpressionError, Licensing
+from license_expression import Licensing
 
 from absolutely_proprietary.models import Status
 
@@ -106,7 +106,9 @@ def classify(license_expr: str | None) -> Status:
         spdx = separator.sub(operator, spdx)
     try:
         return _status(_LICENSING.parse(spdx))
-    except ExpressionError:  # free text the grammar can't hold, e.g. "GPL (>= 2)"
+    # Free text the grammar can't hold ("GPL (>= 2)") raises ExpressionError, but malformed input
+    # can also trip IndexError ("()") or AssertionError ("(|0") deep in the boolean parser.
+    except Exception:
         return _classify_leaf(expr)
 
 
