@@ -38,6 +38,10 @@ Arch users can use the [AUR package](https://aur.archlinux.org/packages/absolute
 - `firmware` (`--firmware`) — what runs in rings -2 and -3. Read from DMI, `/proc/cpuinfo` and `/sys/class/mei` on Linux, and the registry's hardware description on Windows, without admin.
   - The BIOS/UEFI vendor and version (ring -2). A vendor not in `firmware.json` (AMI, Insyde, Phoenix, OEMs) is nonfree. coreboot is uses-nonfree, since most boards still run Intel FSP/ME or AMD AGESA blobs. Libreboot and Canoeboot also report themselves as coreboot, so mark yours free with a `--blacklist` entry named `coreboot`.
   - From the CPU vendor: the Intel ME or AMD PSP, and the CPU microcode with its revision (ring -3). The ME's firmware version comes from `/sys/class/mei` on Linux. The scan can't tell whether me_cleaner or the HAP bit disabled the ME.
+- `hardware` (`--hardware`) — devices that only work with nonfree software, reported at ring 0 because their driver runs in the kernel (and a device's firmware can usually reach memory through DMA).
+  - Linux: PCI devices and USB interfaces from `/sys/bus`, named by `lspci`. A device is nonfree when its driver taints the kernel with `P`, and uses-nonfree when its free driver loads firmware blobs installed in `/lib/firmware` (from `modinfo -F firmware`). A few linux-firmware blobs are free, so treat the blob count as an upper bound.
+  - Windows: PCI, USB and HD Audio devices plugged in now, from the registry. A device on a third-party driver is nonfree; devices on Microsoft's own drivers are covered by Windows itself.
+  - A driver named in the curated lists decides for its device: nvidia's devices get nouveau as the alternative, and a WireGuard adapter stays free.
 
 **Languages** (global installs, not project dependencies)
 - Python: `pip` (default interpreter), `uv` tools, `pipx`
@@ -84,6 +88,7 @@ Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entr
 --kernel                                                      also scan kernel modules and drivers
 --hypervisors                                                 also scan the hypervisor underneath and installed ones
 --firmware                                                    also scan the BIOS/UEFI, Intel ME / AMD PSP and microcode
+--hardware                                                    also scan devices that need a nonfree driver or firmware blobs
 --status S (repeatable) / -f, --full / --all / --show-unknown  what to show (default: nonfree)
 --sort source|name|status|ring|alternatives  (-s, -a shortcuts)  -r   ordering
 --max-ring N                                                  only ring N or deeper (-3 … 3)
