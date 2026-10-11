@@ -22,7 +22,8 @@ from pathlib import Path
 from typing import Any
 
 from absolutely_proprietary import licenses
-from absolutely_proprietary.models import Ring, Status
+from absolutely_proprietary.blacklist import ListEntry, parse_list
+from absolutely_proprietary.models import Status
 
 LISTS = Path(__file__).resolve().parent.parent / "absolutely_proprietary" / "data" / "lists"
 USER_AGENT = "absolutely-proprietary-list-checker/1.0 (+https://github.com/vmavromatis/absolutely-proprietary)"
@@ -63,18 +64,17 @@ def fetch(url: str, headers: dict[str, str] | None = None) -> tuple[int, Any]:
         return 0, None
 
 
-def check_offline(path: Path, entries: list[dict[str, Any]]) -> list[str]:
+def check_offline(path: Path, entries: list[ListEntry]) -> list[str]:
+    """What the schema can't express: references for nonfree entries, and compilable patterns."""
     problems = []
     for e in entries:
-        if Status(e.get("status", "nonfree")) is not Status.FREE and not e.get("reference"):
-            problems.append(f"{path.name}: {e['name']}: no reference")
-        if "ring" in e and e["ring"] not in set(Ring):
-            problems.append(f"{path.name}: {e['name']}: ring {e['ring']!r} is not one of {', '.join(map(str, Ring))}")
-        if pattern := e.get("pattern"):
+        if e.status is not Status.FREE and not e.reference:
+            problems.append(f"{path.name}: {e.name}: no reference")
+        if e.pattern:
             try:
-                re.compile(pattern)
+                re.compile(e.pattern)
             except re.error as exc:
-                problems.append(f"{path.name}: {e['name']}: bad pattern ({exc})")
+                problems.append(f"{path.name}: {e.name}: bad pattern ({exc})")
     return problems
 
 
@@ -108,16 +108,16 @@ def alt_license(alt: str, kind: str) -> tuple[bool, str | None]:
     return True, " OR ".join(f"({x})" for x in found) or None
 
 
-def check_online(path: Path, entries: list[dict[str, Any]], seen: dict[str, str]) -> list[str]:
+def check_online(path: Path, entries: list[ListEntry], seen: dict[str, str]) -> list[str]:
     problems = []
     for e in entries:
-        if ref := e.get("reference"):
+        if ref := e.reference:
             if ref not in seen:
                 status, _ = fetch(ref)
                 seen[ref] = "ok" if 200 <= status < 400 else f"HTTP {status or 'error'}"
             if seen[ref] != "ok":
-                problems.append(f"{path.name}: {e['name']}: reference {ref} -> {seen[ref]}")
-        for alt in e.get("alternatives", []):
+                problems.append(f"{path.name}: {e.name}: reference {ref} -> {seen[ref]}")
+        for alt in e.alternatives:
             kind = ecosystem(alt)
             if kind is None:
                 continue
@@ -134,7 +134,7 @@ def check_online(path: Path, entries: list[dict[str, Any]], seen: dict[str, str]
                 # Repology keys projects by normalized names (e.g. fonts:dejavu, not ttf-dejavu),
                 # so a miss there needs a human look rather than failing the check.
                 prefix = "warning: " if seen[key] == "not found on repology" else ""
-                problems.append(f"{prefix}{path.name}: {e['name']}: alternative {alt!r} {seen[key]}")
+                problems.append(f"{prefix}{path.name}: {e.name}: alternative {alt!r} {seen[key]}")
     return problems
 
 
@@ -147,7 +147,11 @@ def main() -> int:
     problems: list[str] = []
     seen: dict[str, str] = {}
     for path in paths:
-        entries = json.loads(path.read_text(encoding="utf-8"))["entries"]
+        try:
+            entries = parse_list(path.read_bytes(), path.name).entries
+        except ValueError as exc:
+            problems.append(str(exc))
+            continue
         problems += check_offline(path, entries)
         if args.online:
             problems += check_online(path, entries, seen)

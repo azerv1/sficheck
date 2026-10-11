@@ -172,3 +172,10 @@ def test_load_user_json_and_text(tmp_path: Path) -> None:
     txt.write_text("other:libre-other:::[semifree] partly bad\n")
     hit = load_user(str(txt), fetcher).lookup("other")
     assert hit is not None and hit.status is Status.SEMIFREE and hit.origin == "user:mine.txt"
+
+
+def test_list_files_reject_typos_with_the_field_path() -> None:
+    with pytest.raises(ValueError, match=r"unknown field `stauts` - at `\$\.entries\[0\]`"):
+        Blacklist().load_json({"entries": [{"name": "x", "stauts": "free"}]}, "mine.json")
+    with pytest.raises(ValueError, match=r"mine.json: JSON is malformed"):
+        Blacklist().load_json('{"entries": [}', "mine.json")

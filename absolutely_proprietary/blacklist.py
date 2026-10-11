@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-import json
 import logging
 import re
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
 from importlib import resources
 from pathlib import Path
-from typing import Any
+
+import msgspec
 
 from absolutely_proprietary.models import Entry, Ring, Status
 from absolutely_proprietary.net import Fetcher
@@ -87,16 +87,41 @@ def parse_parabola(text: str, origin: str = "parabola", default_status: Status =
             yield entry
 
 
-def _entry_from_json(raw: dict[str, Any], origin: str) -> Entry:
-    return Entry(
-        name=raw["name"],
-        status=Status(raw.get("status", "nonfree")),
-        alternatives=tuple(raw.get("alternatives", ())),
-        description=raw.get("description", ""),
-        origin=origin,
-        reference=raw.get("reference", ""),
-        ring=Ring(raw["ring"]) if "ring" in raw else None,
-    )
+class ListEntry(msgspec.Struct, forbid_unknown_fields=True):
+    """One entry of a JSON list (bundled or --blacklist); see README "Lists"."""
+
+    name: str
+    status: Status = Status.NONFREE
+    alternatives: tuple[str, ...] = ()
+    description: str = ""
+    reference: str = ""
+    pattern: str | None = None  # regex on display names, instead of an exact name
+    ring: Ring | None = None
+
+    def to_entry(self, origin: str) -> Entry:
+        return Entry(
+            name=self.name,
+            status=self.status,
+            alternatives=self.alternatives,
+            description=self.description,
+            origin=origin,
+            reference=self.reference,
+            ring=self.ring,
+        )
+
+
+class ListFile(msgspec.Struct):
+    entries: list[ListEntry] = []
+
+
+def parse_list(data: str | bytes | object, origin: str) -> ListFile:
+    """Validate a JSON list given as text or as already-parsed data."""
+    try:
+        if isinstance(data, str | bytes):
+            return msgspec.json.decode(data, type=ListFile)
+        return msgspec.convert(data, ListFile)
+    except msgspec.DecodeError as exc:  # ValidationError included; its message names the bad field
+        raise ValueError(f"{origin}: {exc}") from exc
 
 
 @dataclass(slots=True)
@@ -129,12 +154,12 @@ class Blacklist:
     def __len__(self) -> int:
         return len(self.by_name) + len(self.patterns)
 
-    def load_json(self, data: dict[str, Any], origin: str) -> None:
+    def load_json(self, data: str | bytes | object, origin: str) -> None:
         """Patterns keep their file order (first match wins) but take precedence over older lists."""
         new_patterns = []
-        for raw in data.get("entries", []):
-            entry = _entry_from_json(raw, origin)
-            if pattern := raw.get("pattern"):
+        for raw in parse_list(data, origin).entries:
+            entry = raw.to_entry(origin)
+            if pattern := raw.pattern:
                 new_patterns.append((re.compile(pattern, re.IGNORECASE), entry))
             else:
                 self.add(entry)
@@ -159,7 +184,7 @@ def load_bundled(*names: str) -> Blacklist:
     root = resources.files("absolutely_proprietary.data.lists")
     for name in names:
         text = root.joinpath(f"{name}.json").read_text(encoding="utf-8")
-        bl.load_json(json.loads(text), origin=f"bundled:{name}")
+        bl.load_json(text, origin=f"bundled:{name}")
     return bl
 
 
@@ -187,7 +212,7 @@ def load_user(location: str, fetcher: Fetcher) -> Blacklist:
     bl = Blacklist()
     origin = f"user:{Path(location).name}"
     if text.lstrip().startswith("{"):
-        bl.load_json(json.loads(text), origin)
+        bl.load_json(text, origin)
     else:
         bl.extend(parse_parabola(text, origin=origin))
     return bl

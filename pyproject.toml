@@ -30,6 +30,7 @@ classifiers = [
 ]
 dependencies = [
     "httpx2>=2.9",
+    "msgspec>=0.19",
 ]
 
 [dependency-groups]
