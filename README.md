@@ -35,6 +35,9 @@ Arch users can use the [AUR package](https://aur.archlinux.org/packages/absolute
 - `hypervisors` (`--hypervisors`) — what runs in ring -1.
   - The hypervisor this OS runs on. Linux reads the CPU's `hypervisor` flag, `/sys/hypervisor/type` and the DMI vendor. Windows asks the kernel whether a hypervisor is present and reads the machine's manufacturer: a VM vendor names the host, and on real hardware it is Hyper-V, which Windows runs on whenever virtualization-based security, WSL 2 or Hyper-V is on.
   - Hypervisors installed here, found by their kernel driver or module: VMware (`vmx86`, `vmmon`), VirtualBox (`VBoxSup`, `vboxdrv`) and KVM (`kvm`).
+- `firmware` (`--firmware`) — what runs in rings -2 and -3. Read from DMI, `/proc/cpuinfo` and `/sys/class/mei` on Linux, and the registry's hardware description on Windows, without admin.
+  - The BIOS/UEFI vendor and version (ring -2). A vendor not in `firmware.json` (AMI, Insyde, Phoenix, OEMs) is nonfree. coreboot is uses-nonfree, since most boards still run Intel FSP/ME or AMD AGESA blobs. Libreboot and Canoeboot also report themselves as coreboot, so mark yours free with a `--blacklist` entry named `coreboot`.
+  - From the CPU vendor: the Intel ME or AMD PSP, and the CPU microcode with its revision (ring -3). The ME's firmware version comes from `/sys/class/mei` on Linux. The scan can't tell whether me_cleaner or the HAP bit disabled the ME.
 
 **Languages** (global installs, not project dependencies)
 - Python: `pip` (default interpreter), `uv` tools, `pipx`
@@ -80,6 +83,7 @@ Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entr
 --sources A,B / --skip A,B / --kind system|lang              what to scan
 --kernel                                                      also scan kernel modules and drivers
 --hypervisors                                                 also scan the hypervisor underneath and installed ones
+--firmware                                                    also scan the BIOS/UEFI, Intel ME / AMD PSP and microcode
 --status S (repeatable) / -f, --full / --all / --show-unknown  what to show (default: nonfree)
 --sort source|name|status|ring|alternatives  (-s, -a shortcuts)  -r   ordering
 --max-ring N                                                  only ring N or deeper (-3 … 3)
@@ -150,6 +154,7 @@ Alternatives must be free software, a real replacement for the same job, and a v
 - `lang.json` — language packages with missing or misleading metadata
 - `kernel.json` — kernel drivers and modules by service or module name: anticheats, and the free drivers
 - `hypervisors.json` — hypervisors by short name (`hyper-v`, `vmware`, `kvm`…)
+- `firmware.json` — BIOS/UEFI vendors, and the ME, PSP and microcode
 
 ## Development
 
