@@ -538,3 +538,14 @@ def test_wsl_runs_on_hyper_v(
     monkeypatch.setattr(hypervisors, "OSRELEASE", tmp_path / "osrelease")
     monkeypatch.setattr(hypervisors, "PROC_MODULES", tmp_path / "missing")
     assert list(scan(Hypervisors(ctx), fetcher)) == ["hyper-v"]
+
+
+def test_vm_microcode_placeholder_is_not_a_version(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fetcher: StubFetcher, ctx: Context
+) -> None:
+    (tmp_path / "cpuinfo").write_text("vendor_id\t: GenuineIntel\nmicrocode\t: 0xffffffff\n")
+    monkeypatch.setattr(firmware, "IS_WINDOWS", False)
+    monkeypatch.setattr(firmware, "CPUINFO", tmp_path / "cpuinfo")
+    monkeypatch.setattr(firmware, "DMI", tmp_path / "no-dmi")
+    monkeypatch.setattr(firmware, "MEI_FW_VER", tmp_path / "missing")
+    assert scan(Firmware(ctx), fetcher)["intel-microcode"].package.version == ""

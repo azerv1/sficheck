@@ -50,7 +50,7 @@ def _linux_platform() -> dict[str, str]:
         "bios_vendor": _read(DMI / "bios_vendor"),
         "bios_version": _read(DMI / "bios_version"),
         "cpu_vendor": cpu.get("vendor_id", ""),
-        "microcode": cpu.get("microcode", ""),
+        "microcode": cpu.get("microcode", "").replace("0xffffffff", ""),  # what VMs show instead of the real one
         "me_version": me_version.rpartition(":")[2],
     }
 
