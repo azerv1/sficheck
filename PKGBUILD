@@ -8,9 +8,9 @@ pkgdesc="Find proprietary software installed through your system and language pa
 arch=('any')
 url="https://github.com/vmavromatis/${_pkgname}"
 license=('GPL-3.0-or-later')
-depends=('python')
+depends=('python' 'python-httpx2' 'python-license-expression' 'python-msgspec' 'python-pyudev')
 makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
-checkdepends=('python-pytest')
+checkdepends=('python-pytest' 'python-hypothesis')
 provides=("${_pkgname}")
 conflicts=("${_pkgname}")
 source=("git+${url}.git")
@@ -28,7 +28,7 @@ build() {
 
 check() {
   cd "${_pkgname}"
-  python -m pytest -q
+  python -m pytest -q -o addopts=''  # the repo's addopts need pytest-xdist and pytest-cov
 }
 
 package() {
