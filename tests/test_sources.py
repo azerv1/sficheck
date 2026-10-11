@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from collections.abc import Iterable
 from pathlib import Path
 
@@ -529,3 +530,12 @@ def test_windows_hardware_flags_devices_on_third_party_drivers(
     assert wifi.description == "Needs Netwtw10 from Intel Corporation"
     assert found["ASIX USB to Gigabit Ethernet"].description == "Needs AX88179A from an unnamed vendor"
     assert found["WireGuard Tunnel"].status is Status.FREE  # curated in kernel.json
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="reads a Windows executable")
+def test_file_info_reads_the_version_resource(tmp_path: Path) -> None:
+    python = Path(sys.base_prefix) / "python.exe"
+    assert kernel._file_info(str(python))["CompanyName"] == "Python Software Foundation"  # type: ignore[index]
+    (tmp_path / "notes.txt").write_text("not a PE file")
+    assert kernel._file_info(str(tmp_path / "notes.txt")) == {}
+    assert kernel._file_info(str(tmp_path / "missing.sys")) is None
