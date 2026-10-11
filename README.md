@@ -2,7 +2,7 @@
 
 Proprietary software detector. It audits everything installed through your system package manager and your language package managers, then prints your Stallman Freedom Index (free / classified).
 
-It runs on GNU/Linux (Arch, Debian, Ubuntu, NixOS and anything with flatpak/snap/brew), Windows and macOS. Python 3.11+, no dependencies.
+It runs on GNU/Linux (Arch, Debian, Ubuntu, NixOS and anything with flatpak/snap/brew), Windows and macOS. Python 3.11+. Dependencies: [msgspec](https://jcristharif.com/msgspec/) (list files), [license-expression](https://github.com/aboutcode-org/license-expression) and [spdx-license-list](https://pypi.org/project/spdx-license-list/) (licenses), [httpx2](https://pypi.org/project/httpx2/) (online lookups), and on Linux [pyudev](https://pyudev.readthedocs.io/) (devices, needs libudev).
 
 ## Install
 
@@ -33,13 +33,13 @@ Arch users can use the [AUR package](https://aur.archlinux.org/packages/absolute
   - Linux: loaded modules from `/proc/modules`. A module the kernel taints with `P` (license not GPL-compatible) is nonfree, the rest free.
   - Windows: third-party kernel drivers from the registry's service keys, counting only those in use: bound to a device, loaded at system or auto start, or installed outside `C:\Windows`. Microsoft's own drivers are skipped (Windows itself is already reported), as are leftover entries whose file is gone. Vendor and version come from the driver file. A driver not in `kernel.json` counts as nonfree, since free drivers are listed there.
 - `hypervisors` (`--hypervisors`) — what runs in ring -1.
-  - The hypervisor this OS runs on. Linux reads the CPU's `hypervisor` flag, `/sys/hypervisor/type` and the DMI vendor. Windows asks the kernel whether a hypervisor is present and reads the machine's manufacturer: a VM vendor names the host, and on real hardware it is Hyper-V, which Windows runs on whenever virtualization-based security, WSL 2 or Hyper-V is on.
+  - The hypervisor this OS runs on. Linux reads the CPU's `hypervisor` flag, `/sys/hypervisor/type`, the DMI vendor and the kernel release (WSL 2). Windows asks the kernel whether a hypervisor is present and reads the machine's manufacturer: a VM vendor names the host, and on real hardware it is Hyper-V, which Windows runs on whenever virtualization-based security, WSL 2 or Hyper-V is on.
   - Hypervisors installed here, found by their kernel driver or module: VMware (`vmx86`, `vmmon`), VirtualBox (`VBoxSup`, `vboxdrv`) and KVM (`kvm`).
 - `firmware` (`--firmware`) — what runs in rings -2 and -3. Read from DMI, `/proc/cpuinfo` and `/sys/class/mei` on Linux, and the registry's hardware description on Windows, without admin.
   - The BIOS/UEFI vendor and version (ring -2). A vendor not in `firmware.json` (AMI, Insyde, Phoenix, OEMs) is nonfree. coreboot is uses-nonfree, since most boards still run Intel FSP/ME or AMD AGESA blobs. Libreboot and Canoeboot also report themselves as coreboot, so mark yours free with a `--blacklist` entry named `coreboot`.
   - From the CPU vendor: the Intel ME or AMD PSP, and the CPU microcode with its revision (ring -3). The ME's firmware version comes from `/sys/class/mei` on Linux. The scan can't tell whether me_cleaner or the HAP bit disabled the ME.
 - `hardware` (`--hardware`) — devices that only work with nonfree software, reported at ring 0 because their driver runs in the kernel (and a device's firmware can usually reach memory through DMA).
-  - Linux: PCI devices and USB interfaces from `/sys/bus`, named by `lspci`. A device is nonfree when its driver taints the kernel with `P`, and uses-nonfree when its free driver loads firmware blobs installed in `/lib/firmware` (from `modinfo -F firmware`). A few linux-firmware blobs are free, so treat the blob count as an upper bound.
+  - Linux: PCI devices and USB interfaces from udev (via pyudev, so libudev is needed), named from udev's hardware database like `lspci` and `lsusb` do. A device is nonfree when its driver taints the kernel with `P`, and uses-nonfree when its free driver loads firmware blobs installed in `/lib/firmware` (from `modinfo -F firmware`). A few linux-firmware blobs are free, so treat the blob count as an upper bound.
   - Windows: PCI, USB and HD Audio devices plugged in now, from the registry. A device on a third-party driver is nonfree; devices on Microsoft's own drivers are covered by Windows itself.
   - A driver named in the curated lists decides for its device: nvidia's devices get nouveau as the alternative, and a WireGuard adapter stays free.
 
@@ -57,7 +57,7 @@ Opt-in sources only run when named, e.g. `--sources maven,gradle`.
 
 Each package goes through a fixed chain, and the first step with an answer wins. Your own `--blacklist` files come first, so you can always overrule the tool. Next comes the ecosystem's own authority, when it has one: Parabola's blacklist for pacman, the archive area for dpkg, `meta.unfree` for nix. Then the bundled curated lists in `absolutely_proprietary/data/lists/`. They come before declared licenses because a license field can be technically true and still misleading. 7-Zip is LGPL but bundles nonfree unRAR code, and VS Code's source is MIT but the Microsoft build is not.
 
-After that the declared license is parsed as an SPDX expression or free text. `MIT OR Proprietary` is free, because you may choose the free branch. `MIT AND Proprietary` is semifree. `BUSL-1.1`, `SSPL`, `Elastic-2.0`, `Freeware` and npm's `UNLICENSED` are nonfree. With `--online-licenses`, packages with no usable license are looked up on deps.dev, Packagist, pub.dev, hex.pm, MetaCPAN or GitHub. Anything still unresolved is `unknown`, except under pacman and dpkg, whose vetted archives default to free.
+After that the declared license is parsed as an SPDX expression or free text. `MIT OR Proprietary` is free, because you may choose the free branch. `MIT AND Proprietary` is semifree. `BUSL-1.1`, `SSPL`, `Elastic-2.0`, `Freeware` and npm's `UNLICENSED` are nonfree. SPDX ids count as free when the SPDX license list marks them FSF-free or OSI-approved. With `--online-licenses`, packages with no usable license are looked up on deps.dev, Packagist, pub.dev, hex.pm, MetaCPAN or GitHub. Anything still unresolved is `unknown`, except under pacman and dpkg, whose vetted archives default to free.
 
 Unknown packages are left out of the index by default. `--unknown-as-nonfree` counts them against you instead. Sources can overlap (the `windows` registry also lists programs winget installed), so the overall index is a rough figure. The per-source rows are the precise ones.
 
