@@ -2,12 +2,23 @@
 
 from __future__ import annotations
 
+import msgspec
+import pytest
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
-from absolutely_proprietary.blacklist import DEFAULT_SKIP_TAGS, PARABOLA_ISSUE_URL, TAG_STATUS, parse_parabola_line
+from absolutely_proprietary.blacklist import (
+    DEFAULT_SKIP_TAGS,
+    PARABOLA_ISSUE_URL,
+    TAG_STATUS,
+    ListEntry,
+    ListFile,
+    parse_list,
+    parse_parabola_line,
+)
 from absolutely_proprietary.licenses import _OR_RANK, classify, classify_many
-from absolutely_proprietary.models import Status
+from absolutely_proprietary.models import Ring, Status
+from absolutely_proprietary.sources.firmware import _revision
 
 # Real ids and free-text names across every status, plus made-up license-like tokens.
 KNOWN = ["MIT", "GPL-3.0-or-later", "LGPL-2.1+", "Apache-2.0", "BSD-3-Clause", "Unlicense", "BUSL-1.1", "SSPL-1.0"]
@@ -71,3 +82,56 @@ def test_parabola_lines_round_trip(
         assert entry.alternatives == (f"{name} (Parabola build)",)
     else:
         assert entry.alternatives == ((replacement,) if replacement else ())
+
+
+json_values = st.recursive(
+    st.none() | st.booleans() | st.integers() | st.floats(allow_nan=False) | st.text(),
+    lambda children: st.lists(children, max_size=4) | st.dictionaries(st.text(), children, max_size=4),
+    max_leaves=10,
+)
+# Close to a real list file, so the schema is exercised past its first check.
+near_list_files = st.fixed_dictionaries(
+    {
+        "entries": st.lists(
+            st.dictionaries(st.sampled_from([*ListEntry.__struct_fields__, "stauts"]), json_values), max_size=4
+        )
+    }
+)
+list_entries = st.builds(
+    ListEntry,
+    name=st.text(),
+    status=st.sampled_from(Status),
+    alternatives=st.lists(st.text()).map(tuple),
+    description=st.text(),
+    reference=st.text(),
+    pattern=st.none() | st.text(),
+    ring=st.none() | st.sampled_from(Ring),
+)
+
+
+@given(json_values | near_list_files)
+def test_list_files_parse_or_raise_value_error(data: object) -> None:
+    try:
+        assert isinstance(parse_list(data, "test"), ListFile)
+    except ValueError as exc:
+        assert str(exc).startswith("test: ")
+
+
+@given(st.lists(list_entries))
+def test_list_files_round_trip(entries: list[ListEntry]) -> None:
+    assert parse_list(msgspec.json.encode(ListFile(entries)), "test").entries == entries
+
+
+@given(st.binary(max_size=16))
+def test_microcode_revision_is_empty_or_hex(raw: bytes) -> None:
+    revision = _revision(raw)
+    if not any(raw):
+        assert revision == ""
+    else:
+        value = int.from_bytes(raw, "little")
+        assert revision == hex(value >> 32 if len(raw) == 8 else value)
+
+
+@pytest.mark.parametrize("raw", [None, 0x1F, "0x1f"])
+def test_microcode_revision_ignores_non_bytes(raw: object) -> None:
+    assert _revision(raw) == ""

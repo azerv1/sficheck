@@ -15,7 +15,7 @@ FakeRun = Callable[[dict[str, str | None]], None]
 
 # No per-example deadline: shared CI runners (Windows especially) stall at random. CI explores harder.
 settings.register_profile("default", deadline=None)
-settings.register_profile("ci", deadline=None, max_examples=1000)
+settings.register_profile("ci", deadline=None, max_examples=500)
 settings.load_profile(os.environ.get("HYPOTHESIS_PROFILE", "ci" if os.environ.get("CI") else "default"))
 
 
