@@ -30,6 +30,7 @@ classifiers = [
 ]
 dependencies = [
     "httpx2>=2.9",
+    "license-expression>=30",
     "msgspec>=0.19",
 ]
 
@@ -77,6 +78,11 @@ python_version = "3.11"
 strict = true
 warn_unreachable = true
 files = ["absolutely_proprietary", "tests", "scripts"]
+
+[[tool.mypy.overrides]]
+# Runtime dependencies that ship without type information.
+module = ["license_expression"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -12,6 +12,7 @@ name = "absolutely-proprietary"
 source = { editable = "." }
 dependencies = [
     { name = "httpx2" },
+    { name = "license-expression" },
     { name = "msgspec" },
 ]
 
@@ -38,6 +39,7 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "httpx2", specifier = ">=2.9" },
+    { name = "license-expression", specifier = ">=30" },
     { name = "msgspec", specifier = ">=0.19" },
 ]
 

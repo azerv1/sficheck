@@ -9,13 +9,16 @@ from importlib import resources
 from pathlib import Path
 from typing import Any
 
+from license_expression import ExpressionError, Licensing
+
 from absolutely_proprietary.models import Status
 
 LICENSE_FILE_NAMES = ("LICENSE", "LICENSE.md", "LICENSE.txt", "LICENCE", "LICENCE.md", "COPYING", "COPYING.md")
 
 _SUFFIXES = re.compile(r"(-only|-or-later|\+)$", re.IGNORECASE)
-_OR = re.compile(r"\s+or\s+|\s*\|\|?\s*|\s*/\s*", re.IGNORECASE)
-_AND = re.compile(r"\s+and\s+|\s*&&?\s*", re.IGNORECASE)
+# Free-text separators ("MIT/Apache-2.0", R's "GPL-2 | GPL-3", "A && B") rewritten as SPDX operators.
+_SEPARATORS = ((re.compile(r"\s*(\|\|?|/)\s*"), " OR "), (re.compile(r"\s*&&?\s*"), " AND "))
+_LICENSING = Licensing()
 _OTHER_PROPRIETARY = re.compile(r"other\s*/\s*proprietary", re.IGNORECASE)
 _WITH = re.compile(r"\s+with\s+.*$", re.IGNORECASE)
 # Python trove classifiers: "License :: OSI Approved :: MIT License"
@@ -64,48 +67,6 @@ def _classify_leaf(term: str) -> Status:
     return Status.UNKNOWN
 
 
-def _split_top_level(expr: str, sep: re.Pattern[str]) -> list[str]:
-    """Split on ``sep`` only where we're not inside parentheses."""
-    parts: list[str] = []
-    depth = start = 0
-    i = 0
-    while i < len(expr):
-        ch = expr[i]
-        if ch == "(":
-            depth += 1
-        elif ch == ")":
-            depth -= 1
-        elif depth == 0:
-            match = sep.match(expr, i)
-            if match and match.end() > i:
-                parts.append(expr[start:i])
-                start = i = match.end()
-                continue
-        i += 1
-    parts.append(expr[start:])
-    return [p for p in (s.strip() for s in parts) if p]
-
-
-def _wraps_whole(expr: str) -> bool:
-    """True for "(A OR B)", false for "(A) AND (B)"."""
-    if not (expr.startswith("(") and expr.endswith(")")):
-        return False
-    depth = 0
-    for i, ch in enumerate(expr):
-        depth += ch == "("
-        depth -= ch == ")"
-        if depth == 0 and i < len(expr) - 1:
-            return False
-    return True
-
-
-def _strip_parens(expr: str) -> str:
-    expr = expr.strip()
-    while _wraps_whole(expr):
-        expr = expr[1:-1].strip()
-    return expr
-
-
 def _combine_and(statuses: list[Status]) -> Status:
     if all(s is Status.FREE for s in statuses):
         return Status.FREE
@@ -127,14 +88,22 @@ def classify(license_expr: str | None) -> Status:
     if not license_expr or not license_expr.strip():
         return Status.UNKNOWN
     # The PyPI classifier "Other/Proprietary License" is one term, not "Other OR Proprietary".
-    expr = _strip_parens(_OTHER_PROPRIETARY.sub("Proprietary", license_expr))
-    branches = _split_top_level(expr, _OR)
-    if len(branches) > 1:
-        return min((classify(b) for b in branches), key=_OR_RANK.__getitem__)
-    terms = _split_top_level(expr, _AND)
-    if len(terms) > 1:
-        return _combine_and([classify(t) for t in terms])
-    return _classify_leaf(expr)
+    expr = _OTHER_PROPRIETARY.sub("Proprietary", license_expr)
+    spdx = expr
+    for separator, operator in _SEPARATORS:
+        spdx = separator.sub(operator, spdx)
+    try:
+        return _status(_LICENSING.parse(spdx))
+    except ExpressionError:  # free text the grammar can't hold, e.g. "GPL (>= 2)"
+        return _classify_leaf(expr)
+
+
+def _status(node: Any) -> Status:
+    if isinstance(node, _LICENSING.OR):
+        return min((_status(arg) for arg in node.args), key=_OR_RANK.__getitem__)
+    if isinstance(node, _LICENSING.AND):
+        return _combine_and([_status(arg) for arg in node.args])
+    return _classify_leaf(str(node))
 
 
 def classify_many(licenses: list[str]) -> Status:
