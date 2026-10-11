@@ -1,0 +1,14 @@
+{
+  "_comment": "Firmware below the OS, by the name the 'firmware' source reports: the BIOS/UEFI vendor string, or intel-me / amd-psp / intel-microcode / amd-microcode. Only used by that source. Unlisted BIOS vendors count as nonfree.",
+  "entries": [
+    {"name": "intel-me", "status": "nonfree", "ring": -3, "description": "Intel Management Engine: a separate computer in the chipset with its own OS, full memory access and network access, running whenever the machine has power. This scan can't tell whether me_cleaner or the HAP bit disabled it", "reference": "https://en.wikipedia.org/wiki/Intel_Management_Engine"},
+    {"name": "amd-psp", "status": "nonfree", "ring": -3, "description": "AMD Platform Security Processor: an ARM core inside the CPU running signed AMD firmware before and beneath the OS", "reference": "https://en.wikipedia.org/wiki/AMD_Platform_Security_Processor"},
+    {"name": "intel-microcode", "status": "nonfree", "ring": -3, "description": "CPU microcode; Intel ships it and its updates only as signed binaries", "reference": "https://github.com/intel/Intel-Linux-Processor-Microcode-Data-Files/blob/main/license"},
+    {"name": "amd-microcode", "status": "nonfree", "ring": -3, "description": "CPU microcode; AMD ships it and its updates only as signed binaries", "reference": "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/LICENSE.amd-ucode"},
+    {"name": "coreboot", "status": "uses-nonfree", "ring": -2, "alternatives": ["libreboot", "canoeboot"], "description": "coreboot is free, but most boards also run Intel FSP/ME or AMD AGESA blobs. Libreboot and Canoeboot builds report themselves as coreboot too; mark yours free with --blacklist", "reference": "https://libreboot.org/news/policy.html"},
+    {"name": "libreboot", "status": "free", "description": "Libreboot boot firmware", "reference": "https://libreboot.org/"},
+    {"name": "canoeboot", "status": "free", "description": "Canoeboot boot firmware (fully free Libreboot fork)", "reference": "https://canoeboot.org/"},
+    {"name": "seabios", "status": "free", "description": "SeaBIOS, the default BIOS of QEMU/KVM virtual machines (LGPL-3.0)", "reference": "https://www.seabios.org/SeaBIOS"},
+    {"name": "edk ii", "status": "free", "description": "EDK II / OVMF UEFI firmware, used by QEMU/KVM virtual machines (BSD-2-Clause-Patent)", "reference": "https://github.com/tianocore/edk2"}
+  ]
+}

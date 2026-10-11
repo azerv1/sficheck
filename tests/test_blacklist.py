@@ -129,6 +129,14 @@ def test_hypervisor_list_rings_the_nonfree_ones() -> None:
     assert kvm is not None and kvm.status is Status.FREE
 
 
+def test_firmware_list_puts_the_me_below_the_bios() -> None:
+    firmware = load_bundled("firmware")
+    me, coreboot, seabios = firmware.lookup("intel-me"), firmware.lookup("coreboot"), firmware.lookup("SeaBIOS")
+    assert me is not None and me.status is Status.NONFREE and me.ring is Ring.ME
+    assert coreboot is not None and coreboot.status is Status.USES_NONFREE and coreboot.ring is Ring.FIRMWARE
+    assert seabios is not None and seabios.status is Status.FREE
+
+
 def test_merged_overrides() -> None:
     a, b = Blacklist(), Blacklist()
     a.add(Entry("x", Status.NONFREE))
