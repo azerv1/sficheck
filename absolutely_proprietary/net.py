@@ -8,11 +8,10 @@ import logging
 import os
 import sys
 import time
-import urllib.error
-import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from absolutely_proprietary import __version__
 
@@ -44,6 +43,7 @@ class Fetcher:
     refresh: bool = False
     timeout: float = 30
     root: Path | None = None
+    transport: Any = None  # an httpx2 transport; tests pass httpx2.MockTransport
 
     def _path(self, key: str, kind: str = "http") -> Path:
         digest = hashlib.sha256(key.encode()).hexdigest()[:32]
@@ -75,18 +75,21 @@ class Fetcher:
         cached, usable = self._cached(path)
         if usable or self.offline:
             return cached
-        request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        import httpx2  # only runs that go online pay for the import
+
+        headers = {"User-Agent": USER_AGENT}
         try:
-            with urllib.request.urlopen(request, timeout=self.timeout) as resp:
-                body: str = resp.read().decode("utf-8", errors="replace")
-        except urllib.error.HTTPError as exc:
-            if exc.code == 404:
+            with httpx2.Client(
+                headers=headers, timeout=self.timeout, follow_redirects=True, transport=self.transport
+            ) as client:
+                response = client.get(url)
+            if response.status_code == 404:
                 return None
+            response.raise_for_status()
+        except httpx2.HTTPError as exc:
             log.warning("Could not download %s (%s)%s", url, exc, "; using cached copy" if cached else "")
             return cached
-        except (urllib.error.URLError, OSError, TimeoutError) as exc:
-            log.warning("Could not download %s (%s)%s", url, exc, "; using cached copy" if cached else "")
-            return cached
+        body = response.text
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(body, encoding="utf-8")
         return body
