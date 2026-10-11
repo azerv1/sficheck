@@ -11,15 +11,14 @@ Exit status is 1 when any problem is reported; Repology misses are only warnings
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import re
 import sys
 import time
-import urllib.error
-import urllib.request
 from pathlib import Path
 from typing import Any
+
+import httpx2
 
 from absolutely_proprietary import licenses
 from absolutely_proprietary.blacklist import ListEntry, parse_list
@@ -50,18 +49,14 @@ _ID = re.compile(r"^[A-Za-z0-9][\w+-]*(\.[\w+-]+)+$")
 
 def fetch(url: str, headers: dict[str, str] | None = None) -> tuple[int, Any]:
     """(HTTP status, parsed JSON or None). Network errors are status 0."""
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, **(headers or {})})
     try:
-        with urllib.request.urlopen(request, timeout=30) as resp:
-            body = resp.read()
-            try:
-                return resp.status, json.loads(body)
-            except ValueError:
-                return resp.status, None
-    except urllib.error.HTTPError as exc:
-        return exc.code, None
-    except (urllib.error.URLError, OSError, TimeoutError):
+        resp = httpx2.get(url, headers={"User-Agent": USER_AGENT, **(headers or {})}, timeout=30, follow_redirects=True)
+    except httpx2.HTTPError:
         return 0, None
+    try:
+        return resp.status_code, resp.json()
+    except ValueError:
+        return resp.status_code, None
 
 
 def check_offline(path: Path, entries: list[ListEntry]) -> list[str]:
