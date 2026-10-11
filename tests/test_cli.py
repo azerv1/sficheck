@@ -249,3 +249,18 @@ def test_ring_in_every_format() -> None:
     rows = list(csv.DictReader(io.StringIO(render.as_csv(findings))))
     assert [r["Ring"] for r in rows] == ["-3", "0", ""]
     assert "| -3 me |" in render.markdown(findings, reports, False)
+
+
+def test_empty_sources_are_left_out_of_the_summaries() -> None:
+    findings = [Finding(Package("vgk", "fake"), Status.NONFREE)]
+    reports = [
+        SourceReport("fake", "lang", findings),
+        SourceReport("pnpm", "lang"),
+        SourceReport("yarn", "lang", error="boom"),
+    ]
+    summary = render.summary_text(reports, render.Palette(False), False)
+    assert "| fake" in summary and "| yarn" in summary and "pnpm" not in summary
+    assert "across 2 sources" in summary
+    md = render.markdown(findings, reports, False)
+    assert "| fake |" in md and "| yarn |" in md and "pnpm" not in md
+    assert "pnpm" in render.as_json(findings, reports, False)  # machine output keeps every source

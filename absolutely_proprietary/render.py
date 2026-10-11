@@ -103,6 +103,11 @@ def _fit_widths(natural: list[int], max_total: int, shrinkable: Sequence[int]) -
     return widths
 
 
+def _with_packages(reports: Sequence[SourceReport]) -> list[SourceReport]:
+    """The sources worth a row: ones that found something, or failed."""
+    return [r for r in reports if r.total or r.error]
+
+
 def summary_text(reports: Sequence[SourceReport], palette: Palette, unknown_as_nonfree: bool) -> str:
     overall = _overall(reports)
     idx = overall.freedom_index(unknown_as_nonfree)
@@ -111,7 +116,7 @@ def summary_text(reports: Sequence[SourceReport], palette: Palette, unknown_as_n
         palette.index(f"{bar}\n{overall.proprietary} ABSOLUTELY PROPRIETARY PACKAGES INSTALLED\n{bar}", idx),
         "",
         f"Your system is infected with {palette.index(str(overall.proprietary), idx)} proprietary packages "
-        f"out of {overall.total} found ({overall.unknown} unknown) across {len(reports)} sources.",
+        f"out of {overall.total} found ({overall.unknown} unknown) across {len(_with_packages(reports))} sources.",
         f"Your Stallman Freedom Index is {palette.index(_fmt_index(idx), idx)}",
     ]
     if rings := _ring_counts(overall.findings):
@@ -119,7 +124,7 @@ def summary_text(reports: Sequence[SourceReport], palette: Palette, unknown_as_n
         lines.append(f"By protection ring: {by_ring}")
     lines.append("")
     rows = [[["Source"], ["Packages"], ["Proprietary"], ["Unknown"], ["Freedom index"]]]
-    for r in reports:
+    for r in _with_packages(reports):
         ri = r.freedom_index(unknown_as_nonfree)
         rows.append(
             [
@@ -175,7 +180,7 @@ def markdown(findings: Sequence[Finding], reports: Sequence[SourceReport], unkno
         return text.replace("|", "\\|")
 
     lines = ["| Source | Packages | Proprietary | Unknown | Freedom index |", "|---|---:|---:|---:|---:|"]
-    for r in [*reports, _overall(reports)]:
+    for r in [*_with_packages(reports), _overall(reports)]:
         lines.append(
             f"| {r.source} | {r.total} | {r.proprietary} | {r.unknown} | {_fmt_index(r.freedom_index(unknown_as_nonfree))} |"
         )
