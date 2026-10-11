@@ -1,12 +1,7 @@
 {
-  "_comment": "SPDX ids count as free when the SPDX license list marks them FSF-free or OSI-approved (spdx-license-list package); extra_free_spdx adds free ids it leaves unmarked. Ids compare case-insensitively, without -only/-or-later/+. free_keywords / nonfree_keywords: lowercase substrings used for non-SPDX license strings. Non-free keywords win.",
-  "extra_free_spdx": [
-    "BSD-Source-Code", "bzip2-1.0.6", "CC-BY-1.0", "CC-BY-2.0", "CC-BY-2.5", "CC-BY-3.0", "CC-BY-SA-1.0", "CC-BY-SA-2.0",
-    "CC-BY-SA-2.5", "CC-BY-SA-3.0", "EUPL-1.0", "FSFUL", "FSFULLR", "GPL-1.0", "ImageMagick", "libpng-2.0",
-    "Libpng", "MIT-CMU", "PSF-2.0", "Spencer-86", "Spencer-94", "Spencer-99", "SunPro", "Unicode-DFS-2015",
-    "zlib-acknowledgement", "GPL-2.0-with-classpath-exception", "LGPLLR", "Beerware", "Info-ZIP", "TCL", "Xerox", "OpenSSL-standalone",
-    "SSLeay-standalone", "GPL-2.0-with-GCC-exception", "Unicode-TOU"
-  ],
+  "_comment": "SPDX ids count as free when ScanCode's license index (shipped with license-expression) puts them in a free category: Permissive, Copyleft, Copyleft Limited or Public Domain. extra_free_spdx adds free ids the index lacks; not_free_spdx removes ids it calls free that are not (FSF-nonfree, hardware- or use-restricted) and bare aliases (\"2.0\", \"gpl\"). Ids compare case-insensitively, without -only/-or-later/+. free_keywords / nonfree_keywords: lowercase substrings used for non-SPDX license strings. Non-free keywords win.",
+  "extra_free_spdx": ["alglib-documentation", "BSD-Ask-To-Endorse", "OSC-1.0", "SISSL", "Unicode-TOU", "WordNet"],
+  "not_free_spdx": ["2.0", "Aladdin", "Glide", "gpl", "IEC-Code-Components-EULA", "JSON", "MS-LPL", "OPL-1.0", "SCEA", "SGI-B-1.1"],
   "free_keywords": [
     "mit license", "mit/x11", "expat", "apache", "bsd", "general public license", "gpl", "lgpl", "agpl",
     "mozilla public", "mpl", "isc license", "zlib", "unlicense", "public domain", "public-domain",

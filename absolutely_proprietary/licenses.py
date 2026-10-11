@@ -23,6 +23,8 @@ _OTHER_PROPRIETARY = re.compile(r"other\s*/\s*proprietary", re.IGNORECASE)
 _WITH = re.compile(r"\s+with\s+.*$", re.IGNORECASE)
 # Python trove classifiers: "License :: OSI Approved :: MIT License"
 _CLASSIFIER_PREFIX = re.compile(r"^license\s*::\s*(osi approved\s*::\s*)?", re.IGNORECASE)
+# ScanCode license categories that are free software (the others: proprietary, source-available, CLA, ...).
+_FREE_CATEGORIES = frozenset({"Permissive", "Copyleft", "Copyleft Limited", "Public Domain"})
 
 
 @cache
@@ -34,10 +36,17 @@ def _data() -> dict[str, Any]:
 
 @cache
 def _free_ids() -> frozenset[str]:
-    from spdx_license_list import LICENSES
-
-    ids = [i for i, lic in LICENSES.items() if lic.fsf_libre or lic.osi_approved] + _data()["extra_free_spdx"]
-    return frozenset(_SUFFIXES.sub("", i).lower() for i in ids)
+    """SPDX ids in a free ScanCode category (license-expression ships the index), adjusted by licenses.json."""
+    index = resources.files("license_expression").joinpath("data", "scancode-licensedb-index.json")
+    ids = [
+        key
+        for lic in json.loads(index.read_text(encoding="utf-8"))
+        if lic["category"] in _FREE_CATEGORIES
+        for key in [lic.get("spdx_license_key"), *(lic.get("other_spdx_license_keys") or [])]
+        if key
+    ] + _data()["extra_free_spdx"]
+    not_free = {i.lower() for i in _data()["not_free_spdx"]}
+    return frozenset(_SUFFIXES.sub("", i).lower() for i in ids if i.lower() not in not_free)
 
 
 def _keyword_pattern(words: tuple[str, ...]) -> re.Pattern[str]:

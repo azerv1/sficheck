@@ -33,7 +33,6 @@ dependencies = [
     "license-expression>=30",
     "msgspec>=0.19",
     "pyudev>=0.24 ; sys_platform == 'linux'",
-    "spdx-license-list>=3.27",
 ]
 
 [dependency-groups]
@@ -83,7 +82,7 @@ files = ["absolutely_proprietary", "tests", "scripts"]
 
 [[tool.mypy.overrides]]
 # Runtime dependencies that ship without type information.
-module = ["license_expression", "pyudev", "spdx_license_list"]
+module = ["license_expression", "pyudev"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

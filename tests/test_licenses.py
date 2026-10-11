@@ -38,6 +38,11 @@ from absolutely_proprietary.models import Status
         ("GPL (>= 2)", Status.FREE),  # R
         ("GPL-2 | GPL-3", Status.FREE),  # R
         ("perl_5", Status.FREE),  # MetaCPAN
+        ("BSD-2-Clause-Views", Status.FREE),  # free in ScanCode, unmarked by SPDX
+        ("JSON", Status.UNKNOWN),  # "Good, not Evil": ScanCode says permissive, the FSF says nonfree
+        ("MS-LPL", Status.UNKNOWN),  # Windows-only
+        ("Watcom-1.0", Status.UNKNOWN),
+        ("2.0", Status.UNKNOWN),  # a ScanCode alias, not a license
         ("Combined GPLv2 and proprietary software", Status.SEMIFREE),
         ("SEE LICENSE IN README.md", Status.UNKNOWN),
         ("NOASSERTION", Status.UNKNOWN),
