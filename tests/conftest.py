@@ -1,15 +1,22 @@
 from __future__ import annotations
 
+import os
 from collections.abc import Callable
 from pathlib import Path
 
 import pytest
+from hypothesis import settings
 
 from absolutely_proprietary import proc
 from absolutely_proprietary.net import Fetcher
 from absolutely_proprietary.sources.base import Context
 
 FakeRun = Callable[[dict[str, str | None]], None]
+
+# No per-example deadline: shared CI runners (Windows especially) stall at random. CI explores harder.
+settings.register_profile("default", deadline=None)
+settings.register_profile("ci", deadline=None, max_examples=1000)
+settings.load_profile(os.environ.get("HYPOTHESIS_PROFILE", "ci" if os.environ.get("CI") else "default"))
 
 
 class StubFetcher(Fetcher):

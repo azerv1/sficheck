@@ -37,7 +37,12 @@ dependencies = [
 
 [dependency-groups]
 # What tox installs per Python version; the linters run once, through prek.
-test = ["pytest>=8", "pytest-cov>=7.1.0", "pytest-xdist>=3.8.0"]
+test = [
+    "hypothesis>=6.169.0",
+    "pytest>=8",
+    "pytest-cov>=7.1.0",
+    "pytest-xdist>=3.8.0",
+]
 dev = [
     { include-group = "test" },
     "complexipy>=8.0.1",
@@ -119,6 +124,7 @@ runner = "uv-venv-lock-runner"
 dependency_groups = ["test"]
 # Parallel envs (tox -p) would otherwise combine and delete each other's coverage files.
 set_env = { COVERAGE_FILE = "{env_tmp_dir}{/}.coverage" }
+pass_env = ["CI", "HYPOTHESIS_PROFILE"]  # picks the Hypothesis profile (tests/conftest.py)
 commands = [["pytest", { replace = "posargs", extend = true }]]
 
 [tool.commitizen]

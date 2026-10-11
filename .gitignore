@@ -13,3 +13,4 @@ __pycache__/
 .complexipy_cache/
 .coverage*
 .tox/
+.hypothesis/
