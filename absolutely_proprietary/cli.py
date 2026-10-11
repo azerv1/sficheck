@@ -23,7 +23,7 @@ from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, Context, Source
 log = logging.getLogger("absolutely_proprietary")
 
 # Opt-in flags for what runs below userspace; each turns on the source of the same name.
-LAYER_FLAGS = ("kernel", "hypervisors", "firmware")
+LAYER_FLAGS = ("kernel", "hypervisors", "firmware", "hardware")
 PROPRIETARY = [Status.NONFREE.value, Status.SEMIFREE.value, Status.USES_NONFREE.value]
 SORT_KEYS = {
     "source": lambda f: (f.package.source, f.package.name.lower()),
@@ -74,6 +74,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--firmware",
         action="store_true",
         help="also scan the BIOS/UEFI (ring -2), Intel ME / AMD PSP and microcode (ring -3)",
+    )
+    g.add_argument(
+        "--hardware", action="store_true", help="also scan devices that need a nonfree driver or firmware blobs"
     )
     g.add_argument(
         "--list-sources", action="store_true", help="show every source and whether it's available here, then exit"

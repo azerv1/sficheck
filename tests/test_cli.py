@@ -60,9 +60,18 @@ class FakeFirmware(FakeKernel):
         yield self.pkg("intel-me", "", "Proprietary")
 
 
+class FakeHardware(FakeKernel):
+    name = "hardware"
+
+    def packages(self) -> Iterable[Package]:
+        yield self.pkg("Wi-Fi 6 AX201", "", "Proprietary")
+
+
 @pytest.fixture(autouse=True)
 def isolated(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    monkeypatch.setattr(cli, "ALL_SOURCES", (FakeSource, BrokenSource, FakeKernel, FakeHypervisors, FakeFirmware))
+    monkeypatch.setattr(
+        cli, "ALL_SOURCES", (FakeSource, BrokenSource, FakeKernel, FakeHypervisors, FakeFirmware, FakeHardware)
+    )
     monkeypatch.setattr(
         cli,
         "BY_NAME",
@@ -72,6 +81,7 @@ def isolated(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
             "kernel": FakeKernel,
             "hypervisors": FakeHypervisors,
             "firmware": FakeFirmware,
+            "hardware": FakeHardware,
         },
     )
     monkeypatch.setattr(cli, "config_path", lambda: tmp_path / "config.json")
@@ -155,6 +165,7 @@ def test_layer_flags_combine(capsys: pytest.CaptureFixture[str]) -> None:
     )
     assert found == ["hyper-v", "vgk"]
     assert names(run_json(capsys, "--sources", "fake", "--firmware", "--max-ring", "0")) == ["intel-me"]
+    assert names(run_json(capsys, "--sources", "fake", "--hardware", "--max-ring", "0")) == ["Wi-Fi 6 AX201"]
 
 
 def test_exit_code(capsys: pytest.CaptureFixture[str]) -> None:
