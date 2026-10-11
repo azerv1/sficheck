@@ -9,9 +9,10 @@ import pytest
 from absolutely_proprietary.blacklist import Blacklist
 from absolutely_proprietary.classify import Classifier
 from absolutely_proprietary.models import Entry, Finding, Package, Ring, Status
-from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, hypervisors, kernel
+from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, firmware, hypervisors, kernel
 from absolutely_proprietary.sources.base import Context, Source
 from absolutely_proprietary.sources.compiled import Cargo, Go
+from absolutely_proprietary.sources.firmware import Firmware
 from absolutely_proprietary.sources.hypervisors import Hypervisors
 from absolutely_proprietary.sources.javascript import Npm
 from absolutely_proprietary.sources.jvm import Maven, Sdkman
@@ -405,3 +406,41 @@ def test_windows_on_bare_metal_with_a_hypervisor_runs_on_hyper_v(
     assert "vmware" in scan(Hypervisors(ctx), fetcher)
     monkeypatch.setattr(hypervisors, "_windows_hypervisor_present", lambda: False)
     assert sorted(scan(Hypervisors(ctx), fetcher)) == ["virtualbox"]
+
+
+def test_linux_firmware_reads_dmi_cpuinfo_and_the_me(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fetcher: StubFetcher, ctx: Context
+) -> None:
+    (tmp_path / "cpuinfo").write_text(
+        "processor\t: 0\nvendor_id\t: GenuineIntel\nmicrocode\t: 0xf4\n\nprocessor\t: 1\nvendor_id\t: x\n"
+    )
+    (tmp_path / "dmi").mkdir()
+    (tmp_path / "dmi" / "bios_vendor").write_text("American Megatrends Inc.\n")
+    (tmp_path / "dmi" / "bios_version").write_text("1.20\n")
+    (tmp_path / "fw_ver").write_text("0:16.1.25.1885\n0:16.1.25.1885\n")
+    monkeypatch.setattr(firmware, "IS_WINDOWS", False)
+    monkeypatch.setattr(firmware, "CPUINFO", tmp_path / "cpuinfo")
+    monkeypatch.setattr(firmware, "DMI", tmp_path / "dmi")
+    monkeypatch.setattr(firmware, "MEI_FW_VER", tmp_path / "fw_ver")
+    found = scan(Firmware(ctx), fetcher)
+    assert sorted(found) == ["American Megatrends Inc.", "intel-me", "intel-microcode"]
+    bios = found["American Megatrends Inc."]
+    assert bios.status is Status.NONFREE and bios.ring is Ring.FIRMWARE and bios.package.version == "1.20"
+    assert found["intel-me"].ring is Ring.ME and found["intel-me"].package.version == "16.1.25.1885"
+    assert found["intel-microcode"].package.version == "0xf4"
+
+
+def test_windows_firmware_reads_the_registry(
+    monkeypatch: pytest.MonkeyPatch, fetcher: StubFetcher, ctx: Context
+) -> None:
+    keys: dict[str, dict[str, object]] = {
+        firmware.BIOS_KEY: {"BIOSVendor": "coreboot", "BIOSVersion": "4.22"},
+        firmware.CPU_KEY: {"VendorIdentifier": "AuthenticAMD", "Update Revision": b"\0\0\0\0\x15\x01\x20\x0a"},
+    }
+    monkeypatch.setattr(firmware, "IS_WINDOWS", True)
+    monkeypatch.setattr(firmware, "_windows_values", lambda key: keys[key])
+    found = scan(Firmware(ctx), fetcher)
+    assert found["coreboot"].status is Status.USES_NONFREE  # curated: free, but with blobs
+    assert found["amd-psp"].status is Status.NONFREE and found["amd-psp"].ring is Ring.ME
+    assert found["amd-microcode"].package.version == "0xa200115"
+    assert firmware._revision(b"\xac\0\0\0") == "0xac" and firmware._revision(b"\0" * 8) == ""
