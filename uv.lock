@@ -14,6 +14,7 @@ dependencies = [
     { name = "httpx2" },
     { name = "license-expression" },
     { name = "msgspec" },
+    { name = "pyudev", marker = "sys_platform == 'linux'" },
     { name = "spdx-license-list" },
 ]
 
@@ -42,6 +43,7 @@ requires-dist = [
     { name = "httpx2", specifier = ">=2.9" },
     { name = "license-expression", specifier = ">=30" },
     { name = "msgspec", specifier = ">=0.19" },
+    { name = "pyudev", marker = "sys_platform == 'linux'", specifier = ">=0.24" },
     { name = "spdx-license-list", specifier = ">=3.27" },
 ]
 
@@ -1275,6 +1277,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/b0/73/54993df8fc57e906dc9b7e01d1d9b0b2d3eb0ce3190639e33dccb12853f7/python_discovery-1.6.2.tar.gz", hash = "sha256:cd1738ca1d37c86ef9d0b654dd46fcee1e41c97c6add12575e8501ced39afdb4", size = 86921, upload-time = "2026-10-10T01:24:27.912Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/61/3b/50ed32583bfffa737df67d33b9c15d7b25df232c55ab606d059f610ef6ca/python_discovery-1.6.2-py3-none-any.whl", hash = "sha256:f0c697f95a3aaec4174a6e5e58f5885e25768684bafc76f1afde384709ebdcf2", size = 38912, upload-time = "2026-10-10T01:24:26.721Z" },
+]
+
+[[package]]
+name = "pyudev"
+version = "0.24.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6a/45/770eda636216c62be4a06af01c7235923ca0580d72fd3e3178fb01b3ae01/pyudev-0.24.5.tar.gz", hash = "sha256:4e7faaec419b81a902d057568101819f448972c0cf448bb9c22203e4fc6a8eb9", size = 55343, upload-time = "2026-09-28T16:36:14.53Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5f/56/0baea14a1c772ce3df2c5d3a57802b31bcdee555f11dc8d18d23a927d14f/pyudev-0.24.5-py3-none-any.whl", hash = "sha256:a9c62d04a83472fb05ad5e014ef85933e5cf2fef193caf8b77bb7a9e8ded4812", size = 60467, upload-time = "2026-09-28T16:36:13.328Z" },
 ]
 
 [[package]]

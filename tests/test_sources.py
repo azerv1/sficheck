@@ -451,27 +451,12 @@ def test_windows_firmware_reads_the_registry(
 def test_linux_hardware_judges_devices_by_driver_and_firmware(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fake_run: FakeRun, fetcher: StubFetcher, ctx: Context
 ) -> None:
-    def device(bus: str, name: str, uevent: str, **files: str) -> None:
-        path = tmp_path / "bus" / bus / "devices" / name
-        path.mkdir(parents=True)
-        (path / "uevent").write_text(uevent)
-        for file, text in files.items():
-            (path / file).write_text(text + "\n")
-
-    device("pci", "gpu", "DRIVER=nvidia\nPCI_ID=10DE:2504\nPCI_SLOT_NAME=0000:01:00.0\n")
-    device("pci", "wifi", "DRIVER=iwlwifi\nPCI_ID=8086:A0F0\nPCI_SLOT_NAME=0000:00:14.3\n")
-    device("pci", "nic", "DRIVER=r8169\nPCI_ID=10EC:8168\nPCI_SLOT_NAME=0000:02:00.0\n")
-    device("pci", "bridge", "DRIVER=pcieport\nPCI_SLOT_NAME=0000:00:1c.0\n")
-    device("pci", "unbound", "PCI_ID=8086:A0A3\nPCI_SLOT_NAME=0000:00:1f.4\n")
-    device(
-        "usb",
-        "dongle",
-        "DEVTYPE=usb_device\nDRIVER=usb\nPRODUCT=bda/8179/0\n",
-        manufacturer="Realtek",
-        product="802.11n",
-    )
-    device("usb", "dongle-if", "DEVTYPE=usb_interface\nDRIVER=wl\nPRODUCT=bda/8179/0\n")
-    device("usb", "hub-if", "DEVTYPE=usb_interface\nDRIVER=hub\nPRODUCT=1d6b/2/0\n")
+    devices = [
+        ("NVIDIA Corporation AD104 [GeForce RTX 4070]", "nvidia"),
+        ("Intel Corporation Wi-Fi 6 AX201", "iwlwifi"),
+        ("Realtek Semiconductor Co., Ltd. RTL8111/8168 PCI Express Gigabit Ethernet", "r8169"),
+        ("Realtek 802.11n", "wl"),
+    ]
     (tmp_path / "module" / "wl").mkdir(parents=True)
     (tmp_path / "module" / "wl" / "taint").write_text("POE\n")
     (tmp_path / "firmware").mkdir()
@@ -480,29 +465,28 @@ def test_linux_hardware_judges_devices_by_driver_and_firmware(
         (tmp_path / "firmware" / blob).write_bytes(b"\0")
     fake_run(
         {
-            "lspci -mmD": '0000:00:14.3 "Network controller" "Intel Corporation" "Wi-Fi 6 AX201" -r20\n',
             "modinfo -F firmware iwlwifi": "iwlwifi-so-a0-gf-a0-72.ucode\niwlwifi-so-a0-gf-a0.pnvm\niwlwifi-ty-a0.ucode\n",
             "modinfo -F firmware r8169": "",
         }
     )
     monkeypatch.setattr(hardware, "IS_WINDOWS", False)
-    monkeypatch.setattr(hardware, "SYS_BUS", tmp_path / "bus")
+    monkeypatch.setattr(hardware, "_linux_devices", lambda: devices)
     monkeypatch.setattr(hardware, "SYS_MODULE", tmp_path / "module")
     monkeypatch.setattr(hardware, "FIRMWARE_DIR", tmp_path / "firmware")
     found = scan(Hardware(ctx), fetcher)
-    assert sorted(found) == [
-        "Intel Corporation Wi-Fi 6 AX201",
-        "PCI device 10DE:2504",
-        "PCI device 10EC:8168",
-        "Realtek 802.11n",
-    ]
-    gpu, wifi = found["PCI device 10DE:2504"], found["Intel Corporation Wi-Fi 6 AX201"]
+    gpu, wifi = found["NVIDIA Corporation AD104 [GeForce RTX 4070]"], found["Intel Corporation Wi-Fi 6 AX201"]
     assert gpu.status is Status.NONFREE and gpu.ring is Ring.KERNEL and gpu.alternatives  # curated nvidia entry
-    assert wifi.status is Status.USES_NONFREE and wifi.description == (
-        "iwlwifi loads iwlwifi-so-a0-gf-a0-72.ucode, iwlwifi-so-a0-gf-a0.pnvm"
-    )
+    assert wifi.status is Status.USES_NONFREE
+    assert wifi.description == "iwlwifi loads iwlwifi-so-a0-gf-a0-72.ucode, iwlwifi-so-a0-gf-a0.pnvm"
     assert found["Realtek 802.11n"].status is Status.NONFREE and found["Realtek 802.11n"].reason == "kernel taint P"
-    assert found["PCI device 10EC:8168"].status is Status.FREE
+    assert found[devices[2][0]].status is Status.FREE
+
+
+@pytest.mark.skipif(hardware._udev() is None, reason="needs Linux with libudev")
+def test_udev_lists_real_devices() -> None:
+    devices = hardware._linux_devices()
+    assert all(name and driver for name, driver in devices)
+    assert hardware._udev_name(type("D", (), {"properties": {}})(), "1414:008E") == "device 1414:008E"
 
 
 def test_windows_hardware_flags_devices_on_third_party_drivers(
