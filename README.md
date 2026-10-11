@@ -163,8 +163,16 @@ Alternatives must be free software, a real replacement for the same job, and a v
 
 ## Development
 
+With [uv](https://docs.astral.sh/uv/) and make:
+
 ```sh
-python -m venv .venv && .venv/bin/pip install -e '.[dev]'
-pytest && ruff check . && ruff format --check . && mypy absolutely_proprietary tests scripts
-python scripts/check_lists.py --online   # after editing the lists
+make sync      # dev environment from uv.lock
+make format    # sort imports, reformat
+make lint      # ruff, mypy, complexipy, vulture, deptry
+make test      # pytest, including Hypothesis property tests
+make audit     # pip-audit the locked dependencies
+make install   # install the command for your user (uv tool install)
+make clean     # caches and build output
+uv run tox -p  # the tests on every supported Python
+uv run python scripts/check_lists.py --online   # after editing the lists
 ```
