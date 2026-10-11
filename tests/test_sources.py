@@ -385,6 +385,7 @@ def test_linux_guest_names_its_hypervisor_and_installed_ones(
     monkeypatch.setattr(hypervisors, "CPUINFO", tmp_path / "cpuinfo")
     monkeypatch.setattr(hypervisors, "DMI", tmp_path / "dmi")
     monkeypatch.setattr(hypervisors, "XEN", tmp_path / "missing")
+    monkeypatch.setattr(hypervisors, "OSRELEASE", tmp_path / "missing")
     monkeypatch.setattr(hypervisors, "PROC_MODULES", tmp_path / "modules")
     found = scan(Hypervisors(ctx), fetcher)
     assert sorted(found) == ["hyper-v", "kvm", "vmware"]
@@ -523,3 +524,17 @@ def test_file_info_reads_the_version_resource(tmp_path: Path) -> None:
     (tmp_path / "notes.txt").write_text("not a PE file")
     assert kernel._file_info(str(tmp_path / "notes.txt")) == {}
     assert kernel._file_info(str(tmp_path / "missing.sys")) is None
+
+
+def test_wsl_runs_on_hyper_v(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fetcher: StubFetcher, ctx: Context
+) -> None:
+    (tmp_path / "cpuinfo").write_text("flags\t\t: fpu hypervisor\n")
+    (tmp_path / "osrelease").write_text("6.18.40.1-microsoft-standard-WSL2\n")
+    monkeypatch.setattr(hypervisors, "IS_WINDOWS", False)
+    monkeypatch.setattr(hypervisors, "CPUINFO", tmp_path / "cpuinfo")
+    monkeypatch.setattr(hypervisors, "DMI", tmp_path / "no-dmi")  # WSL has no DMI
+    monkeypatch.setattr(hypervisors, "XEN", tmp_path / "missing")
+    monkeypatch.setattr(hypervisors, "OSRELEASE", tmp_path / "osrelease")
+    monkeypatch.setattr(hypervisors, "PROC_MODULES", tmp_path / "missing")
+    assert list(scan(Hypervisors(ctx), fetcher)) == ["hyper-v"]

@@ -14,6 +14,7 @@ from absolutely_proprietary.sources.kernel import PROC_MODULES, SERVICES_KEY, _r
 CPUINFO = Path("/proc/cpuinfo")
 DMI = Path("/sys/class/dmi/id")
 XEN = Path("/sys/hypervisor/type")
+OSRELEASE = Path("/proc/sys/kernel/osrelease")
 SYSTEM_INFO_KEY = r"SYSTEM\CurrentControlSet\Control\SystemInformation"
 SYSTEM_HYPERVISOR_INFORMATION = 0x5B  # NtQuerySystemInformation class
 
@@ -26,6 +27,7 @@ VM_VENDORS = (
     ("parallels", "parallels"),
     ("xen", "xen"),
     ("microsoft corporation virtual machine", "hyper-v"),
+    ("microsoft-standard", "hyper-v"),  # WSL 2's kernel release; WSL has no DMI
 )
 # The kernel driver (Windows service or Linux module) each hypervisor installs.
 ENGINES = {"vmx86": "vmware", "vmmon": "vmware", "VBoxSup": "virtualbox", "vboxdrv": "virtualbox", "kvm": "kvm"}
@@ -64,7 +66,7 @@ def _underneath() -> str | None:
     flags = (line.split() for line in _read(CPUINFO).splitlines() if line.startswith("flags"))
     if not any("hypervisor" in f for f in flags):
         return None
-    return _vm_vendor(f"{_read(DMI / 'sys_vendor')} {_read(DMI / 'product_name')}")
+    return _vm_vendor(f"{_read(DMI / 'sys_vendor')} {_read(DMI / 'product_name')} {_read(OSRELEASE)}")
 
 
 def _installed() -> list[str]:
