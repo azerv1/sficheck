@@ -133,7 +133,14 @@ def test_broken_source_is_reported_not_fatal(capsys: pytest.CaptureFixture[str])
     summary = run_json(capsys)["summary"]
     assert isinstance(summary, dict)
     errors = {s["source"]: s["error"] for s in summary["sources"]}
-    assert errors == {"fake": None, "broken": "boom"}
+    assert errors == {
+        "fake": None,
+        "broken": "boom",
+        "kernel": None,
+        "hypervisors": None,
+        "firmware": None,
+        "hardware": None,
+    }
 
 
 def test_ignore_and_user_blacklist(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
@@ -152,9 +159,31 @@ def test_max_ring_and_ring_sort(capsys: pytest.CaptureFixture[str], tmp_path: Pa
     assert names(run_json(capsys, *base, "--all", "--sort", "ring")) == ["half", "evil|pipe", "good", "mystery"]
 
 
-def test_kernel_flag_adds_the_opt_in_kernel_source(capsys: pytest.CaptureFixture[str]) -> None:
-    assert "vgk" not in names(run_json(capsys, "--skip", "broken"))
-    assert "vgk" in names(run_json(capsys, "--skip", "broken", "--kernel"))
+def test_default_scans_every_layer(capsys: pytest.CaptureFixture[str]) -> None:
+    found = names(run_json(capsys, "--skip", "broken", "--sort", "ring"))
+    assert found == ["intel-me", "hyper-v", "vgk", "Wi-Fi 6 AX201", "evil|pipe"]
+
+
+def test_layer_flags_scan_only_those_layers(capsys: pytest.CaptureFixture[str]) -> None:
+    assert names(run_json(capsys, "--firmware")) == ["intel-me"]
+    assert names(run_json(capsys, "--kernel", "--hypervisors", "--sort", "ring")) == ["hyper-v", "vgk"]
+    assert names(run_json(capsys, "--software", "--skip", "broken")) == ["evil|pipe"]
+    assert names(run_json(capsys, "--software", "--kernel", "--skip", "broken", "--sort", "ring")) == [
+        "vgk",
+        "evil|pipe",
+    ]
+
+
+def test_kind_narrows_the_software_layer(capsys: pytest.CaptureFixture[str]) -> None:
+    assert names(run_json(capsys, "--kind", "lang", "--skip", "broken")) == ["evil|pipe"]
+    assert names(run_json(capsys, "--kind", "lang", "--firmware", "--skip", "broken", "--sort", "ring")) == [
+        "intel-me",
+        "evil|pipe",
+    ]
+    assert cli.main(["-q", "--kind", "system"]) == 2  # no system package manager, and no layer flag
+
+
+def test_kernel_flag_adds_to_named_sources(capsys: pytest.CaptureFixture[str]) -> None:
     assert names(run_json(capsys, "--sources", "fake", "--kernel", "--max-ring", "0")) == ["vgk"]
 
 

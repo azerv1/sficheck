@@ -21,9 +21,9 @@ sficheck started as a fork of absolutely-proprietary. See [Origins](#origins) be
 
 ## Sources
 
-`sficheck --list-sources` shows which of these are available on your machine. Every available source is scanned unless you pass `--sources` or `--skip`.
+`sficheck --list-sources` shows which of these are available on your machine. By default every layer is scanned: the package managers (`--software`) and the kernel, hypervisor, firmware and hardware layers below them. Name one or more layers to scan only those, so `sficheck --firmware` checks just the firmware and `sficheck --software --kernel` skips the rest. `--kind system|lang` narrows the package managers, `--sources` names exact sources, and `--skip` drops sources from any selection.
 
-**System**
+**System** (`--software`)
 - `pacman` — Arch and derivatives, checked against Parabola's [blacklist](https://git.parabola.nu/abslibre/blacklist.git/plain/blacklist.txt) and [aur-blacklist](https://git.parabola.nu/abslibre/blacklist.git/plain/aur-blacklist.txt) (`--include-privacy` adds `your-privacy-blacklist.txt`). Packages that aren't blacklisted count as free, as before.
 - `dpkg` — Debian, Ubuntu, Mint… Archive area decides: `non-free`, `non-free-firmware`, `restricted`, `multiverse` → nonfree; `contrib` → uses-nonfree. Third-party repo packages (Chrome, VS Code, Teams…) come from the curated list.
 - `nix` — `nix-env`, `nix profile` and NixOS `systemPackages`, using nixpkgs `meta.license.free`.
@@ -32,7 +32,7 @@ sficheck started as a fork of absolutely-proprietary. See [Origins](#origins) be
 - `windows` — programs in the registry's Uninstall keys, plus Windows itself.
 - `winget`, `scoop`, `choco` — license from `winget show` (cached), scoop manifests, Chocolatey nuspecs.
 
-**Below userspace** (opt-in)
+**Below userspace**
 - `kernel` (`--kernel`) — what runs in ring 0.
   - Linux: loaded modules from `/proc/modules`. A module the kernel taints with `P` (license not GPL-compatible) is nonfree, the rest free.
   - Windows: third-party kernel drivers from the registry's service keys, counting only those in use: bound to a device, loaded at system or auto start, or installed outside `C:\Windows`. Microsoft's own drivers are skipped (Windows itself is already reported), as are leftover entries whose file is gone. Vendor and version come from the driver file. A driver not in `kernel.json` counts as nonfree, since free drivers are listed there.
@@ -47,7 +47,7 @@ sficheck started as a fork of absolutely-proprietary. See [Origins](#origins) be
   - Windows: PCI, USB and HD Audio devices plugged in now, from the registry. A device on a third-party driver is nonfree; devices on Microsoft's own drivers are covered by Windows itself.
   - A driver named in the curated lists decides for its device: nvidia's devices get nouveau as the alternative, and a WireGuard adapter stays free.
 
-**Languages** (global installs, not project dependencies)
+**Languages** (`--software`; global installs, not project dependencies)
 - Python: `pip` (default interpreter), `uv` tools, `pipx`
 - JavaScript/TypeScript: `npm`, `pnpm`, `yarn`, `bun`, `deno`
 - Rust `cargo` · Go `go` · Ruby `gem` · PHP `composer` · Perl `cpan` · Lua `luarocks` · R `r` · Julia `julia` · Haskell `ghc-pkg` · Elixir `mix` · Dart/Flutter `pub` · Swift `mint`
@@ -88,11 +88,13 @@ Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entr
 ## Options
 
 ```
---sources A,B / --skip A,B / --kind system|lang              what to scan
---kernel                                                      also scan kernel modules and drivers
---hypervisors                                                 also scan the hypervisor underneath and installed ones
---firmware                                                    also scan the BIOS/UEFI, Intel ME / AMD PSP and microcode
---hardware                                                    also scan devices that need a nonfree driver or firmware blobs
+(no layer flag)                                               scan every layer
+--software                                                    scan the system and language package managers
+--kernel                                                      scan kernel modules and drivers
+--hypervisors                                                 scan the hypervisor underneath and installed ones
+--firmware                                                    scan the BIOS/UEFI, Intel ME / AMD PSP and microcode
+--hardware                                                    scan devices that need a nonfree driver or firmware blobs
+--kind system|lang / --sources A,B / --skip A,B              narrow or name sources
 --status S (repeatable) / -f, --full / --all / --show-unknown  what to show (default: nonfree)
 --sort source|name|status|ring|alternatives  (-s, -a shortcuts)  -r   ordering
 --max-ring N                                                  only ring N or deeper (-3 … 3)
@@ -186,7 +188,7 @@ uv run python scripts/check_lists.py --online   # after editing the lists
 sficheck is a fork of [absolutely-proprietary](https://github.com/vmavromatis/absolutely-proprietary) by Vasilis Mavromatis and contributors. The original was a single script for Arch-based distros: it checked pacman packages against Parabola's blacklists and printed your Stallman Freedom Index. It was renamed and heavily extended in 2026, adding:
 
 - system package managers beyond pacman (dpkg, nix, flatpak, snap, brew, winget, scoop, choco, the Windows registry) and 28 language package managers
-- the opt-in kernel, hypervisor, firmware and hardware scans (rings 0 to -3)
+- the kernel, hypervisor, firmware and hardware scans (rings 0 to -3), each selectable on its own
 - Windows and macOS support
 - the classification chain: user blacklists, ecosystem authorities, curated lists, SPDX parsing and online license lookups
 - JSON output, a config file, caching, and a test suite with Hypothesis property tests

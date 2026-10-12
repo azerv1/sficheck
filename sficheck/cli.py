@@ -22,7 +22,8 @@ from sficheck.sources import ALL_SOURCES, BY_NAME, Context, Source
 
 log = logging.getLogger("sficheck")
 
-# Opt-in flags for what runs below userspace; each turns on the source of the same name.
+# Flags for the layers below userspace; each turns on the source of the same name. With no layer flag,
+# no --software, --kind or --sources, every layer is scanned.
 LAYER_FLAGS = ("kernel", "hypervisors", "firmware", "hardware")
 PROPRIETARY = [Status.NONFREE.value, Status.SEMIFREE.value, Status.USES_NONFREE.value]
 SORT_KEYS = {
@@ -55,29 +56,32 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
 
-    g = p.add_argument_group("what to scan")
-    g.add_argument("--sources", type=_csv, metavar="A,B", help="only scan these sources (see --list-sources)")
-    g.add_argument("--skip", type=_csv, default=[], metavar="A,B", help="skip these sources")
-    g.add_argument(
-        "--kind",
-        choices=["system", "lang"],
-        action="append",
-        help="only scan sources of this kind (repeatable)",
+    g = p.add_argument_group(
+        "what to scan", "Every layer is scanned by default. Name one or more layers to scan only those."
     )
-    g.add_argument("--kernel", action="store_true", help="also scan kernel modules and third-party drivers (ring 0)")
+    g.add_argument("--software", action="store_true", help="scan the system and language package managers (ring 3)")
+    g.add_argument("--kernel", action="store_true", help="scan kernel modules and third-party drivers (ring 0)")
     g.add_argument(
         "--hypervisors",
         action="store_true",
-        help="also scan the hypervisor this OS runs on and installed ones (ring -1)",
+        help="scan the hypervisor this OS runs on and installed ones (ring -1)",
     )
     g.add_argument(
         "--firmware",
         action="store_true",
-        help="also scan the BIOS/UEFI (ring -2), Intel ME / AMD PSP and microcode (ring -3)",
+        help="scan the BIOS/UEFI (ring -2), Intel ME / AMD PSP and microcode (ring -3)",
+    )
+    g.add_argument("--hardware", action="store_true", help="scan devices that need a nonfree driver or firmware blobs")
+    g.add_argument(
+        "--kind",
+        choices=["system", "lang"],
+        action="append",
+        help="scan package managers of this kind only (repeatable; implies --software)",
     )
     g.add_argument(
-        "--hardware", action="store_true", help="also scan devices that need a nonfree driver or firmware blobs"
+        "--sources", type=_csv, metavar="A,B", help="scan these sources, plus any layer flags (see --list-sources)"
     )
+    g.add_argument("--skip", type=_csv, default=[], metavar="A,B", help="skip these sources")
     g.add_argument(
         "--list-sources", action="store_true", help="show every source and whether it's available here, then exit"
     )
@@ -201,10 +205,19 @@ def shown_findings(args: argparse.Namespace, reports: list[SourceReport]) -> lis
     return shown
 
 
+def software_sources(kinds: list[str] | None) -> list[str]:
+    """The package-manager sources scanned by default, optionally only those of the given kinds."""
+    return [c.name for c in ALL_SOURCES if c.default_enabled and (not kinds or c.kind in kinds)]
+
+
 def select_sources(args: argparse.Namespace, ctx: Context) -> list[Source]:
-    classes = [BY_NAME[n] for n in args.sources] if args.sources else [c for c in ALL_SOURCES if c.default_enabled]
-    classes += [BY_NAME[flag] for flag in LAYER_FLAGS if getattr(args, flag) and BY_NAME[flag] not in classes]
-    classes = [c for c in classes if c.name not in args.skip and (not args.kind or c.kind in args.kind)]
+    layers = [flag for flag in LAYER_FLAGS if getattr(args, flag)]
+    everything = not (args.sources or args.software or args.kind or layers)
+    names = list(args.sources or [])
+    if args.software or args.kind or everything:
+        names += software_sources(args.kind)
+    names += LAYER_FLAGS if everything else layers
+    classes = [BY_NAME[n] for n in dict.fromkeys(names) if n not in args.skip]
     return [src for src in (c(ctx) for c in classes) if src.available()]
 
 
@@ -213,7 +226,7 @@ def list_sources(ctx: Context) -> str:
     for cls in ALL_SOURCES:
         src = cls(ctx)
         state = "available" if src.available() else "-"
-        opt = "" if cls.default_enabled else " (opt-in)"
+        opt = "" if cls.default_enabled or cls.name in LAYER_FLAGS else " (opt-in)"
         lines.append(f"{cls.name:<10} {cls.kind:<9} {state:<10} {cls.description}{opt}")
     return "\n".join(lines) + "\n"
 
