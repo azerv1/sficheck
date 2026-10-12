@@ -90,6 +90,7 @@ ignore = ["E501", "RUF001"]
 python_version = "3.11"
 strict = true
 warn_unreachable = true
+platform = "win32"  # the winreg and ctypes code narrows on sys.platform; check it the same way on every OS
 files = ["sficheck", "tests", "scripts"]
 
 [[tool.mypy.overrides]]

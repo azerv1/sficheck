@@ -26,7 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
-      - run: uvx --with tox-uv tox -e ${{ matrix.python }}
+      # The smoke tests go first: uv run creates .venv as a directory, which tox leaves alone. Run after tox,
+      # they would find the PEP 832 .venv redirect file tox writes, which uv rejects.
       - name: Smoke test against the real machine
         run: >-
           uv run --python ${{ matrix.python }} sficheck --list-sources
@@ -37,3 +38,4 @@ jobs:
           uv run --python ${{ matrix.python }} sficheck -q --format json --skip winget
           --kernel --hypervisors --firmware --hardware > /dev/null
         shell: bash
+      - run: uvx --with tox-uv tox -e ${{ matrix.python }}
