@@ -9,13 +9,13 @@ It runs on GNU/Linux (Arch, Debian, Ubuntu, NixOS and anything with flatpak/snap
 ## Install
 
 ```sh
-pipx install sficheck   # or: uv tool install sficheck
+pipx install git+https://github.com/azerv1/sficheck   # or: uv tool install git+https://github.com/azerv1/sficheck
 sficheck
 ```
 
 You can also run it from a clone without installing: `python3 -m sficheck` (`py -m sficheck` on Windows).
 
-Arch users can use the [AUR package](https://aur.archlinux.org/packages/sficheck-git/) or the `PKGBUILD` in this repo.
+Arch users can build the `PKGBUILD` in this repo with `makepkg -si`.
 
 sficheck started as a fork of absolutely-proprietary. See [Origins](#origins) below.
 
