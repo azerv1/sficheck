@@ -9,11 +9,11 @@ if ! command -v python3 >/dev/null 2>&1; then
     fi
 fi
 
-dir="${XDG_CACHE_HOME:-$HOME/.cache}/absolutely-proprietary-src"
+dir="${XDG_CACHE_HOME:-$HOME/.cache}/sficheck-src"
 if [ -d "$dir/.git" ]; then
     git -C "$dir" pull --quiet
 else
-    git clone --quiet https://github.com/vmavromatis/absolutely-proprietary.git "$dir"
+    git clone --quiet https://github.com/azerv1/sficheck.git "$dir"
 fi
 cd "$dir"
-exec python3 -m absolutely_proprietary "$@"
+exec python3 -m sficheck "$@"

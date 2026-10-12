@@ -5,11 +5,11 @@ from __future__ import annotations
 from collections.abc import Iterable
 from pathlib import Path
 
-from absolutely_proprietary.models import Finding, Package, Ring, Status
-from absolutely_proprietary.sources import _registry
-from absolutely_proprietary.sources.base import IS_WINDOWS, Source
-from absolutely_proprietary.sources.hypervisors import CPUINFO, DMI
-from absolutely_proprietary.sources.kernel import _read
+from sficheck.models import Finding, Package, Ring, Status
+from sficheck.sources import _registry
+from sficheck.sources.base import IS_WINDOWS, Source
+from sficheck.sources.hypervisors import CPUINFO, DMI
+from sficheck.sources.kernel import _read
 
 MEI_FW_VER = Path("/sys/class/mei/mei0/fw_ver")
 BIOS_KEY = r"HARDWARE\DESCRIPTION\System\BIOS"

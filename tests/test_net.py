@@ -4,7 +4,7 @@ from pathlib import Path
 
 import httpx2
 
-from absolutely_proprietary.net import Fetcher
+from sficheck.net import Fetcher
 
 
 def serve(status: int, body: str = "") -> httpx2.MockTransport:

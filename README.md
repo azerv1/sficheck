@@ -7,17 +7,17 @@ It runs on GNU/Linux (Arch, Debian, Ubuntu, NixOS and anything with flatpak/snap
 ## Install
 
 ```sh
-pipx install git+https://github.com/vmavromatis/absolutely-proprietary   # or: uv tool install ...
-absolutely-proprietary
+pipx install git+https://github.com/azerv1/sficheck   # or: uv tool install ...
+sficheck
 ```
 
-You can also run it from a clone without installing: `python3 -m absolutely_proprietary` (`py -m absolutely_proprietary` on Windows).
+You can also run it from a clone without installing: `python3 -m sficheck` (`py -m sficheck` on Windows).
 
-Arch users can use the [AUR package](https://aur.archlinux.org/packages/absolutely-proprietary/) or the `PKGBUILD` in this repo.
+Arch users can use the [AUR package](https://aur.archlinux.org/packages/sficheck/) or the `PKGBUILD` in this repo.
 
 ## Sources
 
-`absolutely-proprietary --list-sources` shows which of these are available on your machine. Every available source is scanned unless you pass `--sources` or `--skip`.
+`sficheck --list-sources` shows which of these are available on your machine. Every available source is scanned unless you pass `--sources` or `--skip`.
 
 **System**
 - `pacman` — Arch and derivatives, checked against Parabola's [blacklist](https://git.parabola.nu/abslibre/blacklist.git/plain/blacklist.txt) and [aur-blacklist](https://git.parabola.nu/abslibre/blacklist.git/plain/aur-blacklist.txt) (`--include-privacy` adds `your-privacy-blacklist.txt`). Packages that aren't blacklisted count as free, as before.
@@ -55,7 +55,7 @@ Opt-in sources only run when named, e.g. `--sources maven,gradle`.
 
 ## How a package is classified
 
-Each package goes through a fixed chain, and the first step with an answer wins. Your own `--blacklist` files come first, so you can always overrule the tool. Next comes the ecosystem's own authority, when it has one: Parabola's blacklist for pacman, the archive area for dpkg, `meta.unfree` for nix. Then the bundled curated lists in `absolutely_proprietary/data/lists/`. They come before declared licenses because a license field can be technically true and still misleading. 7-Zip is LGPL but bundles nonfree unRAR code, and VS Code's source is MIT but the Microsoft build is not.
+Each package goes through a fixed chain, and the first step with an answer wins. Your own `--blacklist` files come first, so you can always overrule the tool. Next comes the ecosystem's own authority, when it has one: Parabola's blacklist for pacman, the archive area for dpkg, `meta.unfree` for nix. Then the bundled curated lists in `sficheck/data/lists/`. They come before declared licenses because a license field can be technically true and still misleading. 7-Zip is LGPL but bundles nonfree unRAR code, and VS Code's source is MIT but the Microsoft build is not.
 
 After that the declared license is parsed as an SPDX expression or free text. `MIT OR Proprietary` is free, because you may choose the free branch. `MIT AND Proprietary` is semifree. `BUSL-1.1`, `SSPL`, `Elastic-2.0`, `Freeware` and npm's `UNLICENSED` are nonfree. SPDX ids count as free when [ScanCode's license database](https://scancode-licensedb.aboutcode.org/) files them as permissive, copyleft or public domain. With `--online-licenses`, packages with no usable license are looked up on deps.dev, Packagist, pub.dev, hex.pm, MetaCPAN or GitHub. Anything still unresolved is `unknown`, except under pacman and dpkg, whose vetted archives default to free.
 
@@ -100,7 +100,7 @@ Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entr
 
 `--exit-code` makes the command exit 1 when anything proprietary is found, so it can be used in CI. Progress goes to stderr, so `--format json | jq` works.
 
-Defaults for any option can live in `~/.config/absolutely-proprietary/config.json` (`%APPDATA%\absolutely-proprietary\config.json` on Windows), using the option names with underscores:
+Defaults for any option can live in `~/.config/sficheck/config.json` (`%APPDATA%\sficheck\config.json` on Windows), using the option names with underscores:
 
 ```json
 { "full": true, "ignore": ["steam"], "blacklist": ["~/my-blacklist.txt"], "skip": ["gradle"] }
@@ -108,7 +108,7 @@ Defaults for any option can live in `~/.config/absolutely-proprietary/config.jso
 
 User blacklists use either Parabola's text format (`name:replacement:ref:id:[status] description`) or the bundled JSON format.
 
-Downloads (Parabola lists, registry lookups, `winget show` output) are cached for 24h in `~/.cache/absolutely-proprietary` (`%LOCALAPPDATA%` on Windows). If the network fails, a stale cache is used.
+Downloads (Parabola lists, registry lookups, `winget show` output) are cached for 24h in `~/.cache/sficheck` (`%LOCALAPPDATA%` on Windows). If the network fails, a stale cache is used.
 
 ## Output
 
@@ -137,7 +137,7 @@ By protection ring: 3 user: 5
 
 ## Contributing to the lists
 
-Curated entries live in `absolutely_proprietary/data/lists/*.json`, one object per entry:
+Curated entries live in `sficheck/data/lists/*.json`, one object per entry:
 
 ```json
 {"name": "zoom", "status": "nonfree", "alternatives": ["jitsi-meet-desktop"], "description": "Proprietary video conferencing", "reference": "https://en.wikipedia.org/wiki/Zoom_(software)"}

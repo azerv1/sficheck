@@ -13,11 +13,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from absolutely_proprietary import __version__
+from sficheck import __version__
 
 log = logging.getLogger(__name__)
 
-USER_AGENT = f"absolutely-proprietary/{__version__} (+https://github.com/vmavromatis/absolutely-proprietary)"
+USER_AGENT = f"sficheck/{__version__} (+https://github.com/azerv1/sficheck)"
 
 
 def cache_dir() -> Path:
@@ -27,7 +27,7 @@ def cache_dir() -> Path:
         base = Path.home() / "Library" / "Caches"
     else:
         base = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
-    return base / "absolutely-proprietary"
+    return base / "sficheck"
 
 
 @dataclass(slots=True)

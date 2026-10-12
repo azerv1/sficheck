@@ -7,7 +7,7 @@ import pytest
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
-from absolutely_proprietary.blacklist import (
+from sficheck.blacklist import (
     DEFAULT_SKIP_TAGS,
     PARABOLA_ISSUE_URL,
     TAG_STATUS,
@@ -16,9 +16,9 @@ from absolutely_proprietary.blacklist import (
     parse_list,
     parse_parabola_line,
 )
-from absolutely_proprietary.licenses import _OR_RANK, classify, classify_many
-from absolutely_proprietary.models import Ring, Status
-from absolutely_proprietary.sources.firmware import _revision
+from sficheck.licenses import _OR_RANK, classify, classify_many
+from sficheck.models import Ring, Status
+from sficheck.sources.firmware import _revision
 
 # Real ids and free-text names across every status, plus made-up license-like tokens.
 KNOWN = ["MIT", "GPL-3.0-or-later", "LGPL-2.1+", "Apache-2.0", "BSD-3-Clause", "Unlicense", "BUSL-1.1", "SSPL-1.0"]

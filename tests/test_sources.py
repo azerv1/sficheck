@@ -7,22 +7,22 @@ from pathlib import Path
 
 import pytest
 
-from absolutely_proprietary.blacklist import Blacklist
-from absolutely_proprietary.classify import Classifier
-from absolutely_proprietary.models import Entry, Finding, Package, Ring, Status
-from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, _registry, firmware, hardware, hypervisors, kernel
-from absolutely_proprietary.sources.base import Context, Source
-from absolutely_proprietary.sources.compiled import Cargo, Go
-from absolutely_proprietary.sources.firmware import Firmware
-from absolutely_proprietary.sources.hardware import Hardware
-from absolutely_proprietary.sources.hypervisors import Hypervisors
-from absolutely_proprietary.sources.javascript import Npm
-from absolutely_proprietary.sources.jvm import Maven, Sdkman
-from absolutely_proprietary.sources.kernel import Kernel
-from absolutely_proprietary.sources.python import Pip
-from absolutely_proprietary.sources.scripting import CranR, Gem, GhcPkg
-from absolutely_proprietary.sources.system import Brew, Dpkg, Nix, Pacman, Snap
-from absolutely_proprietary.sources.windows import Chocolatey, Scoop
+from sficheck.blacklist import Blacklist
+from sficheck.classify import Classifier
+from sficheck.models import Entry, Finding, Package, Ring, Status
+from sficheck.sources import ALL_SOURCES, BY_NAME, _registry, firmware, hardware, hypervisors, kernel
+from sficheck.sources.base import Context, Source
+from sficheck.sources.compiled import Cargo, Go
+from sficheck.sources.firmware import Firmware
+from sficheck.sources.hardware import Hardware
+from sficheck.sources.hypervisors import Hypervisors
+from sficheck.sources.javascript import Npm
+from sficheck.sources.jvm import Maven, Sdkman
+from sficheck.sources.kernel import Kernel
+from sficheck.sources.python import Pip
+from sficheck.sources.scripting import CranR, Gem, GhcPkg
+from sficheck.sources.system import Brew, Dpkg, Nix, Pacman, Snap
+from sficheck.sources.windows import Chocolatey, Scoop
 from tests.conftest import FakeRun, StubFetcher
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -267,8 +267,8 @@ def test_ignore_user_list_and_online(fake_run: FakeRun, fetcher: StubFetcher, ct
         }
     )
     fetcher.bodies["RUBYGEMS/packages/a/versions/1"] = json.dumps({"licenses": ["MIT"]})
-    from absolutely_proprietary.blacklist import Blacklist
-    from absolutely_proprietary.models import Entry
+    from sficheck.blacklist import Blacklist
+    from sficheck.models import Entry
 
     user = Blacklist()
     user.add(Entry("b", Status.NONFREE, origin="user:mine"))

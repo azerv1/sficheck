@@ -7,9 +7,9 @@ from pathlib import Path
 import pytest
 from hypothesis import settings
 
-from absolutely_proprietary import proc
-from absolutely_proprietary.net import Fetcher
-from absolutely_proprietary.sources.base import Context
+from sficheck import proc
+from sficheck.net import Fetcher
+from sficheck.sources.base import Context
 
 FakeRun = Callable[[dict[str, str | None]], None]
 

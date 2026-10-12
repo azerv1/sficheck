@@ -42,7 +42,7 @@ repos:
         verbose: true
       - id: jscpd
         name: jscpd
-        entry: uv run python hooks/timed.py jscpd npx --yes jscpd@4 absolutely_proprietary scripts tests
+        entry: uv run python hooks/timed.py jscpd npx --yes jscpd@4 sficheck scripts tests
         language: system
         pass_filenames: false
         verbose: true

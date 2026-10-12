@@ -10,10 +10,10 @@ from collections.abc import Iterable, Iterator
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from absolutely_proprietary import proc
-from absolutely_proprietary.models import Package
-from absolutely_proprietary.sources import _registry, meta
-from absolutely_proprietary.sources.base import IS_WINDOWS, Source
+from sficheck import proc
+from sficheck.models import Package
+from sficheck.sources import _registry, meta
+from sficheck.sources.base import IS_WINDOWS, Source
 
 UNINSTALL_KEY = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
 # Package-manager ids get id-based lists; display-name regexes would misfire on ids.

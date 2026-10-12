@@ -10,7 +10,7 @@ from collections import Counter
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from absolutely_proprietary.models import Finding, Ring, SourceReport, Status
+from sficheck.models import Finding, Ring, SourceReport, Status
 
 HEADERS = ("Source", "Name", "Version", "Status", "Ring", "Libre alternatives", "Description")
 

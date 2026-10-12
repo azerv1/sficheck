@@ -10,7 +10,7 @@ help:
 	@echo make format - fix imports and reformat
 	@echo make test - run the test suite
 	@echo make audit - check the locked dependencies for known vulnerabilities
-	@echo make install - install the absolutely-proprietary command for this user
+	@echo make install - install the sficheck command for this user
 	@echo make clean - remove caches and build output
 
 sync:

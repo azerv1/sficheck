@@ -20,12 +20,12 @@ from typing import Any
 
 import httpx2
 
-from absolutely_proprietary import licenses
-from absolutely_proprietary.blacklist import ListEntry, parse_list
-from absolutely_proprietary.models import Status
+from sficheck import licenses
+from sficheck.blacklist import ListEntry, parse_list
+from sficheck.models import Status
 
-LISTS = Path(__file__).resolve().parent.parent / "absolutely_proprietary" / "data" / "lists"
-USER_AGENT = "absolutely-proprietary-list-checker/1.0 (+https://github.com/vmavromatis/absolutely-proprietary)"
+LISTS = Path(__file__).resolve().parent.parent / "sficheck" / "data" / "lists"
+USER_AGENT = "sficheck-list-checker/1.0 (+https://github.com/azerv1/sficheck)"
 FLATPAK_TLDS = {
     "com",
     "org",

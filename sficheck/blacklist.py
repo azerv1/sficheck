@@ -11,8 +11,8 @@ from pathlib import Path
 
 import msgspec
 
-from absolutely_proprietary.models import Entry, Ring, Status
-from absolutely_proprietary.net import Fetcher
+from sficheck.models import Entry, Ring, Status
+from sficheck.net import Fetcher
 
 log = logging.getLogger(__name__)
 
@@ -173,7 +173,7 @@ class Blacklist:
 def bundled_names() -> list[str]:
     return sorted(
         p.name.removesuffix(".json")
-        for p in resources.files("absolutely_proprietary.data.lists").iterdir()
+        for p in resources.files("sficheck.data.lists").iterdir()
         if p.name.endswith(".json")
     )
 
@@ -181,7 +181,7 @@ def bundled_names() -> list[str]:
 def load_bundled(*names: str) -> Blacklist:
     """Load bundled curated lists (``data/lists/<name>.json``); later names override earlier."""
     bl = Blacklist()
-    root = resources.files("absolutely_proprietary.data.lists")
+    root = resources.files("sficheck.data.lists")
     for name in names:
         text = root.joinpath(f"{name}.json").read_text(encoding="utf-8")
         bl.load_json(text, origin=f"bundled:{name}")

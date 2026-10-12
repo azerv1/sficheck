@@ -9,8 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import ClassVar
 
-from absolutely_proprietary.models import Finding, Package, Ring, Status
-from absolutely_proprietary.net import Fetcher
+from sficheck.models import Finding, Package, Ring, Status
+from sficheck.net import Fetcher
 
 
 @dataclass(slots=True)

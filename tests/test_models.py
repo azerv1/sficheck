@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from absolutely_proprietary.models import Entry, Finding, Package, Ring, Status
+from sficheck.models import Entry, Finding, Package, Ring, Status
 
 
 def test_lower_rings_sort_first() -> None:

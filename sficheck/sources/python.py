@@ -7,10 +7,10 @@ import re
 from collections.abc import Iterable, Iterator
 from pathlib import Path
 
-from absolutely_proprietary import proc
-from absolutely_proprietary.models import Package
-from absolutely_proprietary.sources import meta
-from absolutely_proprietary.sources.base import IS_WINDOWS, Source
+from sficheck import proc
+from sficheck.models import Package
+from sficheck.sources import meta
+from sficheck.sources.base import IS_WINDOWS, Source
 
 _SITE_SCRIPT = "import json, site; print(json.dumps(site.getsitepackages() + [site.getusersitepackages()]))"
 

@@ -10,8 +10,8 @@ from email.parser import HeaderParser
 from pathlib import Path
 from typing import Any
 
-from absolutely_proprietary import licenses
-from absolutely_proprietary.models import Status
+from sficheck import licenses
+from sficheck.models import Status
 
 _LICENSE_URL_ID = re.compile(
     r"(?:opensource\.org/licenses?|spdx\.org/licenses|choosealicense\.com/licenses)/([A-Za-z0-9.+-]+?)(?:\.html|\.php|/)?$",

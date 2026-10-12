@@ -9,12 +9,12 @@ from functools import cache
 from pathlib import Path
 from typing import Any
 
-from absolutely_proprietary import proc
-from absolutely_proprietary.blacklist import Blacklist, load_bundled
-from absolutely_proprietary.models import Finding, Package, Ring, Status
-from absolutely_proprietary.sources import _registry
-from absolutely_proprietary.sources.base import IS_WINDOWS, Source
-from absolutely_proprietary.sources.kernel import PROC_MODULES, SYS_MODULE, _read, _windows_drivers
+from sficheck import proc
+from sficheck.blacklist import Blacklist, load_bundled
+from sficheck.models import Finding, Package, Ring, Status
+from sficheck.sources import _registry
+from sficheck.sources.base import IS_WINDOWS, Source
+from sficheck.sources.kernel import PROC_MODULES, SYS_MODULE, _read, _windows_drivers
 
 FIRMWARE_DIR = Path("/lib/firmware")
 BLOB_SUFFIXES = ("", ".xz", ".zst")  # distros often compress linux-firmware

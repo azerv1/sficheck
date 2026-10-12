@@ -3,7 +3,7 @@ requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "absolutely-proprietary"
+name = "sficheck"
 dynamic = ["version"]
 description = "Find proprietary software installed through your system and language package managers."
 readme = "README.md"
@@ -56,20 +56,20 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/vmavromatis/absolutely-proprietary"
+Homepage = "https://github.com/azerv1/sficheck"
 
 [project.scripts]
-absolutely-proprietary = "absolutely_proprietary.cli:main"
+sficheck = "sficheck.cli:main"
 
 [tool.setuptools.dynamic]
-version = { attr = "absolutely_proprietary.__version__" }
+version = { attr = "sficheck.__version__" }
 
 [tool.setuptools.packages.find]
-include = ["absolutely_proprietary*"]
+include = ["sficheck*"]
 
 [tool.setuptools.package-data]
-"absolutely_proprietary.data" = ["*.json"]
-"absolutely_proprietary.data.lists" = ["*.json"]
+"sficheck.data" = ["*.json"]
+"sficheck.data.lists" = ["*.json"]
 
 [tool.ruff]
 line-length = 120
@@ -83,7 +83,7 @@ ignore = ["E501", "RUF001"]
 python_version = "3.11"
 strict = true
 warn_unreachable = true
-files = ["absolutely_proprietary", "tests", "scripts"]
+files = ["sficheck", "tests", "scripts"]
 
 [[tool.mypy.overrides]]
 # Runtime dependencies that ship without type information.
@@ -95,7 +95,7 @@ testpaths = ["tests"]
 addopts = "-n auto --cov"  # xdist workers + coverage on every run
 
 [tool.coverage.run]
-source = ["absolutely_proprietary"]
+source = ["sficheck"]
 parallel = true  # one data file per xdist worker; pytest-cov combines them
 
 [tool.coverage.report]
@@ -103,16 +103,16 @@ show_missing = true
 skip_covered = true
 
 [tool.complexipy]
-paths = ["absolutely_proprietary"]  # scripts/ holds one-off maintenance scripts, not core code
+paths = ["sficheck"]  # scripts/ holds one-off maintenance scripts, not core code
 max-complexity-allowed = 20  # cli.main sits at 20
 failed = true  # list only the functions over the limit
 
 [tool.deptry]
 extend_exclude = ["tests", "hooks"]
-known_first_party = ["absolutely_proprietary"]
+known_first_party = ["sficheck"]
 
 [tool.vulture]
-paths = ["absolutely_proprietary", "scripts", "tests"]
+paths = ["sficheck", "scripts", "tests"]
 min_confidence = 100
 
 [tool.tox]

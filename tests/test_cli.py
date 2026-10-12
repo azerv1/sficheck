@@ -8,9 +8,9 @@ from pathlib import Path
 
 import pytest
 
-from absolutely_proprietary import cli, render
-from absolutely_proprietary.models import Finding, Package, Ring, SourceReport, Status
-from absolutely_proprietary.sources.base import Source
+from sficheck import cli, render
+from sficheck.models import Finding, Package, Ring, SourceReport, Status
+from sficheck.sources.base import Source
 
 
 class FakeSource(Source):

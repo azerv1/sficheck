@@ -6,7 +6,7 @@ from collections.abc import Callable
 from typing import Any
 from urllib.parse import quote
 
-from absolutely_proprietary.net import Fetcher
+from sficheck.net import Fetcher
 
 DEPS_DEV = "https://api.deps.dev/v3/systems/{system}/packages/{name}"
 DEPS_DEV_SYSTEMS = {

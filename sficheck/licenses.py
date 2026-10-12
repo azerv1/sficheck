@@ -11,7 +11,7 @@ from typing import Any
 
 from license_expression import Licensing
 
-from absolutely_proprietary.models import Status
+from sficheck.models import Status
 
 LICENSE_FILE_NAMES = ("LICENSE", "LICENSE.md", "LICENSE.txt", "LICENCE", "LICENCE.md", "COPYING", "COPYING.md")
 
@@ -29,7 +29,7 @@ _FREE_CATEGORIES = frozenset({"Permissive", "Copyleft", "Copyleft Limited", "Pub
 
 @cache
 def _data() -> dict[str, Any]:
-    text = resources.files("absolutely_proprietary.data").joinpath("licenses.json").read_text(encoding="utf-8")
+    text = resources.files("sficheck.data").joinpath("licenses.json").read_text(encoding="utf-8")
     data: dict[str, Any] = json.loads(text)
     return data
 

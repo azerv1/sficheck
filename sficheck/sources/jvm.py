@@ -5,10 +5,10 @@ from __future__ import annotations
 from collections.abc import Iterable
 from pathlib import Path
 
-from absolutely_proprietary import proc
-from absolutely_proprietary.models import Finding, Package, Status
-from absolutely_proprietary.sources import meta
-from absolutely_proprietary.sources.base import Source, env_path
+from sficheck import proc
+from sficheck.models import Finding, Package, Status
+from sficheck.sources import meta
+from sficheck.sources.base import Source, env_path
 
 
 class Maven(Source):

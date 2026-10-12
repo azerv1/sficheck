@@ -12,9 +12,9 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
-from absolutely_proprietary import blacklist, proc
-from absolutely_proprietary.models import Finding, Package, Status
-from absolutely_proprietary.sources.base import Context, Source
+from sficheck import blacklist, proc
+from sficheck.models import Finding, Package, Status
+from sficheck.sources.base import Context, Source
 
 log = logging.getLogger(__name__)
 

@@ -6,10 +6,10 @@ import sys
 from collections.abc import Iterable
 from pathlib import Path
 
-from absolutely_proprietary.models import Package, Ring
-from absolutely_proprietary.sources import _registry
-from absolutely_proprietary.sources.base import IS_WINDOWS, Source
-from absolutely_proprietary.sources.kernel import PROC_MODULES, SERVICES_KEY, _read
+from sficheck.models import Package, Ring
+from sficheck.sources import _registry
+from sficheck.sources.base import IS_WINDOWS, Source
+from sficheck.sources.kernel import PROC_MODULES, SERVICES_KEY, _read
 
 CPUINFO = Path("/proc/cpuinfo")
 DMI = Path("/sys/class/dmi/id")

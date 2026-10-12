@@ -1,6 +1,6 @@
 # Maintainer : vmavromatis <bill.mavromatis@protonmail.com>
-# Contributors : https://github.com/vmavromatis/absolutely-proprietary/graphs/contributors
-_pkgname=absolutely-proprietary
+# Contributors : https://github.com/azerv1/sficheck/graphs/contributors
+_pkgname=sficheck
 pkgname=${_pkgname}-git
 pkgver=r0
 pkgrel=1

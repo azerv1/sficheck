@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from absolutely_proprietary.licenses import classify, classify_many, sniff_dir, sniff_text
-from absolutely_proprietary.models import Status
+from sficheck.licenses import classify, classify_many, sniff_dir, sniff_text
+from sficheck.models import Status
 
 
 @pytest.mark.parametrize(

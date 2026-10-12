@@ -7,10 +7,10 @@ import re
 from collections.abc import Iterable
 from pathlib import Path
 
-from absolutely_proprietary import licenses, proc
-from absolutely_proprietary.models import Package
-from absolutely_proprietary.sources import meta
-from absolutely_proprietary.sources.base import IS_WINDOWS, Source, env_path
+from sficheck import licenses, proc
+from sficheck.models import Package
+from sficheck.sources import meta
+from sficheck.sources.base import IS_WINDOWS, Source, env_path
 
 
 def _join(lics: object) -> str | None:

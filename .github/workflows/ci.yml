@@ -29,11 +29,11 @@ jobs:
       - run: uvx --with tox-uv tox -e ${{ matrix.python }}
       - name: Smoke test against the real machine
         run: >-
-          uv run --python ${{ matrix.python }} absolutely-proprietary --list-sources
-          && uv run --python ${{ matrix.python }} absolutely-proprietary -q --format json --skip winget > /dev/null
+          uv run --python ${{ matrix.python }} sficheck --list-sources
+          && uv run --python ${{ matrix.python }} sficheck -q --format json --skip winget > /dev/null
         shell: bash
       - name: Smoke test the kernel, hypervisor, firmware and hardware layers
         run: >-
-          uv run --python ${{ matrix.python }} absolutely-proprietary -q --format json --skip winget
+          uv run --python ${{ matrix.python }} sficheck -q --format json --skip winget
           --kernel --hypervisors --firmware --hardware > /dev/null
         shell: bash

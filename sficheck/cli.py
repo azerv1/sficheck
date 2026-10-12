@@ -13,14 +13,14 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
-from absolutely_proprietary import __version__, render
-from absolutely_proprietary.blacklist import Blacklist, load_user
-from absolutely_proprietary.classify import Classifier
-from absolutely_proprietary.models import Finding, Ring, SourceReport, Status
-from absolutely_proprietary.net import Fetcher
-from absolutely_proprietary.sources import ALL_SOURCES, BY_NAME, Context, Source
+from sficheck import __version__, render
+from sficheck.blacklist import Blacklist, load_user
+from sficheck.classify import Classifier
+from sficheck.models import Finding, Ring, SourceReport, Status
+from sficheck.net import Fetcher
+from sficheck.sources import ALL_SOURCES, BY_NAME, Context, Source
 
-log = logging.getLogger("absolutely_proprietary")
+log = logging.getLogger("sficheck")
 
 # Opt-in flags for what runs below userspace; each turns on the source of the same name.
 LAYER_FLAGS = ("kernel", "hypervisors", "firmware", "hardware")
@@ -40,7 +40,7 @@ def config_path() -> Path:
         base = Path(os.environ.get("APPDATA") or Path.home() / "AppData" / "Roaming")
     else:
         base = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
-    return base / "absolutely-proprietary" / "config.json"
+    return base / "sficheck" / "config.json"
 
 
 def _csv(value: str) -> list[str]:
@@ -49,7 +49,7 @@ def _csv(value: str) -> list[str]:
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        prog="absolutely-proprietary",
+        prog="sficheck",
         description="Find proprietary software installed through your system and language package managers.",
         epilog=f"Defaults for any option can be set in {config_path()} (JSON, keys = option names with underscores).",
     )

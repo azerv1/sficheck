@@ -6,11 +6,11 @@ from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
 
-from absolutely_proprietary import licenses, registries
-from absolutely_proprietary.blacklist import Blacklist, load_bundled
-from absolutely_proprietary.models import Finding, Package, Status
-from absolutely_proprietary.net import Fetcher
-from absolutely_proprietary.sources.base import Source
+from sficheck import licenses, registries
+from sficheck.blacklist import Blacklist, load_bundled
+from sficheck.models import Finding, Package, Status
+from sficheck.net import Fetcher
+from sficheck.sources.base import Source
 
 
 def _from_license(package: Package, license_expr: str | None, origin: str) -> Finding | None:

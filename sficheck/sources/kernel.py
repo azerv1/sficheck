@@ -8,9 +8,9 @@ from collections.abc import Iterable, Iterator
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from absolutely_proprietary.models import Finding, Package, Ring, Status
-from absolutely_proprietary.sources import _registry
-from absolutely_proprietary.sources.base import IS_WINDOWS, Source
+from sficheck.models import Finding, Package, Ring, Status
+from sficheck.sources import _registry
+from sficheck.sources.base import IS_WINDOWS, Source
 
 PROC_MODULES = Path("/proc/modules")
 SYS_MODULE = Path("/sys/module")

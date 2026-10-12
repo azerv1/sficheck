@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from absolutely_proprietary.blacklist import (
+from sficheck.blacklist import (
     Blacklist,
     bundled_names,
     load_bundled,
@@ -13,8 +13,8 @@ from absolutely_proprietary.blacklist import (
     parse_parabola,
     parse_parabola_line,
 )
-from absolutely_proprietary.models import Entry, Ring, Status
-from absolutely_proprietary.net import Fetcher
+from sficheck.models import Entry, Ring, Status
+from sficheck.net import Fetcher
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
