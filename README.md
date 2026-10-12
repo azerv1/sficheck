@@ -1,19 +1,23 @@
-# Absolutely Proprietary
+# sficheck
 
-Proprietary software detector. It audits everything installed through your system package manager and your language package managers, then prints your Stallman Freedom Index (free / classified).
+Check your Stallman Freedom Index (SFI).
+
+sficheck is a proprietary software detector. It audits everything installed through your system package manager and your language package managers, then prints your Stallman Freedom Index (free / classified).
 
 It runs on GNU/Linux (Arch, Debian, Ubuntu, NixOS and anything with flatpak/snap/brew), Windows and macOS. Python 3.11+. Dependencies: [msgspec](https://jcristharif.com/msgspec/) (list files), [license-expression](https://github.com/aboutcode-org/license-expression) (licenses), [httpx2](https://pypi.org/project/httpx2/) (online lookups), and on Linux [pyudev](https://pyudev.readthedocs.io/) (devices, needs libudev).
 
 ## Install
 
 ```sh
-pipx install git+https://github.com/azerv1/sficheck   # or: uv tool install ...
+pipx install sficheck   # or: uv tool install sficheck
 sficheck
 ```
 
 You can also run it from a clone without installing: `python3 -m sficheck` (`py -m sficheck` on Windows).
 
-Arch users can use the [AUR package](https://aur.archlinux.org/packages/sficheck/) or the `PKGBUILD` in this repo.
+Arch users can use the [AUR package](https://aur.archlinux.org/packages/sficheck-git/) or the `PKGBUILD` in this repo.
+
+sficheck started as a fork of absolutely-proprietary. See [Origins](#origins) below.
 
 ## Sources
 
@@ -176,3 +180,19 @@ make clean     # caches and build output
 uv run tox -p  # the tests on every supported Python
 uv run python scripts/check_lists.py --online   # after editing the lists
 ```
+
+## Origins
+
+sficheck is a fork of [absolutely-proprietary](https://github.com/vmavromatis/absolutely-proprietary) by Vasilis Mavromatis and contributors. The original was a single script for Arch-based distros: it checked pacman packages against Parabola's blacklists and printed your Stallman Freedom Index. It was renamed and heavily extended in 2026, adding:
+
+- system package managers beyond pacman (dpkg, nix, flatpak, snap, brew, winget, scoop, choco, the Windows registry) and 28 language package managers
+- the opt-in kernel, hypervisor, firmware and hardware scans (rings 0 to -3)
+- Windows and macOS support
+- the classification chain: user blacklists, ecosystem authorities, curated lists, SPDX parsing and online license lookups
+- JSON output, a config file, caching, and a test suite with Hypothesis property tests
+
+The full history, including every upstream commit, is kept in this repository. Thanks to everyone who contributed to absolutely-proprietary.
+
+## License
+
+GPL-3.0-or-later, the same as upstream. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

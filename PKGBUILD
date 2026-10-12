@@ -1,12 +1,12 @@
-# Maintainer : vmavromatis <bill.mavromatis@protonmail.com>
-# Contributors : https://github.com/azerv1/sficheck/graphs/contributors
+# Maintainer: azerv1 <azerv1@users.noreply.github.com>
+# Contributor: vmavromatis <bill.mavromatis@protonmail.com>
 _pkgname=sficheck
 pkgname=${_pkgname}-git
 pkgver=r0
 pkgrel=1
 pkgdesc="Find proprietary software installed through your system and language package managers"
 arch=('any')
-url="https://github.com/vmavromatis/${_pkgname}"
+url="https://github.com/azerv1/${_pkgname}"
 license=('GPL-3.0-or-later')
 depends=('python' 'python-httpx2' 'python-license-expression' 'python-msgspec' 'python-pyudev')
 makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')

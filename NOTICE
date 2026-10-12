@@ -1,0 +1,15 @@
+sficheck
+Copyright (C) 2026 azerv1
+
+sficheck is a modified version of absolutely-proprietary,
+copyright (C) Vasilis Mavromatis and contributors,
+https://github.com/vmavromatis/absolutely-proprietary
+
+Modified by azerv1 since 2026; renamed from absolutely-proprietary to
+sficheck and substantially extended on 2026-10-12. See the git history
+for the full list of changes and their authors.
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version. See the LICENSE file for the full text.
