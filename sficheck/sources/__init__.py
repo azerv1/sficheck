@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from sficheck.sources.android import Android
 from sficheck.sources.base import Context, Source
 from sficheck.sources.browser import Browser
 from sficheck.sources.compiled import Cargo, Conan, DotnetTools, Go, Mint, NugetCache, Vcpkg
@@ -34,6 +35,7 @@ ALL_SOURCES: tuple[type[Source], ...] = (
     Firmware,
     Hardware,
     Browser,
+    Android,
     # languages
     Pip,
     UvTools,

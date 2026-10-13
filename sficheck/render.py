@@ -88,10 +88,16 @@ def _fmt_index(value: float | None) -> str:
     return "n/a" if value is None else f"{value:.2f}"
 
 
+# Sources of this kind scan another device (a phone). Each keeps its own index, outside the machine's.
+DEVICE = "device"
+
+
 def _overall(reports: Sequence[SourceReport]) -> SourceReport:
+    """This machine's sources combined; other devices are left out."""
     combined = SourceReport("all", "")
     for report in reports:
-        combined.findings.extend(report.findings)
+        if report.kind != DEVICE:
+            combined.findings.extend(report.findings)
     return combined
 
 
@@ -124,20 +130,35 @@ def _with_packages(reports: Sequence[SourceReport]) -> list[SourceReport]:
     return [r for r in reports if r.total or r.error]
 
 
-def summary_text(reports: Sequence[SourceReport], palette: Palette, unknown_as_nonfree: bool) -> str:
+def _machine_summary(reports: Sequence[SourceReport], palette: Palette, unknown_as_nonfree: bool) -> list[str]:
     overall = _overall(reports)
     idx = overall.freedom_index(unknown_as_nonfree)
+    machine = [r for r in _with_packages(reports) if r.kind != DEVICE]
     bar = "=" * 45
     lines = [
         palette.index(f"{bar}\n{overall.proprietary} ABSOLUTELY PROPRIETARY PACKAGES INSTALLED\n{bar}", idx),
         "",
         f"Your system is infected with {palette.index(str(overall.proprietary), idx)} proprietary packages "
-        f"out of {overall.total} found ({overall.unknown} unknown) across {len(_with_packages(reports))} sources.",
+        f"out of {overall.total} found ({overall.unknown} unknown) across {len(machine)} sources.",
         f"Your Stallman Freedom Index is {palette.index(_fmt_index(idx), idx)}",
     ]
     if rings := _ring_counts(overall.findings):
         by_ring = ", ".join(f"{palette.ring(ring_label(r), r)}: {n}" for r, n in rings.items())
         lines.append(f"By protection ring: {by_ring}")
+    return lines
+
+
+def summary_text(reports: Sequence[SourceReport], palette: Palette, unknown_as_nonfree: bool) -> str:
+    devices = [r for r in _with_packages(reports) if r.kind == DEVICE]
+    # A phone-only scan has nothing to say about this machine.
+    has_machine = any(r.kind != DEVICE for r in reports)
+    lines = _machine_summary(reports, palette, unknown_as_nonfree) if has_machine or not devices else []
+    for r in devices:
+        idx = r.freedom_index(unknown_as_nonfree)
+        lines.append(
+            f"Your {r.source.capitalize()} device has {r.proprietary} proprietary apps out of {r.total} "
+            f"({r.unknown} unknown). Its Stallman Freedom Index is {palette.index(_fmt_index(idx), idx)}"
+        )
     lines.append("")
     rows = [[["Source"], ["Packages"], ["Proprietary"], ["Unknown"], ["Freedom index"]]]
     for r in _with_packages(reports):

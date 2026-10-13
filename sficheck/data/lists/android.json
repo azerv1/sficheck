@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../docs/lists.schema.json",
+  "_comment": "Android apps by app id, for the 'android' source. Apps on F-Droid are classified from F-Droid's index first; these cover the rest.",
+  "entries": [
+    {"name": "com.google.android.gms", "status": "nonfree", "alternatives": ["microG (not on F-Droid's main repository)"], "description": "Google Play Services. microG reuses this app id; if yours is microG, mark it free with a --blacklist entry", "reference": "https://en.wikipedia.org/wiki/Google_Play_Services"},
+    {"name": "com.android.vending", "status": "nonfree", "alternatives": ["org.fdroid.fdroid", "com.aurora.store"], "description": "Google Play Store, part of Google Mobile Services", "reference": "https://en.wikipedia.org/wiki/Google_Mobile_Services"},
+    {"name": "com.google.android.youtube", "status": "nonfree", "alternatives": ["org.schabi.newpipe"], "description": "YouTube, part of Google Mobile Services", "reference": "https://en.wikipedia.org/wiki/Google_Mobile_Services"},
+    {"name": "com.google.android.apps.maps", "status": "nonfree", "alternatives": ["app.organicmaps", "net.osmand.plus"], "description": "Google Maps, part of Google Mobile Services", "reference": "https://en.wikipedia.org/wiki/Google_Mobile_Services"},
+    {"name": "com.google.android.gm", "status": "nonfree", "alternatives": ["net.thunderbird.android", "com.fsck.k9"], "description": "Gmail, part of Google Mobile Services", "reference": "https://en.wikipedia.org/wiki/Google_Mobile_Services"},
+    {"name": "com.android.chrome", "status": "nonfree", "alternatives": ["org.mozilla.fennec_fdroid"], "description": "Google Chrome, part of Google Mobile Services", "reference": "https://en.wikipedia.org/wiki/Google_Mobile_Services"}
+  ]
+}

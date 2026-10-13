@@ -1,0 +1,5 @@
+package:/data/app/~~kX1fQ==/org.fdroid.fdroid-pN2a==/base.apk=org.fdroid.fdroid versionCode:1020050  installer=null
+package:/data/app/~~aB3cD==/org.schabi.newpipe-eF4g==/base.apk=org.schabi.newpipe versionCode:1003  installer=org.fdroid.fdroid
+package:/data/app/~~hI5jK==/org.mozilla.fennec_fdroid-lM6n==/base.apk=org.mozilla.fennec_fdroid versionCode:1310020  installer=com.android.vending
+package:/product/priv-app/PrebuiltGmsCore/PrebuiltGmsCore.apk=com.google.android.gms versionCode:243731037  installer=null
+package:/data/app/~~oP7qR==/com.whatsapp-sT8u==/base.apk=com.whatsapp versionCode:241718003  installer=com.android.vending

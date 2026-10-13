@@ -38,6 +38,22 @@ class Antifeature(StrEnum):
     DRM = "drm"
 
 
+# F-Droid's index names for the anti-features above.
+FDROID_ANTIFEATURES = {
+    "Ads": Antifeature.ADS,
+    "Tracking": Antifeature.TRACKING,
+    "NonFreeNet": Antifeature.NONFREE_NET,
+    "NonFreeAdd": Antifeature.NONFREE_ADD,
+    "NonFreeDep": Antifeature.NONFREE_DEP,
+    "NonFreeAssets": Antifeature.NONFREE_ASSETS,
+    "UpstreamNonFree": Antifeature.UPSTREAM_NONFREE,
+    "TetheredNet": Antifeature.TETHERED_NET,
+    "KnownVuln": Antifeature.KNOWN_VULN,
+    "DisabledAlgorithm": Antifeature.DISABLED_ALGORITHM,
+    "NoSourceSince": Antifeature.NO_SOURCE_SINCE,
+}
+
+
 class Ring(IntEnum):
     """The CPU protection ring a program runs in; lower rings see and control more.
 

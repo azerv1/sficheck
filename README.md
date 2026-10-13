@@ -56,6 +56,14 @@ sficheck started as a fork of absolutely-proprietary. See [Origins](#origins) be
 - Firefox's built-in add-ons, themes, dictionaries and language packs are skipped.
 - With `--online-licenses`, Firefox extensions are looked up on addons.mozilla.org, which publishes the license each developer declares. A custom license stays unknown. Chrome Web Store doesn't publish licenses, so Chromium extensions rely on the curated `browser.json` and are otherwise unknown.
 
+**Android phone** (`--android`, only when asked for; scored separately)
+- `android` — the apps on an Android phone connected with [adb](https://developer.android.com/tools/adb) (from Google's platform-tools). The phone gets its own Freedom Index, so it never changes your machine's.
+- Setup, once: on the phone, turn on Developer options and then USB debugging, connect the cable, and allow the computer when the phone asks. On Android 11 and later, wireless debugging with `adb pair` works too. No root is needed and nothing is installed on the phone.
+- sficheck runs `adb devices` and then `adb shell pm list packages -f -i --show-versioncode`, which lists each app's id, version code and the app that installed it. With several devices connected, set `ANDROID_SERIAL` to pick one, as with any adb command.
+- Apps on [F-Droid](https://f-droid.org/), which only ships free software, are free and carry F-Droid's anti-features. Apps tagged `nonfree-net`, `nonfree-dep`, `nonfree-add` or `tethered-net` are uses-nonfree, and `nonfree-assets` makes them semifree. The reference is the app's F-Droid page. An app installed from Google Play keeps the F-Droid verdict for its app id, with a note that Play's build can differ.
+- F-Droid's index is about 65 MB. It's downloaded once a day at most (`--cache-ttl`), and only a 200 KB summary is read on later runs.
+- Other apps are checked against the curated `android.json` (Google Play Services, the Play Store and other Google apps), and are unknown otherwise. microG reuses Google Play Services' app id, so microG users should mark `com.google.android.gms` free with a `--blacklist` entry.
+
 **Languages** (`--software`; global installs, not project dependencies)
 - Python: `pip` (default interpreter), `uv` tools, `pipx`
 - JavaScript/TypeScript: `npm`, `pnpm`, `yarn`, `bun`, `deno`
@@ -104,6 +112,7 @@ Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entr
 --firmware                                                    scan the BIOS/UEFI, Intel ME / AMD PSP and microcode
 --hardware                                                    scan devices that need a nonfree driver or firmware blobs
 --browser                                                     scan browser extensions and DRM modules (only when asked)
+--android                                                     scan a phone's apps over adb (only when asked; own index)
 --kind system|lang / --sources A,B / --skip A,B              narrow or name sources
 --status S (repeatable) / -f, --full / --all / --show-unknown  what to show (default: nonfree)
 --sort source|name|status|ring|alternatives  (-s, -a shortcuts)  -r   ordering

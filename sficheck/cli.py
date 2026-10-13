@@ -26,7 +26,7 @@ log = logging.getLogger("sficheck")
 # no --software, --kind or --sources, every layer is scanned.
 LAYER_FLAGS = ("kernel", "hypervisors", "firmware", "hardware")
 # Scanned only when named: never part of the default "everything" scan.
-OPT_IN_FLAGS = ("browser",)
+OPT_IN_FLAGS = ("browser", "android")
 PROPRIETARY = [Status.NONFREE.value, Status.SEMIFREE.value, Status.USES_NONFREE.value]
 SORT_KEYS = {
     "source": lambda f: (f.package.source, f.package.name.lower()),
@@ -78,6 +78,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--browser",
         action="store_true",
         help="scan browser extensions and DRM modules in local profiles (only when asked for)",
+    )
+    g.add_argument(
+        "--android",
+        action="store_true",
+        help="scan the apps on an Android phone connected over adb (only when asked for; scored separately)",
     )
     g.add_argument(
         "--kind",

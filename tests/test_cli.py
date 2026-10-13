@@ -70,6 +70,15 @@ class FakeHardware(FakeKernel):
         yield self.pkg("Wi-Fi 6 AX201", "", "Proprietary")
 
 
+class FakeAndroid(FakeSource):
+    name = "android"
+    kind = "device"
+    default_enabled = False
+
+    def packages(self) -> Iterable[Package]:
+        yield self.pkg("com.google.android.gms", "1", "Proprietary")
+
+
 class FakeBrowser(FakeSource):
     name = "browser"
     default_enabled = False
@@ -83,7 +92,7 @@ def isolated(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setattr(
         cli,
         "ALL_SOURCES",
-        (FakeSource, BrokenSource, FakeKernel, FakeHypervisors, FakeFirmware, FakeHardware, FakeBrowser),
+        (FakeSource, BrokenSource, FakeKernel, FakeHypervisors, FakeFirmware, FakeHardware, FakeBrowser, FakeAndroid),
     )
     monkeypatch.setattr(
         cli,
@@ -96,6 +105,7 @@ def isolated(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
             "firmware": FakeFirmware,
             "hardware": FakeHardware,
             "browser": FakeBrowser,
+            "android": FakeAndroid,
         },
     )
     monkeypatch.setattr(cli, "config_path", lambda: tmp_path / "config.json")
@@ -204,6 +214,22 @@ def test_in_use_keeps_only_what_runs(capsys: pytest.CaptureFixture[str], monkeyp
     summary = doc["summary"]
     assert isinstance(summary, dict) and summary["total"] == 2 and summary["freedom_index"] == 50
     assert len(names(run_json(capsys, "--sources", "fake", "--all"))) == 4  # without the flag nothing changes
+
+
+def test_android_gets_its_own_index(capsys: pytest.CaptureFixture[str]) -> None:
+    doc = run_json(capsys, "--sources", "fake", "--android")
+    assert "com.google.android.gms" in names(doc)
+    summary = doc["summary"]
+    assert isinstance(summary, dict)
+    assert summary["total"] == 4 and summary["freedom_index"] == pytest.approx(100 / 3)  # the phone isn't counted
+    phone = next(s for s in summary["sources"] if s["source"] == "android")
+    assert phone["kind"] == "device" and phone["freedom_index"] == 0
+    assert cli.main(["-q", "--sources", "fake", "--android"]) == 0
+    text = capsys.readouterr().out
+    assert "out of 4 found (1 unknown) across 1 sources" in text
+    assert "Your Android device has 1 proprietary apps out of 1 (0 unknown)" in text
+    assert cli.main(["-q", "--android"]) == 0
+    assert "ABSOLUTELY PROPRIETARY" not in capsys.readouterr().out  # a phone-only scan says nothing about this machine
 
 
 def test_kind_narrows_the_software_layer(capsys: pytest.CaptureFixture[str]) -> None:
