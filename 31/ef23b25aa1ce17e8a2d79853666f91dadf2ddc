@@ -1,0 +1,46 @@
+sficheck/sources/__init__.py
+  s_b79e2f7da11bed::t_1b9bcd3cf87b51 5,38
+tests/fixtures/android/pm_list_packages.txt
+  s_b79e2f7da11bed::t_48928fb84d81ed 1-5
+sficheck/cli.py
+  s_b79e2f7da11bed::t_1b9bcd3cf87b51 29,82-85
+  s_b79e2f7da11bed::t_aad6aaa8ac746e 86
+tests/test_cli.py
+  s_b79e2f7da11bed::t_ff006a1dde2c78 73-81,95,108,219-232
+  s_b79e2f7da11bed::t_248edb09bc4855 233-234
+README.md
+  s_b79e2f7da11bed::t_5e3154043c18eb 59-66
+  s_b79e2f7da11bed::t_b76287618ae873 115
+sficheck/sources/android.py
+  s_b79e2f7da11bed::t_ff006a1dde2c78 23-25
+  s_b79e2f7da11bed::t_fe4bbbb8a51f99 76,91,110-111
+  s_b79e2f7da11bed::t_f37fc860e95127 74-75
+  s_b79e2f7da11bed::t_e4cc36159279fe 1-14,16-22,26-73,77-90,92-109,112-127
+  s_b79e2f7da11bed::t_7b99788f151191 15
+tests/test_android.py
+  s_b79e2f7da11bed::t_25fc5026d526db 1-93
+sficheck/models.py
+  s_b79e2f7da11bed::t_a612dd88002c61 41-56
+sficheck/render.py
+  s_b79e2f7da11bed::t_f3063c0671f9f9 133,136,142,148-153,156-161
+  s_b79e2f7da11bed::t_0627471efb98d5 154-155
+  s_b79e2f7da11bed::t_af12beb192b23e 91-94,96,99-100
+sficheck/data/lists/android.json
+  s_b79e2f7da11bed::t_72bb1a69a5eaa6 1-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "31ef23b25aa1ce17e8a2d79853666f91dadf2ddc",
+  "prompts": {},
+  "sessions": {
+    "s_b79e2f7da11bed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8118b6d4-579a-42af-8de0-6b45bd45a8f7",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "azerv1 <asterioszer@gmail.com>"
+    }
+  }
+}
