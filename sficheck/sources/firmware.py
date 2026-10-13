@@ -62,6 +62,7 @@ class Firmware(Source):
     lists = ("firmware",)
     default_ring = Ring.FIRMWARE
     default_enabled = False
+    always_in_use = True
 
     def available(self) -> bool:
         return IS_WINDOWS or CPUINFO.is_file()

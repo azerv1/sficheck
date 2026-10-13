@@ -13,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
-from sficheck import __version__, render
+from sficheck import __version__, render, running
 from sficheck.blacklist import Blacklist, load_user
 from sficheck.classify import Classifier
 from sficheck.models import Finding, Ring, SourceReport, Status
@@ -105,6 +105,12 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--show-unknown", action="store_true", help="also show packages that couldn't be classified")
     g.add_argument(
         "--unknown-as-nonfree", action="store_true", help="count unknown packages as proprietary in the index"
+    )
+    g.add_argument(
+        "--in-use",
+        action="store_true",
+        help="only report what is in use now: running programs, and the drivers, firmware and devices "
+        "loaded or present (stopped services and autostart entries aren't counted); the index covers only these",
     )
     g.add_argument(
         "--max-ring",
@@ -200,6 +206,14 @@ def wanted_statuses(args: argparse.Namespace) -> set[str]:
     if args.show_unknown:
         statuses.add(Status.UNKNOWN.value)
     return statuses
+
+
+def keep_in_use(sources: list[Source], reports: list[SourceReport]) -> None:
+    """Drop findings for packages that aren't in use; sources that can't tell lose all of theirs."""
+    now = running.running_paths()
+    for src, report in zip(sources, reports, strict=True):
+        owners = src.in_use([f.package for f in report.findings], now) or set()
+        report.findings = [f for f in report.findings if f.package.name in owners]
 
 
 def shown_findings(args: argparse.Namespace, reports: list[SourceReport]) -> list[Finding]:
@@ -324,6 +338,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         jobs=args.jobs,
     )
     reports = scan(sources, classifier, args.jobs)
+    if args.in_use:
+        keep_in_use(sources, reports)
 
     shown = shown_findings(args, reports)
 

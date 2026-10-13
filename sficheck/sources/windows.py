@@ -6,22 +6,39 @@ import os
 import re
 import sys
 import tempfile
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable, Iterator, Sequence
 from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from sficheck import proc
 from sficheck.models import Package
+from sficheck.running import under
 from sficheck.sources import _registry, meta
 from sficheck.sources.base import IS_WINDOWS, Source
 
 UNINSTALL_KEY = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
 # Package-manager ids get id-based lists; display-name regexes would misfire on ids.
 PACKAGE_LISTS = ("common", "windows-packages")
+_SHARED_FOLDERS = {"", "program files", "program files (x86)", "programs", "appdata", "local"}
 
 
-def _registry_programs() -> Iterator[tuple[str, str]]:
-    """(DisplayName, DisplayVersion) for every visible Uninstall entry."""
+def _install_folder(values: dict[str, object]) -> str:
+    """Where a program lives: InstallLocation, else the folder of its .exe icon; "" when unknown."""
+    folder = str(values.get("InstallLocation", "")).strip().strip('"')
+    # Some installers record a shared parent such as C:\Program Files, which would match everything.
+    if PureWindowsPath(folder).name.lower() in _SHARED_FOLDERS:
+        folder = ""
+    if folder:
+        return folder
+    icon = str(values.get("DisplayIcon", "")).split(",")[0].strip().strip('"')
+    # Icons under C:\Windows (the MSI cache, system tools) say nothing about the program's own folder.
+    if icon.lower().endswith(".exe") and "\\windows\\" not in icon.lower():
+        return str(PureWindowsPath(icon).parent)
+    return ""
+
+
+def _registry_programs() -> Iterator[tuple[str, str, str]]:
+    """(DisplayName, DisplayVersion, install folder) for every visible Uninstall entry."""
     for hive, view in (("HKLM", _registry.WOW64_64), ("HKLM", _registry.WOW64_32), ("HKCU", 0)):
         for subkey in _registry.subkeys(UNINSTALL_KEY, hive, view):
             values = _registry.values(rf"{UNINSTALL_KEY}\{subkey}", hive, view)
@@ -29,7 +46,7 @@ def _registry_programs() -> Iterator[tuple[str, str]]:
             # Hidden components and updates belonging to another product aren't "programs".
             if not name or values.get("SystemComponent") == 1 or values.get("ParentKeyName"):
                 continue
-            yield name, str(values.get("DisplayVersion", ""))
+            yield name, str(values.get("DisplayVersion", "")), _install_folder(values)
 
 
 def _windows_edition() -> tuple[str, str]:
@@ -57,9 +74,16 @@ class WindowsRegistry(Source):
     def packages(self) -> Iterable[Package]:
         edition, build = _windows_edition()
         if edition:
-            yield self.pkg(edition, build)
-        for name, version in dict.fromkeys(_registry_programs()):
-            yield self.pkg(name, version)
+            # Windows' own processes run from here, so --in-use always keeps it.
+            yield self.pkg(edition, build, folder=os.environ.get("SYSTEMROOT", r"C:\Windows"))
+        programs: dict[tuple[str, str], str] = {}
+        for name, version, folder in _registry_programs():
+            programs.setdefault((name, version), folder)
+        for (name, version), folder in programs.items():
+            yield self.pkg(name, version, folder=folder)
+
+    def in_use(self, packages: Sequence[Package], running: set[Path]) -> set[str] | None:
+        return {p.name for p in packages if any(under(r, p.extra.get("folder", "")) for r in running)}
 
 
 _WINGET_LICENSE = re.compile(r"^\s*License:\s*(.+)$", re.MULTILINE)
@@ -141,11 +165,21 @@ class Scoop(Source):
     def available(self) -> bool:
         return (_scoop_root() / "apps").is_dir()
 
-    def packages(self) -> Iterable[Package]:
+    def _roots(self) -> list[Path]:
         roots = [_scoop_root()]
         if global_root := os.environ.get("SCOOP_GLOBAL"):
             roots.append(Path(global_root))
-        for root in roots:
+        return roots
+
+    def in_use(self, packages: Sequence[Package], running: set[Path]) -> set[str] | None:
+        return {
+            p.name
+            for p in packages
+            if any(under(r, str(root / "apps" / p.name)) for root in self._roots() for r in running)
+        }
+
+    def packages(self) -> Iterable[Package]:
+        for root in self._roots():
             for manifest_path in root.glob("apps/*/current/manifest.json"):
                 manifest = meta.read_json(manifest_path)
                 if not isinstance(manifest, dict):

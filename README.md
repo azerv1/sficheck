@@ -108,6 +108,7 @@ Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entr
 --status S (repeatable) / -f, --full / --all / --show-unknown  what to show (default: nonfree)
 --sort source|name|status|ring|alternatives  (-s, -a shortcuts)  -r   ordering
 --max-ring N                                                  only ring N or deeper (-3 … 3)
+--in-use                                                      only what is in use right now (see below)
 --format table|markdown|json|csv  -o FILE                     output
 --blacklist PATH|URL (repeatable)  --ignore PKG  --no-bundled list control
 --online-licenses  --offline  --refresh  --cache-ttl HOURS    network and cache
@@ -115,6 +116,11 @@ Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entr
 ```
 
 `--exit-code` makes the command exit 1 when anything proprietary is found, so it can be used in CI. Progress goes to stderr, so `--format json | jq` works.
+
+`--in-use` keeps only what is in use right now, and the Freedom Index then covers only that. A nonfree program you installed years ago and never open drops out; a nonfree service running all the time stays.
+- Running programs come from the process list ([psutil](https://github.com/giampaolo/psutil)). Each program's path is matched to the package that installed it: `pacman -Qqo`, `dpkg -S` or `rpm -qf` on Linux, `/snap/<name>/` for snaps, `flatpak ps` for flatpaks, Homebrew's `Cellar/<name>/`, and on Windows the install folder the registry records for each program (or scoop's `apps/<name>/`).
+- Kernel drivers, firmware and devices are always in use, since those scans already report only what is loaded or present. A hypervisor counts only when this OS runs on it.
+- Not counted: services that are enabled but stopped, autostart entries, and sources that can't map a running program to a package (the language package managers, winget, Chocolatey, nix and the browser). Windows programs that record no install folder are left out too.
 
 Defaults for any option can live in `~/.config/sficheck/config.json` (`%APPDATA%\sficheck\config.json` on Windows), using the option names with underscores:
 

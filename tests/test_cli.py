@@ -9,7 +9,7 @@ from pathlib import Path
 import msgspec
 import pytest
 
-from sficheck import cli, render
+from sficheck import cli, render, running
 from sficheck.models import Antifeature, Finding, Package, Ring, SourceReport, Status
 from sficheck.sources.base import Source
 
@@ -194,6 +194,16 @@ def test_browser_is_scanned_only_when_asked_for(capsys: pytest.CaptureFixture[st
     assert names(run_json(capsys, "--browser", "--firmware", "--sort", "ring")) == ["intel-me", "widevine"]
     cli.main(["--list-sources"])
     assert "(opt-in)" in next(line for line in capsys.readouterr().out.splitlines() if line.startswith("browser"))
+
+
+def test_in_use_keeps_only_what_runs(capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(running, "running_paths", lambda: {Path("/usr/bin/half")})
+    monkeypatch.setattr(FakeSource, "in_use", lambda self, packages, now: {"half", "good"})
+    doc = run_json(capsys, "--sources", "fake", "--firmware", "--in-use", "--all")
+    assert names(doc) == ["good", "half"]  # intel-me isn't among the packages in use
+    summary = doc["summary"]
+    assert isinstance(summary, dict) and summary["total"] == 2 and summary["freedom_index"] == 50
+    assert len(names(run_json(capsys, "--sources", "fake", "--all"))) == 4  # without the flag nothing changes
 
 
 def test_kind_narrows_the_software_layer(capsys: pytest.CaptureFixture[str]) -> None:

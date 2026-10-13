@@ -115,6 +115,7 @@ class Kernel(Source):
     lists = ("common", "kernel")
     default_ring = Ring.KERNEL
     default_enabled = False
+    always_in_use = True
 
     def available(self) -> bool:
         return IS_WINDOWS or PROC_MODULES.is_file()

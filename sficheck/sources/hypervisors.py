@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import sys
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from pathlib import Path
 
 from sficheck.models import Package, Ring
@@ -30,6 +30,7 @@ VM_VENDORS = (
     ("microsoft-standard", "hyper-v"),  # WSL 2's kernel release; WSL has no DMI
 )
 # The kernel driver (Windows service or Linux module) each hypervisor installs.
+UNDERNEATH = "running underneath this OS"
 ENGINES = {"vmx86": "vmware", "vmmon": "vmware", "VBoxSup": "virtualbox", "vboxdrv": "virtualbox", "kvm": "kvm"}
 
 
@@ -87,10 +88,14 @@ class Hypervisors(Source):
     def available(self) -> bool:
         return IS_WINDOWS or CPUINFO.is_file()
 
+    def in_use(self, packages: Sequence[Package], running: set[Path]) -> set[str] | None:
+        # An installed hypervisor may sit idle; the one this OS runs on never does.
+        return {p.name for p in packages if p.extra.get("role") == UNDERNEATH}
+
     def packages(self) -> Iterable[Package]:
         underneath = _underneath()
         if underneath:
-            yield self.pkg(underneath, role="running underneath this OS")
+            yield self.pkg(underneath, role=UNDERNEATH)
         for hypervisor in _installed():
             if hypervisor != underneath:
                 yield self.pkg(hypervisor, role="installed")

@@ -7,7 +7,7 @@ import json
 import logging
 import re
 import xml.etree.ElementTree as ET
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable, Iterator, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
@@ -40,6 +40,10 @@ class Pacman(Source):
         for line in out.splitlines():
             name, _, version = line.partition(" ")
             yield self.pkg(name, version, repo="aur" if name in foreign else "repo")
+
+    def in_use(self, packages: Sequence[Package], running: set[Path]) -> set[str] | None:
+        # Exits 1 when some paths belong to no package; the owned ones are still printed.
+        return set((proc.run(["pacman", "-Qqo", *map(str, running)], ok_codes=(0, 1)) or "").split())
 
     def verdict(self, package: Package) -> Finding | None:
         entry = self._parabola.lookup(package.name) if self._parabola else None
@@ -74,6 +78,12 @@ class Dpkg(Source):
             if len(parts) == 4 and parts[0].startswith("ii"):
                 yield self.pkg(parts[1], parts[2], section=parts[3])
 
+    def in_use(self, packages: Sequence[Package], running: set[Path]) -> set[str] | None:
+        out = proc.run(["dpkg", "-S", *map(str, running)], ok_codes=(0, 1)) or ""
+        # "pkg1, pkg2:amd64: /usr/bin/x" -> pkg1, pkg2
+        owners = (line.rpartition(": ")[0] for line in out.splitlines() if ": " in line)
+        return {name.strip().split(":")[0] for names in owners for name in names.split(",")}
+
     def verdict(self, package: Package) -> Finding | None:
         area = package.extra.get("section", "").split("/")[0]
         if area in DEB_SECTIONS:
@@ -98,6 +108,11 @@ class Rpm(Source):
             # gpg-pubkey entries are the signing keys rpm imported, not software.
             if len(parts) == 3 and parts[0] != "gpg-pubkey":
                 yield self.pkg(parts[0], parts[1], None if parts[2] == "(none)" else parts[2])
+
+    def in_use(self, packages: Sequence[Package], running: set[Path]) -> set[str] | None:
+        out = proc.run(["rpm", "-qf", "--qf", r"%{NAME}\n", *map(str, running)], ok_codes=(0, 1)) or ""
+        # Unowned paths print "file /x is not owned by any package" on the same stream.
+        return {line for line in out.splitlines() if line and " " not in line}
 
 
 def nix_license_status(meta: dict[str, Any]) -> tuple[Status, str] | None:
@@ -205,6 +220,10 @@ class Flatpak(Source):
             if app_id:
                 yield self.pkg(app_id, version, licenses_by_id.get(app_id), origin=origin)
 
+    def in_use(self, packages: Sequence[Package], running: set[Path]) -> set[str] | None:
+        # Sandboxed apps run from paths the host can't map back, so ask flatpak itself.
+        return set((proc.run(["flatpak", "ps", "--columns=application"]) or "").split())
+
 
 class Snap(Source):
     name = "snap"
@@ -230,6 +249,11 @@ class Snap(Source):
         for (name, version), lic in zip(names, found, strict=True):
             yield self.pkg(name, version, lic)
 
+    def in_use(self, packages: Sequence[Package], running: set[Path]) -> set[str] | None:
+        # Snaps run from /snap/<name>/<revision>/; /snap/bin only holds launchers.
+        parts = (p.as_posix().split("/") for p in running)
+        return {x[2] for x in parts if len(x) > 3 and x[:2] == ["", "snap"] and x[2] != "bin"}
+
 
 class Brew(Source):
     name = "brew"
@@ -250,3 +274,7 @@ class Brew(Source):
             yield self.pkg(formula["name"], installed[-1].get("version", ""), formula.get("license"), type="formula")
         for cask in data.get("casks", []):
             yield self.pkg(cask["token"], cask.get("installed") or cask.get("version", ""), None, type="cask")
+
+    def in_use(self, packages: Sequence[Package], running: set[Path]) -> set[str] | None:
+        # Formulae run from <prefix>/Cellar/<name>/<version>/; casks are apps brew can't map.
+        return {p.parts[p.parts.index("Cellar") + 1] for p in running if "Cellar" in p.parts[:-1]}

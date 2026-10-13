@@ -36,6 +36,7 @@ dependencies = [
     "httpx2>=2.9",
     "license-expression>=30",
     "msgspec>=0.19",
+    "psutil>=7",
     "pyudev>=0.24 ; sys_platform == 'linux'",
 ]
 
@@ -56,6 +57,7 @@ dev = [
     "ruff>=0.6",
     "tox>=4.21",
     "tox-uv>=1",
+    "types-psutil>=7.2.2.20260906",
     "vulture>=2.16",
 ]
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 import sys
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import ClassVar
@@ -44,6 +44,8 @@ class Source:
     default_ring: ClassVar[Ring] = Ring.USER
     # Caches (maven, gradle, nuget) can hold thousands of entries; only scan on request.
     default_enabled: ClassVar[bool] = True
+    # Everything the source reports is loaded or present right now (drivers, firmware, devices).
+    always_in_use: ClassVar[bool] = False
 
     def __init__(self, ctx: Context) -> None:
         self.ctx = ctx
@@ -56,6 +58,13 @@ class Source:
 
     def verdict(self, package: Package) -> Finding | None:
         return None
+
+    def in_use(self, packages: Sequence[Package], running: set[Path]) -> set[str] | None:
+        """Names of these packages that own one of the ``running`` programs (--in-use).
+
+        None means this source can't tell, and --in-use hides its findings.
+        """
+        return {p.name for p in packages} if self.always_in_use else None
 
     def lookup_name(self, package: Package) -> str | None:
         """The name to look up in ``registry``; None skips the online lookup for this package."""
