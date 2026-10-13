@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../docs/lists.schema.json",
   "_comment": "Language-ecosystem packages whose declared license metadata is missing or misleading. Matched by package name across all language sources.",
   "entries": [
     {"name": "@anthropic-ai/claude-code", "status": "nonfree", "alternatives": ["aider", "opencode", "@openai/codex"], "description": "Proprietary CLI (\"SEE LICENSE IN README.md\")", "reference": "https://registry.npmjs.org/@anthropic-ai/claude-code/latest"},

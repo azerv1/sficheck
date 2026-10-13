@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../docs/lists.schema.json",
   "_comment": "Firmware below the OS, by the name the 'firmware' source reports: the BIOS/UEFI vendor string, or intel-me / amd-psp / intel-microcode / amd-microcode. Only used by that source. Unlisted BIOS vendors count as nonfree.",
   "entries": [
     {"name": "intel-me", "status": "nonfree", "ring": -3, "description": "Intel Management Engine: a separate computer in the chipset with its own OS, full memory access and network access, running whenever the machine has power. This scan can't tell whether me_cleaner or the HAP bit disabled it", "reference": "https://en.wikipedia.org/wiki/Intel_Management_Engine"},

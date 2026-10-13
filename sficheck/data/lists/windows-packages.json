@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../docs/lists.schema.json",
   "_comment": "Windows package ids (winget, scoop, Chocolatey) whose declared license is missing or misleading. Regexes match the whole id, case-insensitively.",
   "entries": [
     {

@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../docs/lists.schema.json",
   "_comment": "Debian/Ubuntu package names from third-party repos that report a 'main'-looking Section (web, devel, net...) but are proprietary. Packages from non-free/contrib/restricted/multiverse are detected from their Section and don't need to be listed.",
   "entries": [
     {"name": "code", "status": "nonfree", "alternatives": ["vscodium", "code-oss"], "description": "Microsoft's VS Code build is under a proprietary license with telemetry", "reference": "https://en.wikipedia.org/wiki/Visual_Studio_Code"},

@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../docs/lists.schema.json",
   "_comment": "Windows registry programs, matched by regex against DisplayName. First match in file order wins, so put specific patterns before general ones. 'free' entries let the index count known free software. Only used by the 'windows' source; package ids (winget/scoop/choco) use windows-packages.json.",
   "entries": [
     {

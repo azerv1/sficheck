@@ -151,6 +151,8 @@ Curated entries live in `sficheck/data/lists/*.json`, one object per entry:
 {"name": "zoom", "status": "nonfree", "alternatives": ["jitsi-meet-desktop"], "description": "Proprietary video conferencing", "reference": "https://en.wikipedia.org/wiki/Zoom_(software)"}
 ```
 
+Each list declares `"$schema": "../../../docs/lists.schema.json"`, so VS Code and other editors that support JSON Schema autocomplete fields and flag mistakes as you type, such as an unknown key or a non-free entry without a `reference`.
+
 Add `"ring"` (-3, -2, -1, 0 or 3) when the software runs below userspace, such as a kernel driver or a hypervisor.
 
 Add `"pattern"` (a case-insensitive regex) instead of an exact name for fuzzy matches, such as Windows display names. In pattern lists the first match in file order wins.

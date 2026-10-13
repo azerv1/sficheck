@@ -8,6 +8,7 @@ from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
 from importlib import resources
 from pathlib import Path
+from typing import Any
 
 import msgspec
 
@@ -112,6 +113,17 @@ class ListEntry(msgspec.Struct, forbid_unknown_fields=True):
 
 class ListFile(msgspec.Struct):
     entries: list[ListEntry] = []
+
+
+def lists_schema() -> dict[str, Any]:
+    """The JSON Schema of a list file, as published in docs/lists.schema.json for editors."""
+    # Round-trip through JSON so tuple defaults such as () come back as [], the way the file stores them.
+    generated = msgspec.json.decode(msgspec.json.encode(msgspec.json.schema(ListFile)))
+    schema: dict[str, Any] = {"$schema": "https://json-schema.org/draft/2020-12/schema", **generated}
+    # The rule from README "Contributing to the lists": anything not free must cite a reference.
+    schema["$defs"]["ListEntry"]["if"] = {"not": {"properties": {"status": {"const": "free"}}, "required": ["status"]}}
+    schema["$defs"]["ListEntry"]["then"] = {"required": ["reference"], "properties": {"reference": {"minLength": 1}}}
+    return schema
 
 
 def parse_list(data: str | bytes | object, origin: str) -> ListFile:

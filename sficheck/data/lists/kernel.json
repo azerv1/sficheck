@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../docs/lists.schema.json",
   "_comment": "Kernel drivers and modules, matched by exact Windows driver service name or Linux module name. Only used by the 'kernel' source. Unlisted third-party Windows drivers count as nonfree, so list free drivers here as 'free'; Linux modules are judged by the kernel's own taint flag.",
   "entries": [
     {"name": "vgk", "status": "nonfree", "ring": 0, "description": "Riot Vanguard kernel anticheat, loaded at boot", "reference": "https://en.wikipedia.org/wiki/Riot_Vanguard"},

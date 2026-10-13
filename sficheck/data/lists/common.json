@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../docs/lists.schema.json",
   "_comment": "Cross-platform proprietary software, matched by exact package name (pacman/AUR, deb, rpm, flatpak, snap, brew, scoop, choco, winget ids). Optional 'pattern' is a case-insensitive regex instead of an exact name.",
   "entries": [
     {"name": "google-chrome", "status": "nonfree", "alternatives": ["ungoogled-chromium", "librewolf", "icecat"], "description": "Google's proprietary browser build", "reference": "https://git.parabola.nu/abslibre/blacklist.git/tree/blacklist.txt"},

@@ -10,7 +10,7 @@ help:
 	@echo make format - fix imports and reformat
 	@echo make test - run the test suite
 	@echo make audit - check the locked dependencies for known vulnerabilities
-	@echo make schema - regenerate docs/output.schema.json after changing the JSON output
+	@echo make schema - regenerate the JSON Schemas in docs/ after changing the output or list format
 	@echo make install - install the sficheck command for this user
 	@echo make clean - remove caches and build output
 
@@ -37,7 +37,7 @@ audit:
 	uv run pip-audit -r build/audit-req.txt --disable-pip
 
 schema:
-	uv run python scripts/gen_output_schema.py
+	uv run python scripts/gen_schemas.py
 
 install:
 	uv tool install --reinstall .

@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/ListFile",
+  "$defs": {
+    "ListFile": {
+      "title": "ListFile",
+      "type": "object",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ListEntry"
+          },
+          "default": []
+        }
+      },
+      "required": []
+    },
+    "ListEntry": {
+      "title": "ListEntry",
+      "description": "One entry of a JSON list (bundled or --blacklist); see README \"Lists\".",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "nonfree"
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "description": {
+          "type": "string",
+          "default": ""
+        },
+        "reference": {
+          "type": "string",
+          "default": ""
+        },
+        "pattern": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ring": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Ring"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "if": {
+        "not": {
+          "properties": {
+            "status": {
+              "const": "free"
+            }
+          },
+          "required": [
+            "status"
+          ]
+        }
+      },
+      "then": {
+        "required": [
+          "reference"
+        ],
+        "properties": {
+          "reference": {
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "Status": {
+      "title": "Status",
+      "enum": [
+        "free",
+        "nonfree",
+        "semifree",
+        "unknown",
+        "uses-nonfree"
+      ]
+    },
+    "Ring": {
+      "title": "Ring",
+      "description": "The CPU protection ring a program runs in; lower rings see and control more.\n\nRings 1 and 2 go unused by mainstream OSes. The negative rings are the usual names\nfor what sits below the kernel.",
+      "enum": [
+        -3,
+        -2,
+        -1,
+        0,
+        3
+      ]
+    }
+  }
+}

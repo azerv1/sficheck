@@ -8,6 +8,7 @@ import pytest
 from sficheck.blacklist import (
     Blacklist,
     bundled_names,
+    lists_schema,
     load_bundled,
     load_user,
     parse_parabola,
@@ -17,6 +18,8 @@ from sficheck.models import Entry, Ring, Status
 from sficheck.net import Fetcher
 
 FIXTURES = Path(__file__).parent / "fixtures"
+ROOT = Path(__file__).resolve().parent.parent
+LISTS_SCHEMA = ROOT / "docs" / "lists.schema.json"
 
 
 @pytest.fixture
@@ -160,6 +163,18 @@ def test_every_nonfree_curated_entry_cites_a_source(name: str) -> None:
     entries = [*bl.by_name.values(), *(entry for _, entry in bl.patterns)]
     unsourced = [e.name for e in entries if e.status is not Status.FREE and not e.reference]
     assert unsourced == [], f"{name}.json entries need a 'reference': {unsourced}"
+
+
+def test_published_lists_schema_is_current() -> None:
+    assert json.loads(LISTS_SCHEMA.read_text(encoding="utf-8")) == lists_schema(), "run `make schema`"
+
+
+@pytest.mark.parametrize("name", bundled_names())
+def test_every_bundled_list_points_editors_at_the_schema(name: str) -> None:
+    path = ROOT / "sficheck" / "data" / "lists" / f"{name}.json"
+    declared = json.loads(path.read_text(encoding="utf-8")).get("$schema")
+    assert declared == "../../../docs/lists.schema.json", f"{name}.json needs a $schema key"
+    assert (path.parent / declared).resolve() == LISTS_SCHEMA
 
 
 def test_load_user_json_and_text(tmp_path: Path) -> None:

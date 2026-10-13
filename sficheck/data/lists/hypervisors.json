@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../docs/lists.schema.json",
   "_comment": "Hypervisors by the short name the 'hypervisors' source reports: the one this OS runs on, and the ones installed here. Only used by that source.",
   "entries": [
     {"name": "hyper-v", "status": "nonfree", "ring": -1, "alternatives": ["kvm", "xen"], "description": "Microsoft Hyper-V; Windows itself runs on top of it whenever virtualization-based security, WSL 2 or Hyper-V is on", "reference": "https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/reference/hyper-v-architecture"},
