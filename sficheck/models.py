@@ -18,6 +18,26 @@ class Status(StrEnum):
         return self in (Status.NONFREE, Status.SEMIFREE, Status.USES_NONFREE)
 
 
+class Antifeature(StrEnum):
+    """Why a finding matters beyond its license; F-Droid's anti-features (minus NSFW) plus DRM.
+
+    Tags never change a status or the Freedom Index.
+    """
+
+    ADS = "ads"
+    TRACKING = "tracking"
+    NONFREE_NET = "nonfree-net"  # promotes or depends on a nonfree network service
+    NONFREE_ADD = "nonfree-add"  # promotes nonfree add-ons
+    NONFREE_DEP = "nonfree-dep"  # needs nonfree software to work
+    NONFREE_ASSETS = "nonfree-assets"
+    UPSTREAM_NONFREE = "upstream-nonfree"  # the upstream release contains nonfree parts
+    TETHERED_NET = "tethered-net"  # only works with the developer's own servers
+    KNOWN_VULN = "known-vuln"
+    DISABLED_ALGORITHM = "disabled-algorithm"
+    NO_SOURCE_SINCE = "no-source-since"
+    DRM = "drm"
+
+
 class Ring(IntEnum):
     """The CPU protection ring a program runs in; lower rings see and control more.
 
@@ -55,6 +75,7 @@ class Entry:
     origin: str = ""
     reference: str = ""
     ring: Ring | None = None  # None: the scanning source's default
+    antifeatures: tuple[Antifeature, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -70,6 +91,7 @@ class Finding:
     reference: str = ""
     # Set on proprietary findings: how deep into the machine the software reaches.
     ring: Ring | None = None
+    antifeatures: tuple[Antifeature, ...] = ()
 
     @classmethod
     def from_entry(cls, package: Package, entry: Entry) -> Finding:
@@ -81,6 +103,7 @@ class Finding:
             description=entry.description,
             reference=entry.reference,
             ring=entry.ring,
+            antifeatures=entry.antifeatures,
         )
 
 

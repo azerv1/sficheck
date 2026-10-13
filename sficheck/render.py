@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 import msgspec
 
-from sficheck.models import Finding, Ring, SourceReport, Status
+from sficheck.models import Antifeature, Finding, Ring, SourceReport, Status
 
 HEADERS = ("Source", "Name", "Version", "Status", "Ring", "Libre alternatives", "Description")
 
@@ -64,6 +64,18 @@ def _row(f: Finding) -> tuple[str, str, str, str, str, list[str], str]:
         list(f.alternatives),
         desc,
     )
+
+
+def _antifeatures(f: Finding) -> str:
+    return ", ".join(f.antifeatures)
+
+
+def _table_row(f: Finding) -> tuple[str, str, str, str, str, list[str], str]:
+    """The table has no anti-features column, so they go at the end of the description."""
+    src, name, ver, status, ring, alts, desc = _row(f)
+    if f.antifeatures:
+        desc = f"{desc} [{_antifeatures(f)}]".lstrip()
+    return src, name, ver, status, ring, alts, desc
 
 
 def _ring_counts(findings: Sequence[Finding]) -> dict[Ring, int]:
@@ -147,7 +159,7 @@ def summary_text(reports: Sequence[SourceReport], palette: Palette, unknown_as_n
 def table(findings: Sequence[Finding], palette: Palette, max_width: int) -> str:
     if not findings:
         return "No matching packages.\n"
-    raw = [_row(f) for f in findings]
+    raw = [_table_row(f) for f in findings]
     natural = [len(h) for h in HEADERS]
     for src, name, ver, status, ring, alts, desc in raw:
         for i, value in enumerate((src, name, ver, status, ring, max(alts, key=len, default=""), desc)):
@@ -188,12 +200,12 @@ def markdown(findings: Sequence[Finding], reports: Sequence[SourceReport], unkno
         lines.append(
             f"| {r.source} | {r.total} | {r.proprietary} | {r.unknown} | {_fmt_index(r.freedom_index(unknown_as_nonfree))} |"
         )
-    headers = (*HEADERS, "Reference")
+    headers = (*HEADERS, "Anti-features", "Reference")
     lines += ["", "| " + " | ".join(headers) + " |", "|" + "---|" * len(headers)]
     for f in findings:
         src, name, ver, status, ring, alts, desc = _row(f)
         ref = f"[source]({f.reference})" if f.reference else ""
-        cells = (src, name, ver, status, ring, "<br>".join(alts), desc, ref)
+        cells = (src, name, ver, status, ring, "<br>".join(alts), desc, _antifeatures(f), ref)
         lines.append("| " + " | ".join(esc(x) for x in cells) + " |")
     return "\n".join(lines) + "\n"
 
@@ -233,6 +245,7 @@ class FindingOut(msgspec.Struct):
     description: str
     reason: str
     reference: str | None
+    antifeatures: list[Antifeature]
 
 
 class Report(msgspec.Struct):
@@ -283,6 +296,7 @@ def as_json(findings: Sequence[Finding], reports: Sequence[SourceReport], unknow
                 description=f.description,
                 reason=f.reason,
                 reference=f.reference or None,
+                antifeatures=list(f.antifeatures),
             )
             for f in findings
         ],
@@ -293,7 +307,7 @@ def as_json(findings: Sequence[Finding], reports: Sequence[SourceReport], unknow
 def as_csv(findings: Sequence[Finding]) -> str:
     buf = io.StringIO()
     writer = csv.writer(buf, lineterminator="\n")
-    writer.writerow([*HEADERS, "License", "Reason", "Reference"])
+    writer.writerow([*HEADERS, "License", "Reason", "Reference", "Anti-features"])
     for f in findings:
         src, name, ver, status, _, alts, _ = _row(f)
         ring = "" if f.ring is None else str(f.ring.value)
@@ -308,6 +322,7 @@ def as_csv(findings: Sequence[Finding]) -> str:
             f.package.license or "",
             f.reason,
             f.reference,
+            "; ".join(f.antifeatures),
         ]
         writer.writerow(row)
     return buf.getvalue()

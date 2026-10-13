@@ -10,12 +10,14 @@ from sficheck.blacklist import (
     bundled_names,
     lists_schema,
     load_bundled,
+    load_parabola,
     load_user,
     parse_parabola,
     parse_parabola_line,
 )
-from sficheck.models import Entry, Ring, Status
+from sficheck.models import Antifeature, Entry, Ring, Status
 from sficheck.net import Fetcher
+from tests.conftest import StubFetcher
 
 FIXTURES = Path(__file__).parent / "fixtures"
 ROOT = Path(__file__).resolve().parent.parent
@@ -111,6 +113,26 @@ def test_json_ring_is_optional_and_validated() -> None:
     assert bl.by_name["calendar"].ring is None
     with pytest.raises(ValueError):
         Blacklist().load_json({"entries": [{"name": "bad", "ring": 2}]}, "test")
+
+
+def test_json_antifeatures_are_optional_and_validated() -> None:
+    bl = Blacklist()
+    bl.load_json({"entries": [{"name": "spyware", "antifeatures": ["tracking", "ads"]}, {"name": "plain"}]}, "test")
+    assert bl.by_name["spyware"].antifeatures == (Antifeature.TRACKING, Antifeature.ADS)
+    assert bl.by_name["plain"].antifeatures == ()
+    with pytest.raises(ValueError):
+        Blacklist().load_json({"entries": [{"name": "bad", "antifeatures": ["spying"]}]}, "test")
+
+
+def test_privacy_list_entries_are_tagged_nonfree_net(tmp_path: Path) -> None:
+    fetcher = StubFetcher(
+        tmp_path,
+        {"/blacklist.txt": "unrar:unar:::[nonfree] proprietary license\n", "privacy": "bti:bti::: supports Twitter\n"},
+    )
+    bl = load_parabola(fetcher, include_aur=False, include_privacy=True)
+    privacy, nonfree = bl.lookup("bti"), bl.lookup("unrar")
+    assert privacy is not None and privacy.antifeatures == (Antifeature.NONFREE_NET,)
+    assert nonfree is not None and nonfree.antifeatures == ()
 
 
 def test_kernel_anticheat_is_ring_zero() -> None:

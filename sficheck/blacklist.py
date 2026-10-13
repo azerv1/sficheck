@@ -5,14 +5,14 @@ from __future__ import annotations
 import logging
 import re
 from collections.abc import Iterable, Iterator
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from importlib import resources
 from pathlib import Path
 from typing import Any
 
 import msgspec
 
-from sficheck.models import Entry, Ring, Status
+from sficheck.models import Antifeature, Entry, Ring, Status
 from sficheck.net import Fetcher
 
 log = logging.getLogger(__name__)
@@ -98,6 +98,7 @@ class ListEntry(msgspec.Struct, forbid_unknown_fields=True):
     reference: str = ""
     pattern: str | None = None  # regex on display names, instead of an exact name
     ring: Ring | None = None
+    antifeatures: tuple[Antifeature, ...] = ()
 
     def to_entry(self, origin: str) -> Entry:
         return Entry(
@@ -108,6 +109,7 @@ class ListEntry(msgspec.Struct, forbid_unknown_fields=True):
             origin=origin,
             reference=self.reference,
             ring=self.ring,
+            antifeatures=self.antifeatures,
         )
 
 
@@ -209,7 +211,10 @@ def load_parabola(fetcher: Fetcher, include_aur: bool = True, include_privacy: b
             log.warning("Parabola %s list unavailable; results for pacman will be incomplete", key)
             continue
         default = Status.USES_NONFREE if key == "privacy" else Status.NONFREE
-        bl.extend(parse_parabola(text, origin=f"parabola:{key}", default_status=default))
+        entries = parse_parabola(text, origin=f"parabola:{key}", default_status=default)
+        if key == "privacy":
+            entries = (replace(e, antifeatures=(Antifeature.NONFREE_NET,)) for e in entries)
+        bl.extend(entries)
     return bl
 
 

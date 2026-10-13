@@ -10,7 +10,7 @@ import msgspec
 import pytest
 
 from sficheck import cli, render
-from sficheck.models import Finding, Package, Ring, SourceReport, Status
+from sficheck.models import Antifeature, Finding, Package, Ring, SourceReport, Status
 from sficheck.sources.base import Source
 
 SCHEMA = Path(__file__).resolve().parent.parent / "docs" / "output.schema.json"
@@ -291,6 +291,22 @@ def test_ring_in_every_format() -> None:
     rows = list(csv.DictReader(io.StringIO(render.as_csv(findings))))
     assert [r["Ring"] for r in rows] == ["-3", "0", ""]
     assert "| -3 ME |" in render.markdown(findings, reports, False)
+
+
+def test_antifeatures_in_every_format() -> None:
+    tags = (Antifeature.TRACKING, Antifeature.DRM)
+    findings = [
+        Finding(Package("spyware", "fake"), Status.NONFREE, description="phones home", antifeatures=tags),
+        Finding(Package("bash", "fake"), Status.FREE),
+    ]
+    reports = [SourceReport("fake", "lang", findings)]
+    assert "phones home [tracking, drm]" in render.table(findings, render.Palette(False), 200)
+    doc = json.loads(render.as_json(findings, reports, False))
+    assert [f["antifeatures"] for f in doc["findings"]] == [["tracking", "drm"], []]
+    rows = list(csv.DictReader(io.StringIO(render.as_csv(findings))))
+    assert [r["Anti-features"] for r in rows] == ["tracking; drm", ""]
+    md = render.markdown(findings, reports, False)
+    assert "| phones home | tracking, drm |" in md  # its own column, not repeated in the description
 
 
 def test_empty_sources_are_left_out_of_the_summaries() -> None:

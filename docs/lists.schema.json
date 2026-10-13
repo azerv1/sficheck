@@ -64,6 +64,13 @@
             }
           ],
           "default": null
+        },
+        "antifeatures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Antifeature"
+          },
+          "default": []
         }
       },
       "required": [
@@ -112,6 +119,24 @@
         -1,
         0,
         3
+      ]
+    },
+    "Antifeature": {
+      "title": "Antifeature",
+      "description": "Why a finding matters beyond its license; F-Droid's anti-features (minus NSFW) plus DRM.\n\nTags never change a status or the Freedom Index.",
+      "enum": [
+        "ads",
+        "disabled-algorithm",
+        "drm",
+        "known-vuln",
+        "no-source-since",
+        "nonfree-add",
+        "nonfree-assets",
+        "nonfree-dep",
+        "nonfree-net",
+        "tethered-net",
+        "tracking",
+        "upstream-nonfree"
       ]
     }
   }

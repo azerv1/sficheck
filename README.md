@@ -156,6 +156,8 @@ Each list declares `"$schema": "../../../docs/lists.schema.json"`, so VS Code an
 
 Add `"ring"` (-3, -2, -1, 0 or 3) when the software runs below userspace, such as a kernel driver or a hypervisor.
 
+Add `"antifeatures"` to say why an entry matters beyond its license. They're [F-Droid's anti-features](https://f-droid.org/docs/Anti-Features/) plus `drm`: `ads`, `tracking`, `nonfree-net`, `nonfree-add`, `nonfree-dep`, `nonfree-assets`, `upstream-nonfree`, `tethered-net`, `known-vuln`, `disabled-algorithm`, `no-source-since` and `drm`. They show up in every output format but never change the status or the Freedom Index. Free software can have them too, such as a free app that phones home. Like a status, each tag needs a `reference` that states it. Entries from Parabola's privacy list (`--include-privacy`) are tagged `nonfree-net`, since nearly all of them exist to support a nonfree network service such as Google, Facebook or Twitter.
+
 Add `"pattern"` (a case-insensitive regex) instead of an exact name for fuzzy matches, such as Windows display names. In pattern lists the first match in file order wins.
 
 Every entry that isn't `free` must have a `reference`: a page that states the license. In order of preference, that's Parabola's blacklist or issue tracker, the Debian package tracker, the project's own license or terms page, a registry license field (npm, PyPI), or the Wikipedia infobox / Wikidata license. The tests fail without one, and the reference is shown in JSON, CSV and markdown output. If a claim can't be sourced, leave the entry out. An unknown result is better than an unsourced one.
