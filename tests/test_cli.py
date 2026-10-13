@@ -6,11 +6,14 @@ import json
 from collections.abc import Iterable
 from pathlib import Path
 
+import msgspec
 import pytest
 
 from sficheck import cli, render
 from sficheck.models import Finding, Package, Ring, SourceReport, Status
 from sficheck.sources.base import Source
+
+SCHEMA = Path(__file__).resolve().parent.parent / "docs" / "output.schema.json"
 
 
 class FakeSource(Source):
@@ -195,6 +198,16 @@ def test_layer_flags_combine(capsys: pytest.CaptureFixture[str]) -> None:
     assert found == ["hyper-v", "vgk"]
     assert names(run_json(capsys, "--sources", "fake", "--firmware", "--max-ring", "0")) == ["intel-me"]
     assert names(run_json(capsys, "--sources", "fake", "--hardware", "--max-ring", "0")) == ["Wi-Fi 6 AX201"]
+
+
+def test_json_output_is_versioned_and_matches_its_types(capsys: pytest.CaptureFixture[str]) -> None:
+    doc = run_json(capsys, "--skip", "broken", "--all")
+    assert next(iter(doc)) == "schema_version" and doc["schema_version"] == render.SCHEMA_VERSION
+    msgspec.json.decode(json.dumps(doc), type=render.Report)  # raises if a field is missing or mistyped
+
+
+def test_published_schema_is_current() -> None:
+    assert json.loads(SCHEMA.read_text(encoding="utf-8")) == render.output_schema(), "run `make schema`"
 
 
 def test_exit_code(capsys: pytest.CaptureFixture[str]) -> None:

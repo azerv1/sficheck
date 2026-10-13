@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/Report",
+  "$defs": {
+    "Report": {
+      "title": "Report",
+      "description": "sficheck's JSON report.",
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "integer"
+        },
+        "summary": {
+          "$ref": "#/$defs/Summary"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FindingOut"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "summary",
+        "findings"
+      ]
+    },
+    "Summary": {
+      "title": "Summary",
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer"
+        },
+        "proprietary": {
+          "type": "integer"
+        },
+        "unknown": {
+          "type": "integer"
+        },
+        "freedom_index": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "by_ring": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceSummary"
+          }
+        }
+      },
+      "required": [
+        "total",
+        "proprietary",
+        "unknown",
+        "freedom_index",
+        "by_ring",
+        "sources"
+      ]
+    },
+    "SourceSummary": {
+      "title": "SourceSummary",
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "total": {
+          "type": "integer"
+        },
+        "proprietary": {
+          "type": "integer"
+        },
+        "unknown": {
+          "type": "integer"
+        },
+        "freedom_index": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "source",
+        "kind",
+        "total",
+        "proprietary",
+        "unknown",
+        "freedom_index",
+        "error"
+      ]
+    },
+    "FindingOut": {
+      "title": "FindingOut",
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/Status"
+        },
+        "ring": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Ring"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "license": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "reference": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "source",
+        "name",
+        "version",
+        "status",
+        "ring",
+        "license",
+        "alternatives",
+        "description",
+        "reason",
+        "reference"
+      ]
+    },
+    "Status": {
+      "title": "Status",
+      "enum": [
+        "free",
+        "nonfree",
+        "semifree",
+        "unknown",
+        "uses-nonfree"
+      ]
+    },
+    "Ring": {
+      "title": "Ring",
+      "description": "The CPU protection ring a program runs in; lower rings see and control more.\n\nRings 1 and 2 go unused by mainstream OSes. The negative rings are the usual names\nfor what sits below the kernel.",
+      "enum": [
+        -3,
+        -2,
+        -1,
+        0,
+        3
+      ]
+    }
+  }
+}

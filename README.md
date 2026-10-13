@@ -141,6 +141,8 @@ By protection ring: 3 user: 5
 +--------+-------+------------+---------+--------+--------------------+--------------------------------------------+
 ```
 
+`--format json` is meant for scripts and CI. Its shape is described by [`docs/output.schema.json`](docs/output.schema.json) (JSON Schema 2020-12), and every report starts with `"schema_version"`. New fields can appear at any time, so ignore keys you don't know. Removing, renaming or retyping a field bumps `schema_version`.
+
 ## Contributing to the lists
 
 Curated entries live in `sficheck/data/lists/*.json`, one object per entry:

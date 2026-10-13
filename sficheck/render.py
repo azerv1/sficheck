@@ -10,6 +10,8 @@ from collections import Counter
 from collections.abc import Sequence
 from dataclasses import dataclass
 
+import msgspec
+
 from sficheck.models import Finding, Ring, SourceReport, Status
 
 HEADERS = ("Source", "Name", "Version", "Status", "Ring", "Libre alternatives", "Description")
@@ -196,45 +198,96 @@ def markdown(findings: Sequence[Finding], reports: Sequence[SourceReport], unkno
     return "\n".join(lines) + "\n"
 
 
+# The --format json document. Bump SCHEMA_VERSION when a field is removed, renamed or changes type;
+# adding a field keeps the version. docs/output.schema.json is generated from Report (`make schema`).
+SCHEMA_VERSION = 1
+
+
+class SourceSummary(msgspec.Struct):
+    source: str
+    kind: str
+    total: int
+    proprietary: int
+    unknown: int
+    freedom_index: float | None  # None when there is nothing to rate
+    error: str | None
+
+
+class Summary(msgspec.Struct):
+    total: int
+    proprietary: int
+    unknown: int
+    freedom_index: float | None  # None when there is nothing to rate
+    by_ring: dict[str, int]  # ring number (as a string) -> proprietary findings at that ring
+    sources: list[SourceSummary]
+
+
+class FindingOut(msgspec.Struct):
+    source: str
+    name: str
+    version: str
+    status: Status
+    ring: Ring | None
+    license: str | None
+    alternatives: list[str]
+    description: str
+    reason: str
+    reference: str | None
+
+
+class Report(msgspec.Struct):
+    """sficheck's JSON report."""
+
+    schema_version: int
+    summary: Summary
+    findings: list[FindingOut]
+
+
+def output_schema() -> dict[str, object]:
+    """The JSON Schema of Report, as published in docs/output.schema.json."""
+    return {"$schema": "https://json-schema.org/draft/2020-12/schema", **msgspec.json.schema(Report)}
+
+
 def as_json(findings: Sequence[Finding], reports: Sequence[SourceReport], unknown_as_nonfree: bool) -> str:
     overall = _overall(reports)
-    doc = {
-        "summary": {
-            "total": overall.total,
-            "proprietary": overall.proprietary,
-            "unknown": overall.unknown,
-            "freedom_index": overall.freedom_index(unknown_as_nonfree),
-            "by_ring": {str(r.value): n for r, n in _ring_counts(overall.findings).items()},
-            "sources": [
-                {
-                    "source": r.source,
-                    "kind": r.kind,
-                    "total": r.total,
-                    "proprietary": r.proprietary,
-                    "unknown": r.unknown,
-                    "freedom_index": r.freedom_index(unknown_as_nonfree),
-                    "error": r.error or None,
-                }
+    doc = Report(
+        schema_version=SCHEMA_VERSION,
+        summary=Summary(
+            total=overall.total,
+            proprietary=overall.proprietary,
+            unknown=overall.unknown,
+            freedom_index=overall.freedom_index(unknown_as_nonfree),
+            by_ring={str(r.value): n for r, n in _ring_counts(overall.findings).items()},
+            sources=[
+                SourceSummary(
+                    source=r.source,
+                    kind=r.kind,
+                    total=r.total,
+                    proprietary=r.proprietary,
+                    unknown=r.unknown,
+                    freedom_index=r.freedom_index(unknown_as_nonfree),
+                    error=r.error or None,
+                )
                 for r in reports
             ],
-        },
-        "findings": [
-            {
-                "source": f.package.source,
-                "name": f.package.name,
-                "version": f.package.version,
-                "status": f.status.value,
-                "ring": None if f.ring is None else f.ring.value,
-                "license": f.package.license,
-                "alternatives": list(f.alternatives),
-                "description": f.description,
-                "reason": f.reason,
-                "reference": f.reference or None,
-            }
+        ),
+        findings=[
+            FindingOut(
+                source=f.package.source,
+                name=f.package.name,
+                version=f.package.version,
+                status=f.status,
+                ring=f.ring,
+                license=f.package.license,
+                alternatives=list(f.alternatives),
+                description=f.description,
+                reason=f.reason,
+                reference=f.reference or None,
+            )
             for f in findings
         ],
-    }
-    return json.dumps(doc, indent=2) + "\n"
+    )
+    return json.dumps(msgspec.to_builtins(doc), indent=2) + "\n"  # json.dumps escapes non-ASCII for any console
 
 
 def as_csv(findings: Sequence[Finding]) -> str:

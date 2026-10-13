@@ -2,7 +2,7 @@
 # whether make hands them to sh (Linux, macOS, Git Bash) or cmd.exe.
 
 .DEFAULT_GOAL := help
-.PHONY: help sync lint format test clean audit install
+.PHONY: help sync lint format test clean audit install schema
 
 help:
 	@echo make sync - install the dev environment from uv.lock
@@ -10,6 +10,7 @@ help:
 	@echo make format - fix imports and reformat
 	@echo make test - run the test suite
 	@echo make audit - check the locked dependencies for known vulnerabilities
+	@echo make schema - regenerate docs/output.schema.json after changing the JSON output
 	@echo make install - install the sficheck command for this user
 	@echo make clean - remove caches and build output
 
@@ -34,6 +35,9 @@ test:
 audit:
 	uv export --frozen --no-emit-project --quiet -o build/audit-req.txt
 	uv run pip-audit -r build/audit-req.txt --disable-pip
+
+schema:
+	uv run python scripts/gen_output_schema.py
 
 install:
 	uv tool install --reinstall .
