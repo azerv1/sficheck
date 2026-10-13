@@ -1,0 +1,40 @@
+sficheck/sources/system.py
+  s_b79e2f7da11bed::t_5a42756522c1f8 36,38-40
+sficheck/hooks.py
+  s_b79e2f7da11bed::t_85f51d3ac8a015 61-64,72
+  s_b79e2f7da11bed::t_8c1f417217b5f7 53
+  s_b79e2f7da11bed::t_f7c8e189519284 54
+  s_b79e2f7da11bed::t_311ff0a930b193 1-52,55-60,65-71,73-132
+sficheck/sources/base.py
+  s_b79e2f7da11bed::t_d5a0c3c3cffcb1 59-61
+sficheck/cli.py
+  s_b79e2f7da11bed::t_78174b0dc77f0b 343-355,367-368
+  s_b79e2f7da11bed::t_de21e404972cd4 16,168-169,178-187,227-232,234-244,246,386-392
+  s_b79e2f7da11bed::t_26528b22d8f664 233
+  s_b79e2f7da11bed::t_d1dc878de25647 245
+  s_b79e2f7da11bed::t_7ab944011fa4db 247-248
+tests/test_hooks.py
+  s_b79e2f7da11bed::t_8cb32ca70fe57b 36-38
+  s_b79e2f7da11bed::t_d38978b22403ad 1-35,39-51,53,55-71,73-116
+  s_b79e2f7da11bed::t_ecf3c6bc13ca84 54
+  s_b79e2f7da11bed::t_85f51d3ac8a015 52,72
+README.md
+  s_b79e2f7da11bed::t_bf8b73fb69e19b 125
+  s_b79e2f7da11bed::t_d927dabd9f9319 135-152
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4e22977f579b4b245cae03a5fec1a108ec076984",
+  "prompts": {},
+  "sessions": {
+    "s_b79e2f7da11bed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8118b6d4-579a-42af-8de0-6b45bd45a8f7",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "azerv1 <asterioszer@gmail.com>"
+    }
+  }
+}
