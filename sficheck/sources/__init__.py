@@ -12,13 +12,14 @@ from sficheck.sources.jvm import Coursier, Gradle, Maven, Sdkman
 from sficheck.sources.kernel import Kernel
 from sficheck.sources.python import Pip, Pipx, UvTools
 from sficheck.sources.scripting import Composer, Cpan, CranR, Gem, GhcPkg, Julia, LuaRocks, Mix, Pub
-from sficheck.sources.system import Brew, Dpkg, Flatpak, Nix, Pacman, Snap
+from sficheck.sources.system import Brew, Dpkg, Flatpak, Nix, Pacman, Rpm, Snap
 from sficheck.sources.windows import Chocolatey, Scoop, WindowsRegistry, Winget
 
 ALL_SOURCES: tuple[type[Source], ...] = (
     # system
     Pacman,
     Dpkg,
+    Rpm,
     Nix,
     Flatpak,
     Snap,

@@ -21,7 +21,7 @@ from sficheck.sources.jvm import Maven, Sdkman
 from sficheck.sources.kernel import Kernel
 from sficheck.sources.python import Pip
 from sficheck.sources.scripting import CranR, Gem, GhcPkg
-from sficheck.sources.system import Brew, Dpkg, Nix, Pacman, Snap
+from sficheck.sources.system import Brew, Dpkg, Nix, Pacman, Rpm, Snap
 from sficheck.sources.windows import Chocolatey, Scoop
 from tests.conftest import FakeRun, StubFetcher
 
@@ -69,6 +69,28 @@ def test_dpkg_sections(fake_run: FakeRun, fetcher: StubFetcher, ctx: Context) ->
     assert found["coreutils"].status is Status.FREE
     assert found["google-chrome-stable"].status is Status.NONFREE  # curated list
     assert found["nvidia-driver"].status is Status.NONFREE  # Ubuntu component
+
+
+def test_rpm_license_tags(fake_run: FakeRun, fetcher: StubFetcher, ctx: Context) -> None:
+    fake_run(
+        {
+            "rpm -qa": "bash\t5.2.26-3.fc40\tGPL-3.0-or-later\n"
+            "httpd\t2.4.57-8.el9\tASL 2.0\n"
+            "akmod-nvidia\t550.67-1.fc40\tRedistributable, no modification permitted\n"
+            "gpg-pubkey\ta15b79cc-63d04c2c\tpubkey\n"
+            "mystery\t1.0-1\t(none)\n"
+            "iwlwifi-mvm-firmware\t20240909-1.fc41\tLicenseRef-Fedora-Firmware\n"
+            "google-chrome-stable\t124.0.6367.60-1\tMulti-licensed\n"
+        }
+    )
+    found = scan(Rpm(ctx), fetcher)
+    assert "gpg-pubkey" not in found  # rpm's pseudo-package for imported signing keys
+    assert found["bash"].status is Status.FREE and found["bash"].package.version == "5.2.26-3.fc40"
+    assert found["httpd"].status is Status.FREE
+    assert found["akmod-nvidia"].status is Status.NONFREE
+    assert found["iwlwifi-mvm-firmware"].status is Status.NONFREE  # current Fedora firmware tag
+    assert found["mystery"].status is Status.UNKNOWN and found["mystery"].package.license is None
+    assert found["google-chrome-stable"].status is Status.NONFREE  # curated list
 
 
 def test_nix_meta(fake_run: FakeRun, fetcher: StubFetcher, ctx: Context) -> None:

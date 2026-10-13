@@ -38,6 +38,16 @@ from sficheck.models import Status
         ("GPL (>= 2)", Status.FREE),  # R
         ("GPL-2 | GPL-3", Status.FREE),  # R
         ("perl_5", Status.FREE),  # MetaCPAN
+        ("ASL 2.0", Status.FREE),  # Fedora/RHEL legacy (Callaway) name for Apache-2.0
+        ("GPLv2 and LGPLv2+", Status.FREE),  # Callaway
+        ("Redistributable, no modification permitted", Status.NONFREE),  # rpm firmware and drivers
+        ("Freely redistributable without restriction", Status.NONFREE),  # Fedora: firmware only
+        ("GPL+ and GPLv2+ and MIT and Redistributable, no modification permitted", Status.NONFREE),
+        ("LicenseRef-Fedora-Firmware", Status.NONFREE),  # Fedora's tag for binary firmware
+        ("GPL-2.0-or-later AND MIT AND LicenseRef-Fedora-Firmware", Status.SEMIFREE),
+        ("LicenseRef-Not-Copyrightable", Status.FREE),
+        ("MIT AND HPND-export-US AND HPND-export-US-acknowledgement", Status.FREE),  # krb5
+        ("Python-2.0.1 AND HPND-SMC", Status.FREE),  # python3
         ("BSD-2-Clause-Views", Status.FREE),  # free in ScanCode, unmarked by SPDX
         ("JSON", Status.UNKNOWN),  # "Good, not Evil": ScanCode says permissive, the FSF says nonfree
         ("MS-LPL", Status.UNKNOWN),  # Windows-only

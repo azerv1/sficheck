@@ -1,6 +1,6 @@
 {
   "_comment": "SPDX ids count as free when ScanCode's license index (shipped with license-expression) puts them in a free category: Permissive, Copyleft, Copyleft Limited or Public Domain. extra_free_spdx adds free ids the index lacks; not_free_spdx removes ids it calls free that are not (FSF-nonfree, hardware- or use-restricted) and bare aliases (\"2.0\", \"gpl\"). Ids compare case-insensitively, without -only/-or-later/+. free_keywords / nonfree_keywords: lowercase substrings used for non-SPDX license strings. Non-free keywords win.",
-  "extra_free_spdx": ["alglib-documentation", "BSD-Ask-To-Endorse", "OSC-1.0", "SISSL", "Unicode-TOU", "WordNet"],
+  "extra_free_spdx": ["alglib-documentation", "BSD-Ask-To-Endorse", "HPND-export-US", "HPND-export-US-acknowledgement", "HPND-SMC", "OSC-1.0", "SISSL", "Unicode-TOU", "WordNet"],
   "not_free_spdx": ["2.0", "Aladdin", "Glide", "gpl", "IEC-Code-Components-EULA", "JSON", "MS-LPL", "OPL-1.0", "SCEA", "SGI-B-1.1"],
   "free_keywords": [
     "mit license", "mit/x11", "expat", "apache", "bsd", "general public license", "gpl", "lgpl", "agpl",
@@ -8,7 +8,8 @@
     "cc0", "artistic license", "python software foundation", "psf", "eclipse public", "boost software",
     "wtfpl", "postgresql", "open font license", "ofl", "x11", "eupl", "cddl", "european union public",
     "universal permissive", "academic free", "open software license", "zope public", "isc", "mit",
-    "perl", "artistic", "epl", "w3c", "open_source", "unrestricted", "same as perl"
+    "perl", "artistic", "epl", "w3c", "open_source", "unrestricted", "same as perl",
+    "asl 1.0", "asl 1.1", "asl 2.0", "licenseref-not-copyrightable"
   ],
   "nonfree_keywords": [
     "proprietary", "freeware", "shareware", "commercial", "all rights reserved", "eula",
@@ -19,7 +20,8 @@
     "openrail", "bigscience", "jetbrains user agreement", "oracle technology network",
     "oracle no-fee terms", "microsoft software license", "nvidia", "closed source", "closed-source",
     "not open source", "other/proprietary", "licenseref-proprietary", "licenseref-scancode-proprietary",
-    "source-available", "source available", "restricted"
+    "source-available", "source available", "restricted",
+    "no modification permitted", "freely redistributable without restriction", "licenseref-fedora-firmware"
   ],
   "unknown_markers": ["noassertion", "none", "unknown", "see license in", "see license", "custom", "other"],
   "fingerprints": [

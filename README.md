@@ -4,7 +4,7 @@ Check your Stallman Freedom Index (SFI).
 
 sficheck is a proprietary software detector. It audits everything installed through your system package manager and your language package managers, then prints your Stallman Freedom Index (free / classified).
 
-It runs on GNU/Linux (Arch, Debian, Ubuntu, NixOS and anything with flatpak/snap/brew), Windows and macOS. Python 3.11+. Dependencies: [msgspec](https://jcristharif.com/msgspec/) (list files), [license-expression](https://github.com/aboutcode-org/license-expression) (licenses), [httpx2](https://pypi.org/project/httpx2/) (online lookups), and on Linux [pyudev](https://pyudev.readthedocs.io/) (devices, needs libudev).
+It runs on GNU/Linux (Arch, Debian, Ubuntu, Fedora, RHEL, openSUSE, NixOS and anything with flatpak/snap/brew), Windows and macOS. Python 3.11+. Dependencies: [msgspec](https://jcristharif.com/msgspec/) (list files), [license-expression](https://github.com/aboutcode-org/license-expression) (licenses), [httpx2](https://pypi.org/project/httpx2/) (online lookups), and on Linux [pyudev](https://pyudev.readthedocs.io/) (devices, needs libudev).
 
 ## Install
 
@@ -26,6 +26,7 @@ sficheck started as a fork of absolutely-proprietary. See [Origins](#origins) be
 **System** (`--software`)
 - `pacman` — Arch and derivatives, checked against Parabola's [blacklist](https://git.parabola.nu/abslibre/blacklist.git/plain/blacklist.txt) and [aur-blacklist](https://git.parabola.nu/abslibre/blacklist.git/plain/aur-blacklist.txt) (`--include-privacy` adds `your-privacy-blacklist.txt`). Packages that aren't blacklisted count as free, as before.
 - `dpkg` — Debian, Ubuntu, Mint… Archive area decides: `non-free`, `non-free-firmware`, `restricted`, `multiverse` → nonfree; `contrib` → uses-nonfree. Third-party repo packages (Chrome, VS Code, Teams…) come from the curated list.
+- `rpm` — Fedora, RHEL, openSUSE, Mageia… License tag from the rpm database (SPDX on current Fedora, older Callaway names like `GPLv2+` and `ASL 2.0` too). Firmware tagged `LicenseRef-Fedora-Firmware` or `Redistributable, no modification permitted` is nonfree.
 - `nix` — `nix-env`, `nix profile` and NixOS `systemPackages`, using nixpkgs `meta.license.free`.
 - `flatpak` — license from the local appstream catalogue.
 - `snap`, `brew` — license from `snap info` / `brew info`; brew casks via the curated list.
@@ -191,7 +192,7 @@ uv run python scripts/check_lists.py --online   # after editing the lists
 
 sficheck is a fork of [absolutely-proprietary](https://github.com/vmavromatis/absolutely-proprietary) by Vasilis Mavromatis and contributors. The original was a single script for Arch-based distros: it checked pacman packages against Parabola's blacklists and printed your Stallman Freedom Index. It was renamed and heavily extended in 2026, adding:
 
-- system package managers beyond pacman (dpkg, nix, flatpak, snap, brew, winget, scoop, choco, the Windows registry) and 28 language package managers
+- system package managers beyond pacman (dpkg, rpm, nix, flatpak, snap, brew, winget, scoop, choco, the Windows registry) and 28 language package managers
 - the kernel, hypervisor, firmware and hardware scans (rings 0 to -3), each selectable on its own
 - Windows and macOS support
 - the classification chain: user blacklists, ecosystem authorities, curated lists, SPDX parsing and online license lookups

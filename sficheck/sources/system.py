@@ -1,4 +1,4 @@
-"""Unix system package managers: pacman, dpkg, nix, flatpak, snap, brew."""
+"""Unix system package managers: pacman, dpkg, rpm, nix, flatpak, snap, brew."""
 
 from __future__ import annotations
 
@@ -80,6 +80,24 @@ class Dpkg(Source):
             status, why = DEB_SECTIONS[area]
             return Finding(package, status, reason=f"section:{package.extra['section']}", description=why)
         return None
+
+
+class Rpm(Source):
+    name = "rpm"
+    kind = "system"
+    description = "Fedora, RHEL, openSUSE, Mageia... (rpm License tag + curated list)"
+    lists = ("common",)
+
+    def available(self) -> bool:
+        return proc.which("rpm") is not None
+
+    def packages(self) -> Iterable[Package]:
+        out = proc.run(["rpm", "-qa", "--qf", r"%{NAME}\t%{VERSION}-%{RELEASE}\t%{LICENSE}\n"]) or ""
+        for line in out.splitlines():
+            parts = line.split("\t")
+            # gpg-pubkey entries are the signing keys rpm imported, not software.
+            if len(parts) == 3 and parts[0] != "gpg-pubkey":
+                yield self.pkg(parts[0], parts[1], None if parts[2] == "(none)" else parts[2])
 
 
 def nix_license_status(meta: dict[str, Any]) -> tuple[Status, str] | None:
