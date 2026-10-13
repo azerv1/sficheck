@@ -56,6 +56,9 @@ class Source:
     def packages(self) -> Iterable[Package]:
         raise NotImplementedError
 
+    def prepare(self) -> None:
+        """Load what ``verdict`` needs, for packages that aren't installed yet (install-time hooks)."""
+
     def verdict(self, package: Package) -> Finding | None:
         return None
 

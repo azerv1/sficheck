@@ -33,8 +33,11 @@ class Pacman(Source):
     def available(self) -> bool:
         return proc.which("pacman") is not None
 
-    def packages(self) -> Iterable[Package]:
+    def prepare(self) -> None:
         self._parabola = blacklist.load_parabola(self.ctx.fetcher, include_privacy=self.ctx.include_privacy)
+
+    def packages(self) -> Iterable[Package]:
+        self.prepare()
         foreign = set((proc.run(["pacman", "-Qqm"], ok_codes=(0, 1)) or "").split())
         out = proc.run(["pacman", "-Q"]) or ""
         for line in out.splitlines():

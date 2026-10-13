@@ -122,6 +122,7 @@ Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entr
 --blacklist PATH|URL (repeatable)  --ignore PKG  --no-bundled list control
 --online-licenses  --offline  --refresh  --cache-ttl HOURS    network and cache
 --unknown-as-nonfree  --exit-code  --jobs N  --color  -q  -v
+--install-hook pacman|apt|dnf  --remove-hook pacman|apt|dnf  warn at install time (Linux, root)
 ```
 
 `--exit-code` makes the command exit 1 when anything proprietary is found, so it can be used in CI. Progress goes to stderr, so `--format json | jq` works.
@@ -130,6 +131,24 @@ Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entr
 - Running programs come from the process list ([psutil](https://github.com/giampaolo/psutil)). Each program's path is matched to the package that installed it: `pacman -Qqo`, `dpkg -S` or `rpm -qf` on Linux, `/snap/<name>/` for snaps, `flatpak ps` for flatpaks, Homebrew's `Cellar/<name>/`, and on Windows the install folder the registry records for each program (or scoop's `apps/<name>/`).
 - Kernel drivers, firmware and devices are always in use, since those scans already report only what is loaded or present. A hypervisor counts only when this OS runs on it.
 - Not counted: services that are enabled but stopped, autostart entries, and sources that can't map a running program to a package (the language package managers, winget, Chocolatey, nix and the browser). Windows programs that record no install folder are left out too.
+
+### Warnings at install time
+
+`sudo sficheck --install-hook pacman` (or `apt`, or `dnf`) adds a hook that warns before the package manager installs something proprietary:
+
+```
+sficheck: unrar is nonfree (proprietary license); free alternatives: unar
+```
+
+The hook only warns: it always lets the install go ahead, even if sficheck itself fails. It checks new installs only, never upgrades, using the same rules as a scan: your `--blacklist` lists, then Parabola's blacklist for pacman, the archive area for apt, or the License tag for dnf, then the curated lists. `sudo sficheck --remove-hook pacman` removes it again.
+
+| Package manager | File written | How it's called |
+|---|---|---|
+| pacman | `/etc/pacman.d/hooks/sficheck.hook` | a `PreTransaction` hook for `Operation = Install`, given the package names |
+| apt | `/etc/apt/apt.conf.d/50sficheck` | `DPkg::Pre-Install-Pkgs` with protocol version 2, which tells new installs from upgrades; each `.deb`'s section is read with `dpkg-deb` |
+| dnf5 | `/etc/dnf/libdnf5-plugins/actions.d/sficheck.actions` | a `pre_transaction` action, run per new package with its name and License tag; needs `libdnf5-plugin-actions` |
+
+The hook runs sficheck by the absolute path it was installed from, so reinstall the hook if you move sficheck.
 
 Defaults for any option can live in `~/.config/sficheck/config.json` (`%APPDATA%\sficheck\config.json` on Windows), using the option names with underscores:
 

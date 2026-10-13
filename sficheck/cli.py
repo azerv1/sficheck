@@ -13,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
-from sficheck import __version__, render, running
+from sficheck import __version__, hooks, render, running
 from sficheck.blacklist import Blacklist, load_user
 from sficheck.classify import Classifier
 from sficheck.models import Finding, Ring, SourceReport, Status
@@ -165,7 +165,8 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument(
         "--online-licenses",
         action="store_true",
-        help="look up missing licenses online (deps.dev, packagist, pub.dev, hex.pm, metacpan, GitHub)",
+        help="look up missing licenses online (deps.dev, packagist, pub.dev, hex.pm, metacpan, GitHub, "
+        "addons.mozilla.org)",
     )
     g.add_argument("--offline", action="store_true", help="never use the network; rely on cached downloads")
     g.add_argument("--refresh", action="store_true", help="ignore cached downloads younger than --cache-ttl")
@@ -174,6 +175,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     g.add_argument("--jobs", type=int, default=8, help="parallel workers (default: 8)")
     g.add_argument("--config", type=Path, default=None, help=argparse.SUPPRESS)
+
+    g = p.add_argument_group(
+        "install-time hooks (Linux, needs root)",
+        "Warn before the package manager installs something nonfree. The hook never blocks an install.",
+    )
+    g.add_argument("--install-hook", choices=list(hooks.HOOK_FILES), help="install the hook for this package manager")
+    g.add_argument("--remove-hook", choices=list(hooks.HOOK_FILES), help="remove that hook again")
+    # What the installed hooks run; not meant to be typed.
+    g.add_argument("--check-targets", choices=list(hooks.HOOK_SOURCES.values()), help=argparse.SUPPRESS)
+    p.add_argument("targets", nargs="*", help=argparse.SUPPRESS)
     return p
 
 
@@ -211,6 +222,28 @@ def wanted_statuses(args: argparse.Namespace) -> set[str]:
     if args.show_unknown:
         statuses.add(Status.UNKNOWN.value)
     return statuses
+
+
+def manage_hook(args: argparse.Namespace) -> int:
+    try:
+        message = hooks.install(args.install_hook) if args.install_hook else hooks.remove(args.remove_hook)
+    except OSError as exc:
+        log.error("%s", exc)
+        return 2
+    sys.stdout.write(message + "\n")
+    return 0
+
+
+def check_targets(args: argparse.Namespace, ctx: Context, classifier: Classifier) -> int:
+    """Warn about proprietary packages a package manager is about to install; never fails the install."""
+    try:
+        source = BY_NAME[args.check_targets](ctx)
+        warnings = hooks.check(source, hooks.targets(source, sys.stdin, args.targets), classifier)
+    except Exception as exc:  # a hook must never block the package manager
+        log.warning("sficheck: %s", exc)
+        return 0
+    sys.stdout.write("".join(f"{w}\n" for w in warnings))
+    return 0
 
 
 def keep_in_use(sources: list[Source], reports: list[SourceReport]) -> None:
@@ -307,6 +340,19 @@ def render_report(args: argparse.Namespace, reports: list[SourceReport], shown: 
     return render.summary_text(reports, palette, args.unknown_as_nonfree) + "\n" + render.table(shown, palette, width)
 
 
+def run_command(args: argparse.Namespace, ctx: Context) -> int | None:
+    """Options that do something other than scan; returns their exit code, or None to go on scanning."""
+    if args.list_sources:
+        sys.stdout.write(list_sources(ctx))
+        return 0
+    if args.targets and not args.check_targets:
+        log.error("unrecognized arguments: %s", " ".join(args.targets))
+        return 2
+    if args.install_hook or args.remove_hook:
+        return manage_hook(args)
+    return None
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
@@ -318,9 +364,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     fetcher = Fetcher(ttl=args.cache_ttl * 3600, offline=args.offline, refresh=args.refresh)
     ctx = Context(fetcher=fetcher, include_privacy=args.include_privacy, jobs=args.jobs)
-    if args.list_sources:
-        sys.stdout.write(list_sources(ctx))
-        return 0
+    if (code := run_command(args, ctx)) is not None:
+        return code
 
     user = Blacklist()
     for location in args.blacklist:
@@ -330,10 +375,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             log.error("Could not load blacklist %s: %s", location, exc)
             return 2
 
-    sources = select_sources(args, ctx)
-    if not sources:
-        log.error("No supported package sources found (try --list-sources).")
-        return 2
     classifier = Classifier(
         fetcher=fetcher,
         user=user,
@@ -342,6 +383,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         online=args.online_licenses and not args.offline,
         jobs=args.jobs,
     )
+    if args.check_targets:
+        return check_targets(args, ctx, classifier)
+
+    sources = select_sources(args, ctx)
+    if not sources:
+        log.error("No supported package sources found (try --list-sources).")
+        return 2
     reports = scan(sources, classifier, args.jobs)
     if args.in_use:
         keep_in_use(sources, reports)
