@@ -70,10 +70,20 @@ class FakeHardware(FakeKernel):
         yield self.pkg("Wi-Fi 6 AX201", "", "Proprietary")
 
 
+class FakeBrowser(FakeSource):
+    name = "browser"
+    default_enabled = False
+
+    def packages(self) -> Iterable[Package]:
+        yield self.pkg("widevine", "", "Proprietary")
+
+
 @pytest.fixture(autouse=True)
 def isolated(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setattr(
-        cli, "ALL_SOURCES", (FakeSource, BrokenSource, FakeKernel, FakeHypervisors, FakeFirmware, FakeHardware)
+        cli,
+        "ALL_SOURCES",
+        (FakeSource, BrokenSource, FakeKernel, FakeHypervisors, FakeFirmware, FakeHardware, FakeBrowser),
     )
     monkeypatch.setattr(
         cli,
@@ -85,6 +95,7 @@ def isolated(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
             "hypervisors": FakeHypervisors,
             "firmware": FakeFirmware,
             "hardware": FakeHardware,
+            "browser": FakeBrowser,
         },
     )
     monkeypatch.setattr(cli, "config_path", lambda: tmp_path / "config.json")
@@ -175,6 +186,14 @@ def test_layer_flags_scan_only_those_layers(capsys: pytest.CaptureFixture[str]) 
         "vgk",
         "evil|pipe",
     ]
+
+
+def test_browser_is_scanned_only_when_asked_for(capsys: pytest.CaptureFixture[str]) -> None:
+    assert "widevine" not in names(run_json(capsys, "--skip", "broken"))
+    assert names(run_json(capsys, "--browser")) == ["widevine"]
+    assert names(run_json(capsys, "--browser", "--firmware", "--sort", "ring")) == ["intel-me", "widevine"]
+    cli.main(["--list-sources"])
+    assert "(opt-in)" in next(line for line in capsys.readouterr().out.splitlines() if line.startswith("browser"))
 
 
 def test_kind_narrows_the_software_layer(capsys: pytest.CaptureFixture[str]) -> None:

@@ -74,7 +74,15 @@ def _github(fetcher: Fetcher, name: str, version: str) -> str | None:
     return spdx if spdx and spdx != "NOASSERTION" else None
 
 
+def _amo(fetcher: Fetcher, name: str, version: str) -> str | None:
+    data = fetcher.get_json(f"https://addons.mozilla.org/api/v5/addons/addon/{quote(name, safe='')}/")
+    license_ = ((data.get("current_version") or {}).get("license") or {}) if isinstance(data, dict) else {}
+    # Custom licenses are free text that only a person can judge.
+    return None if license_.get("is_custom") else license_.get("slug")
+
+
 _LOOKUPS: dict[str, Callable[[Fetcher, str, str], str | None]] = {
+    "amo": _amo,
     "packagist": _packagist,
     "pub": _pub,
     "hex": _hex,

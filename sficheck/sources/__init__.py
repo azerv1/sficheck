@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from sficheck.sources.base import Context, Source
+from sficheck.sources.browser import Browser
 from sficheck.sources.compiled import Cargo, Conan, DotnetTools, Go, Mint, NugetCache, Vcpkg
 from sficheck.sources.firmware import Firmware
 from sficheck.sources.hardware import Hardware
@@ -32,6 +33,7 @@ ALL_SOURCES: tuple[type[Source], ...] = (
     Hypervisors,
     Firmware,
     Hardware,
+    Browser,
     # languages
     Pip,
     UvTools,

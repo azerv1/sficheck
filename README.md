@@ -48,6 +48,14 @@ sficheck started as a fork of absolutely-proprietary. See [Origins](#origins) be
   - Windows: PCI, USB and HD Audio devices plugged in now, from the registry. A device on a third-party driver is nonfree; devices on Microsoft's own drivers are covered by Windows itself.
   - A driver named in the curated lists decides for its device: nvidia's devices get nouveau as the alternative, and a WireGuard adapter stays free.
 
+**Browser** (`--browser`, only when asked for; never part of the default scan)
+- `browser` — extensions you installed in Firefox and Chromium-based browsers (Chrome, Chromium, Brave, Edge, Vivaldi), and the Widevine DRM module those browsers download to play protected video. Widevine is nonfree and tagged `drm`.
+- It reads only these local files, and never history, cookies or passwords:
+  - Firefox: `extensions.json` and the `gmp-widevinecdm` folder in each profile, under `~/.mozilla/firefox` (plus its flatpak and snap locations), `~/Library/Application Support/Firefox/Profiles` or `%APPDATA%\Mozilla\Firefox\Profiles`.
+  - Chromium-based: each extension's `manifest.json` (and its `_locales` folder for the display name) under `<profile>/Extensions`, and the `WidevineCdm` folder, under `~/.config/<browser>`, `~/Library/Application Support/<vendor>/<browser>` or `%LOCALAPPDATA%\<vendor>\<browser>\User Data`.
+- Firefox's built-in add-ons, themes, dictionaries and language packs are skipped.
+- With `--online-licenses`, Firefox extensions are looked up on addons.mozilla.org, which publishes the license each developer declares. A custom license stays unknown. Chrome Web Store doesn't publish licenses, so Chromium extensions rely on the curated `browser.json` and are otherwise unknown.
+
 **Languages** (`--software`; global installs, not project dependencies)
 - Python: `pip` (default interpreter), `uv` tools, `pipx`
 - JavaScript/TypeScript: `npm`, `pnpm`, `yarn`, `bun`, `deno`
@@ -62,7 +70,7 @@ Opt-in sources only run when named, e.g. `--sources maven,gradle`.
 
 Each package goes through a fixed chain, and the first step with an answer wins. Your own `--blacklist` files come first, so you can always overrule the tool. Next comes the ecosystem's own authority, when it has one: Parabola's blacklist for pacman, the archive area for dpkg, `meta.unfree` for nix. Then the bundled curated lists in `sficheck/data/lists/`. They come before declared licenses because a license field can be technically true and still misleading. 7-Zip is LGPL but bundles nonfree unRAR code, and VS Code's source is MIT but the Microsoft build is not.
 
-After that the declared license is parsed as an SPDX expression or free text. `MIT OR Proprietary` is free, because you may choose the free branch. `MIT AND Proprietary` is semifree. `BUSL-1.1`, `SSPL`, `Elastic-2.0`, `Freeware` and npm's `UNLICENSED` are nonfree. SPDX ids count as free when [ScanCode's license database](https://scancode-licensedb.aboutcode.org/) files them as permissive, copyleft or public domain. With `--online-licenses`, packages with no usable license are looked up on deps.dev, Packagist, pub.dev, hex.pm, MetaCPAN or GitHub. Anything still unresolved is `unknown`, except under pacman and dpkg, whose vetted archives default to free.
+After that the declared license is parsed as an SPDX expression or free text. `MIT OR Proprietary` is free, because you may choose the free branch. `MIT AND Proprietary` is semifree. `BUSL-1.1`, `SSPL`, `Elastic-2.0`, `Freeware` and npm's `UNLICENSED` are nonfree. SPDX ids count as free when [ScanCode's license database](https://scancode-licensedb.aboutcode.org/) files them as permissive, copyleft or public domain. With `--online-licenses`, packages with no usable license are looked up on deps.dev, Packagist, pub.dev, hex.pm, MetaCPAN, GitHub or addons.mozilla.org. Anything still unresolved is `unknown`, except under pacman and dpkg, whose vetted archives default to free.
 
 Unknown packages are left out of the index by default. `--unknown-as-nonfree` counts them against you instead. Sources can overlap (the `windows` registry also lists programs winget installed), so the overall index is a rough figure. The per-source rows are the precise ones.
 
@@ -95,6 +103,7 @@ Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entr
 --hypervisors                                                 scan the hypervisor underneath and installed ones
 --firmware                                                    scan the BIOS/UEFI, Intel ME / AMD PSP and microcode
 --hardware                                                    scan devices that need a nonfree driver or firmware blobs
+--browser                                                     scan browser extensions and DRM modules (only when asked)
 --kind system|lang / --sources A,B / --skip A,B              narrow or name sources
 --status S (repeatable) / -f, --full / --all / --show-unknown  what to show (default: nonfree)
 --sort source|name|status|ring|alternatives  (-s, -a shortcuts)  -r   ordering

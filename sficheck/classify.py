@@ -62,7 +62,8 @@ class Classifier:
 
     def _online(self, source: Source, package: Package) -> Finding | None:
         assert source.registry is not None
-        found = registries.lookup_license(self.fetcher, source.registry, package.name, package.version)
+        name = source.lookup_name(package) or package.name
+        found = registries.lookup_license(self.fetcher, source.registry, name, package.version)
         return _from_license(package, found, f"online:{source.registry}")
 
     def run(self, source: Source, packages: Iterable[Package]) -> list[Finding]:
@@ -74,7 +75,7 @@ class Classifier:
                 continue
             if finding := self._offline(source, package, curated):
                 findings.append(finding)
-            elif self.online and source.registry:
+            elif self.online and source.registry and source.lookup_name(package):
                 pending.append(package)
             else:
                 findings.append(source.fallback(package))

@@ -1,0 +1,7 @@
+{
+  "$schema": "../../../docs/lists.schema.json",
+  "_comment": "Browser extensions (by display name) and DRM modules the 'browser' source reports. Only used by that source.",
+  "entries": [
+    {"name": "widevine", "status": "nonfree", "antifeatures": ["drm"], "description": "Google's Widevine DRM module, downloaded by the browser to play protected video", "reference": "https://en.wikipedia.org/wiki/Widevine"}
+  ]
+}

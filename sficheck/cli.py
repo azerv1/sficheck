@@ -25,6 +25,8 @@ log = logging.getLogger("sficheck")
 # Flags for the layers below userspace; each turns on the source of the same name. With no layer flag,
 # no --software, --kind or --sources, every layer is scanned.
 LAYER_FLAGS = ("kernel", "hypervisors", "firmware", "hardware")
+# Scanned only when named: never part of the default "everything" scan.
+OPT_IN_FLAGS = ("browser",)
 PROPRIETARY = [Status.NONFREE.value, Status.SEMIFREE.value, Status.USES_NONFREE.value]
 SORT_KEYS = {
     "source": lambda f: (f.package.source, f.package.name.lower()),
@@ -72,6 +74,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="scan the BIOS/UEFI (ring -2), Intel ME / AMD PSP and microcode (ring -3)",
     )
     g.add_argument("--hardware", action="store_true", help="scan devices that need a nonfree driver or firmware blobs")
+    g.add_argument(
+        "--browser",
+        action="store_true",
+        help="scan browser extensions and DRM modules in local profiles (only when asked for)",
+    )
     g.add_argument(
         "--kind",
         choices=["system", "lang"],
@@ -211,7 +218,7 @@ def software_sources(kinds: list[str] | None) -> list[str]:
 
 
 def select_sources(args: argparse.Namespace, ctx: Context) -> list[Source]:
-    layers = [flag for flag in LAYER_FLAGS if getattr(args, flag)]
+    layers = [flag for flag in (*LAYER_FLAGS, *OPT_IN_FLAGS) if getattr(args, flag)]
     everything = not (args.sources or args.software or args.kind or layers)
     names = list(args.sources or [])
     if args.software or args.kind or everything:

@@ -57,6 +57,10 @@ class Source:
     def verdict(self, package: Package) -> Finding | None:
         return None
 
+    def lookup_name(self, package: Package) -> str | None:
+        """The name to look up in ``registry``; None skips the online lookup for this package."""
+        return package.name
+
     def fallback(self, package: Package) -> Finding:
         """The finding for a package nothing else could classify."""
         reason = "not blacklisted" if self.fallback_status is Status.FREE else "no license information"
