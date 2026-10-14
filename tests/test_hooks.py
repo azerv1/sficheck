@@ -40,7 +40,7 @@ def test_dnf_hook_escapes_spaces_and_skips_all_but_new_installs() -> None:
     assert positional == "sh ${pkg.action} ${pkg.name} ${pkg.license}"
     script = escaped.replace("\\ ", " ")  # every space is escaped, so sh -c gets one script
     assert script.startswith('[ "$1" = I ] || exit 0; exec /home/me/.local/bin/sficheck')
-    assert script.endswith('--check-targets rpm "$2" "$3"')
+    assert script.endswith('--check-targets rpm "$2" "$3" >&2')  # dnf5 only shows an action's stderr
 
 
 def _dnf5_argv(command: str, values: dict[str, str]) -> list[str]:

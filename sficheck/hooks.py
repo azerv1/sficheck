@@ -54,7 +54,8 @@ def hook_text(manager: str, command: list[str]) -> str:
     # dnf5 runs the command once per package; the sh guard skips upgrades and removals cheaply.
     # dnf5 pastes ${pkg.*} values into an argument as plain text, so they reach sh as positional
     # arguments: inside the script, a quote in a package's License tag would run as root.
-    script = f'[ "$1" = I ] || exit 0; exec {check} "$2" "$3"'
+    # dnf5 reads an action's stdout as commands and only shows its stderr, so the warnings go there.
+    script = f'[ "$1" = I ] || exit 0; exec {check} "$2" "$3" >&2'
     escaped = script.replace(" ", "\\ ")  # unescaped spaces would split the command into arguments
     return (
         "# Written by sficheck --install-hook dnf; remove with --remove-hook dnf.\n"
