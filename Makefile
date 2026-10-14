@@ -24,6 +24,7 @@ lint:
 	uv run complexipy
 	uv run vulture
 	uv run deptry .
+	uv run zizmor .github/workflows
 
 format:
 	uv run ruff check --fix --select I

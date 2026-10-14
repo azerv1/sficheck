@@ -40,6 +40,12 @@ repos:
         language: system
         pass_filenames: false
         verbose: true
+      - id: zizmor
+        name: zizmor
+        entry: uv run python hooks/timed.py zizmor zizmor .github/workflows
+        language: system
+        pass_filenames: false
+        verbose: true
       - id: jscpd
         name: jscpd
         entry: uv run python hooks/timed.py jscpd npx --yes jscpd@4 sficheck scripts tests
