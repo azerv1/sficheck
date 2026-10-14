@@ -1,0 +1,25 @@
+.pre-commit-config.yaml
+  s_4d7dbb40c2169b::t_ddad55a05a0911 43-48
+Makefile
+  s_4d7dbb40c2169b::t_33c4ef3354a6c1 27
+pyproject.toml
+  s_4d7dbb40c2169b::t_e962f18500b3f7 61
+uv.lock
+  s_4d7dbb40c2169b::t_9be5efa3af1a83 1438,1471,1703-1720
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "43d5b38d81fefa45d7ad9e13cce3359957590b9b",
+  "prompts": {},
+  "sessions": {
+    "s_4d7dbb40c2169b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2cc965ab-7f44-49e0-a2b8-006a4ab62b4c",
+        "model": "unknown"
+      },
+      "human_author": "azerv1 <asterioszer@gmail.com>"
+    }
+  }
+}
