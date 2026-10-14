@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 import logging
 import re
 from collections.abc import Iterable, Iterator
@@ -117,10 +118,22 @@ class ListFile(msgspec.Struct):
     entries: list[ListEntry] = []
 
 
+def json_schema(type_: Any) -> dict[str, Any]:
+    """msgspec's JSON Schema for ``type_``, the same on every Python version.
+
+    Class docstrings become descriptions, and Python 3.13 started dedenting docstrings, so they are cleaned here.
+    """
+    schema: dict[str, Any] = msgspec.json.schema(type_)
+    for definition in (schema, *schema.get("$defs", {}).values()):
+        if "description" in definition:
+            definition["description"] = inspect.cleandoc(definition["description"])
+    return schema
+
+
 def lists_schema() -> dict[str, Any]:
     """The JSON Schema of a list file, as published in docs/lists.schema.json for editors."""
     # Round-trip through JSON so tuple defaults such as () come back as [], the way the file stores them.
-    generated = msgspec.json.decode(msgspec.json.encode(msgspec.json.schema(ListFile)))
+    generated = msgspec.json.decode(msgspec.json.encode(json_schema(ListFile)))
     schema: dict[str, Any] = {"$schema": "https://json-schema.org/draft/2020-12/schema", **generated}
     # The rule from README "Contributing to the lists": anything not free must cite a reference.
     schema["$defs"]["ListEntry"]["if"] = {"not": {"properties": {"status": {"const": "free"}}, "required": ["status"]}}

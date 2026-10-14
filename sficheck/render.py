@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 import msgspec
 
+from sficheck.blacklist import json_schema
 from sficheck.models import Antifeature, Finding, Ring, SourceReport, Status
 
 HEADERS = ("Source", "Name", "Version", "Status", "Ring", "Libre alternatives", "Description")
@@ -288,7 +289,7 @@ class Report(msgspec.Struct):
 
 def output_schema() -> dict[str, object]:
     """The JSON Schema of Report, as published in docs/output.schema.json."""
-    return {"$schema": "https://json-schema.org/draft/2020-12/schema", **msgspec.json.schema(Report)}
+    return {"$schema": "https://json-schema.org/draft/2020-12/schema", **json_schema(Report)}
 
 
 def as_json(findings: Sequence[Finding], reports: Sequence[SourceReport], unknown_as_nonfree: bool) -> str:
