@@ -15,13 +15,21 @@ DEFAULT_TIMEOUT = 120
 
 
 def which(tool: str) -> str | None:
-    """The tool's path on PATH. On Windows, Python 3.11 looks in the current directory first, so a
-    same-named file there (a cloned repo's ``git.cmd``) would run instead; it is searched last and ignored."""
-    path = os.environ.get("PATH", os.defpath)
-    if sys.platform != "win32" or os.curdir in path.split(os.pathsep):
+    """The tool's path on PATH.
+
+    On Windows, shutil.which looks in the current directory first unless NoDefaultCurrentDirectoryInExePath
+    is set, so a same-named file there (a cloned repo's ``git.cmd``) would run instead. Windows gets a
+    search of PATH alone.
+    """
+    if sys.platform != "win32":
         return shutil.which(tool)
-    found = shutil.which(tool, path=path + os.pathsep + os.curdir)
-    return None if found and Path(found).parent == Path(os.curdir) else found
+    exts = [ext for ext in os.environ.get("PATHEXT", ".COM;.EXE;.BAT;.CMD").split(os.pathsep) if ext]
+    names = [tool] if tool.lower().endswith(tuple(ext.lower() for ext in exts)) else [tool + ext for ext in exts]
+    for folder in os.environ.get("PATH", "").split(os.pathsep):
+        for name in names:
+            if folder and (candidate := Path(folder, name)).is_file():
+                return str(candidate)
+    return None
 
 
 def run(cmd: list[str], timeout: float = DEFAULT_TIMEOUT, ok_codes: tuple[int, ...] = (0,)) -> str | None:

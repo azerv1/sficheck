@@ -20,6 +20,7 @@ def test_which_ignores_a_same_named_file_in_the_current_directory(
     (here / "tool.cmd").write_text("@echo fake\r\n", encoding="utf-8")
     (here / "elsewhere.cmd").write_text("@echo fake\r\n", encoding="utf-8")
     monkeypatch.chdir(here)
+    monkeypatch.delenv("NoDefaultCurrentDirectoryInExePath", raising=False)  # set in some shells, not in cmd
     monkeypatch.setenv("PATH", str(real))
     found = proc.which("tool")
     assert found is not None and Path(found).parent == real
