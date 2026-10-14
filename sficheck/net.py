@@ -75,6 +75,9 @@ class Fetcher:
         cached, usable = self._cached(path)
         if usable or self.offline:
             return cached
+        if not url.startswith("https://"):  # lists decide verdicts, so nobody on the path may swap them
+            log.warning("Refusing to download %s: only https:// URLs are fetched", url)
+            return cached
         import httpx2  # only runs that go online pay for the import
 
         headers = {"User-Agent": USER_AGENT}
@@ -88,6 +91,9 @@ class Fetcher:
             response.raise_for_status()
         except httpx2.HTTPError as exc:
             log.warning("Could not download %s (%s)%s", url, exc, "; using cached copy" if cached else "")
+            return cached
+        if response.url.scheme != "https":
+            log.warning("Refusing %s: it redirected to %s", url, response.url)
             return cached
         body = response.text
         path.parent.mkdir(parents=True, exist_ok=True)

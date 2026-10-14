@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import io
+import re
 import sys
+from collections.abc import Callable
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -33,11 +36,42 @@ def test_dnf_hook_escapes_spaces_and_skips_all_but_new_installs() -> None:
     line = hooks.hook_text("dnf", COMMAND).splitlines()[-1]
     callback, pattern, direction, options, command = line.split(":", 4)
     assert (callback, pattern, direction, options) == ("pre_transaction", "*", "in", "")
-    escaped = command.removeprefix("/bin/sh -c ")
-    assert " " not in escaped.replace("\\ ", "")  # every space is escaped, so sh -c gets one script
-    script = escaped.replace("\\ ", " ")
-    assert script.startswith("[ '${pkg.action}' = I ] || exit 0; exec /home/me/.local/bin/sficheck")
-    assert script.endswith("--check-targets rpm '${pkg.name}' '${pkg.license}'")
+    escaped, positional = re.split(r"(?<!\\) ", command.removeprefix("/bin/sh -c "), maxsplit=1)
+    assert positional == "sh ${pkg.action} ${pkg.name} ${pkg.license}"
+    script = escaped.replace("\\ ", " ")  # every space is escaped, so sh -c gets one script
+    assert script.startswith('[ "$1" = I ] || exit 0; exec /home/me/.local/bin/sficheck')
+    assert script.endswith('--check-targets rpm "$2" "$3"')
+
+
+def _dnf5_argv(command: str, values: dict[str, str]) -> list[str]:
+    """What dnf5's actions plugin executes: split on unescaped spaces, substitute each argument, unescape."""
+    args = re.split(r"(?<!\\) +", command)
+    for key, value in values.items():
+        args = [arg.replace("${" + key + "}", value) for arg in args]
+    return [re.sub(r"\\(.)", r"\1", arg) for arg in args]
+
+
+def test_dnf_hook_keeps_package_values_out_of_the_script() -> None:
+    command = hooks.hook_text("dnf", COMMAND).splitlines()[-1].split(":", 4)[4]
+    evil = "MIT' ; touch /tmp/pwned ; '"
+    argv = _dnf5_argv(command, {"pkg.action": "I", "pkg.name": "zoom", "pkg.license": evil})
+    assert argv[:2] == ["/bin/sh", "-c"]
+    assert "pwned" not in argv[2]
+    assert argv[3:] == ["sh", "I", "zoom", evil]
+
+
+def test_install_refuses_files_a_user_could_change(monkeypatch: pytest.MonkeyPatch) -> None:
+    def stat(owner: int, mode: int) -> Callable[[Path], SimpleNamespace]:
+        return lambda self: SimpleNamespace(st_uid=owner, st_mode=mode)
+
+    monkeypatch.setattr(Path, "stat", stat(0, 0o40755))
+    hooks._check_root_owned(COMMAND)  # root-owned and not group or world writable
+    monkeypatch.setattr(Path, "stat", stat(1000, 0o40755))
+    with pytest.raises(OSError, match="can be changed by a user other than root"):
+        hooks._check_root_owned(COMMAND)
+    monkeypatch.setattr(Path, "stat", stat(0, 0o40777))
+    with pytest.raises(OSError, match="system-wide"):
+        hooks._check_root_owned(COMMAND)
 
 
 def test_python_dash_m_runs_through_the_interpreter(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -51,6 +85,7 @@ def hook_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setattr(hooks, "DNF_ACTIONS_CONF", tmp_path / "missing.conf")
     monkeypatch.setattr(hooks, "_is_linux", lambda: True)
     monkeypatch.setattr(hooks, "_is_root", lambda: True)
+    monkeypatch.setattr(hooks, "_check_root_owned", lambda command: None)
     monkeypatch.setattr(cli, "config_path", lambda: tmp_path / "config.json")
     return tmp_path
 

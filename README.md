@@ -119,7 +119,7 @@ Rings 1 and 2 exist on x86 but mainstream OSes leave them unused. A curated entr
 --max-ring N                                                  only ring N or deeper (-3 … 3)
 --in-use                                                      only what is in use right now (see below)
 --format table|markdown|json|csv  -o FILE                     output
---blacklist PATH|URL (repeatable)  --ignore PKG  --no-bundled list control
+--blacklist PATH|https-URL (repeatable)  --ignore PKG  --no-bundled list control
 --online-licenses  --offline  --refresh  --cache-ttl HOURS    network and cache
 --unknown-as-nonfree  --exit-code  --jobs N  --color  -q  -v
 --install-hook pacman|apt|dnf  --remove-hook pacman|apt|dnf  warn at install time (Linux, root)
@@ -141,6 +141,8 @@ sficheck: unrar is nonfree (proprietary license); free alternatives: unar
 ```
 
 The hook only warns: it always lets the install go ahead, even if sficheck itself fails. It checks new installs only, never upgrades, using the same rules as a scan: your `--blacklist` lists, then Parabola's blacklist for pacman, the archive area for apt, or the License tag for dnf, then the curated lists. `sudo sficheck --remove-hook pacman` removes it again.
+
+The package manager runs the hook as root, so sficheck must be installed where only root can change it: your distro's package, the `PKGBUILD`, or `sudo pipx install --global`. `--install-hook` refuses a copy under your home directory, since anyone who can edit it could then run code as root.
 
 | Package manager | File written | How it's called |
 |---|---|---|

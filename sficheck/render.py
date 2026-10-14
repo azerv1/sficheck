@@ -51,18 +51,27 @@ class Palette:
         return self.wrap(text, "32" if value > 95 else "33" if value > 25 else "31")
 
 
+def clean(text: str) -> str:
+    """``text`` with control and other unprintable characters shown as ``?``.
+
+    Names and descriptions come from browser profiles, phones and online registries, so an escape
+    sequence in one could otherwise rewrite the terminal.
+    """
+    return text if text.isprintable() else "".join(ch if ch.isprintable() else "?" for ch in text)
+
+
 def _row(f: Finding) -> tuple[str, str, str, str, str, list[str], str]:
     desc = f.description or f.reason
     if f.description and f.reason not in ("", "license"):
         desc += f" [{f.reason}]"
     return (
-        f.package.source,
-        f.package.name,
-        f.package.version,
+        clean(f.package.source),
+        clean(f.package.name),
+        clean(f.package.version),
         f.status.value,
         ring_label(f.ring),
-        list(f.alternatives),
-        desc,
+        [clean(alt) for alt in f.alternatives],
+        clean(desc),
     )
 
 
@@ -169,7 +178,7 @@ def summary_text(reports: Sequence[SourceReport], palette: Palette, unknown_as_n
                 [str(r.total)],
                 [str(r.proprietary)],
                 [str(r.unknown)],
-                [_fmt_index(ri)] if not r.error else [f"error: {r.error}"],
+                [_fmt_index(ri)] if not r.error else [f"error: {clean(r.error)}"],
             ]
         )
     widths = [max(len(cell[0]) for cell in col) for col in zip(*rows, strict=True)]
@@ -331,7 +340,7 @@ def as_csv(findings: Sequence[Finding]) -> str:
     writer.writerow([*HEADERS, "License", "Reason", "Reference", "Anti-features"])
     for f in findings:
         src, name, ver, status, _, alts, _ = _row(f)
-        ring = "" if f.ring is None else str(f.ring.value)
+        ring: str | int = "" if f.ring is None else f.ring.value
         row = [
             src,
             name,
@@ -339,11 +348,16 @@ def as_csv(findings: Sequence[Finding]) -> str:
             status,
             ring,
             "; ".join(alts),
-            f.description,
-            f.package.license or "",
-            f.reason,
-            f.reference,
+            clean(f.description),
+            clean(f.package.license or ""),
+            clean(f.reason),
+            clean(f.reference),
             "; ".join(f.antifeatures),
         ]
-        writer.writerow(row)
+        writer.writerow([_no_formula(cell) for cell in row])
     return buf.getvalue()
+
+
+def _no_formula(cell: str | int) -> str | int:
+    """Spreadsheets run a text cell starting with = + - or @ as a formula; a leading ' keeps it text."""
+    return f"'{cell}" if isinstance(cell, str) and cell.startswith(("=", "+", "-", "@")) else cell

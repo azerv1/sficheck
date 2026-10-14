@@ -41,7 +41,7 @@ def _local(tag: str) -> str:
 def read_xml_fields(path: Path) -> dict[str, str]:
     """Flatten an XML file into {local tag name: text} (first occurrence wins)."""
     try:
-        root = ET.parse(path).getroot()
+        root = ET.parse(path).getroot()  # noqa: S314 -- expat resolves no external entities and caps entity expansion (2.4.1+)
     except (OSError, ET.ParseError):
         return {}
     fields: dict[str, str] = {}
@@ -60,7 +60,7 @@ def nuspec(path: Path) -> tuple[str, str, str | None]:
 def pom_licenses(path: Path) -> str | None:
     """License names from a Maven POM's <licenses> block."""
     try:
-        root = ET.parse(path).getroot()
+        root = ET.parse(path).getroot()  # noqa: S314 -- expat resolves no external entities and caps entity expansion (2.4.1+)
     except (OSError, ET.ParseError):
         return None
     names = [

@@ -17,7 +17,7 @@ def main() -> int:
     name, cmd = sys.argv[1], " ".join(sys.argv[2:])
     print(f"[{stamp()}] > {name}", flush=True)
     start = time.perf_counter()
-    code = subprocess.run(cmd, shell=True, check=False).returncode
+    code = subprocess.run(cmd, shell=True, check=False).returncode  # noqa: S602 -- commands from our own hook config
     print(
         f"[{stamp()}] < {name}  {time.perf_counter() - start:.2f}s (exit {code})",
         flush=True,

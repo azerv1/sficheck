@@ -11,6 +11,7 @@ from pathlib import Path
 from sficheck import proc
 from sficheck.classify import Classifier
 from sficheck.models import Package
+from sficheck.render import clean
 from sficheck.sources.base import Source
 
 HOOK_FILES = {
@@ -49,9 +50,14 @@ def hook_text(manager: str, command: list[str]) -> str:
             f'DPkg::Tools::Options::{command[0]}::Version "2";\n'
         )
     # dnf5 runs the command once per package; the sh guard skips upgrades and removals cheaply.
-    script = f"[ '${{pkg.action}}' = I ] || exit 0; exec {check} '${{pkg.name}}' '${{pkg.license}}'"
+    # dnf5 pastes ${pkg.*} values into an argument as plain text, so they reach sh as positional
+    # arguments: inside the script, a quote in a package's License tag would run as root.
+    script = f'[ "$1" = I ] || exit 0; exec {check} "$2" "$3"'
     escaped = script.replace(" ", "\\ ")  # unescaped spaces would split the command into arguments
-    return f"# Written by sficheck --install-hook dnf; remove with --remove-hook dnf.\npre_transaction:*:in::/bin/sh -c {escaped}\n"
+    return (
+        "# Written by sficheck --install-hook dnf; remove with --remove-hook dnf.\n"
+        f"pre_transaction:*:in::/bin/sh -c {escaped} sh ${{pkg.action}} ${{pkg.name}} ${{pkg.license}}\n"
+    )
 
 
 def _apt_quote(text: str) -> str:
@@ -67,15 +73,37 @@ def _is_root() -> bool:
     return geteuid is not None and geteuid() == 0
 
 
+def _user_writable(path: Path) -> Path | None:
+    """The first of ``path`` and its parents that someone other than root could change, if any."""
+    for p in (path, *path.parents):
+        st = p.stat()
+        if st.st_uid != 0 or st.st_mode & 0o022:
+            return p
+    return None
+
+
+def _check_root_owned(command: list[str]) -> None:
+    """Refuse a hook whose program or code a user could swap out, since root would then run their code."""
+    package = Path(__file__).resolve().parent
+    for path in (Path(command[0]).resolve(), Path(sys.executable).resolve(), package):
+        if (unsafe := _user_writable(path)) is not None:
+            raise OSError(
+                f"the hook would run {path} as root, but {unsafe} can be changed by a user other than root; "
+                "install sficheck system-wide first (your distro's package, or sudo pipx install --global)"
+            )
+
+
 def install(manager: str) -> str:
     """Write the hook file; returns what was done, or raises OSError with the reason."""
     if not _is_linux():
         raise OSError("package-manager hooks are only supported on Linux")
     if not _is_root():
         raise OSError(f"writing {HOOK_FILES[manager]} needs root; run it with sudo")
+    command = sficheck_command()
+    _check_root_owned(command)
     path = HOOK_FILES[manager]
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(hook_text(manager, sficheck_command()), encoding="utf-8")
+    path.write_text(hook_text(manager, command), encoding="utf-8")
     note = ""
     if manager == "dnf" and not DNF_ACTIONS_CONF.is_file():
         note = " dnf only runs it once libdnf5-plugin-actions is installed."
@@ -128,5 +156,5 @@ def check(source: Source, packages: list[Package], classifier: Classifier) -> li
         if f.status.is_proprietary:
             why = f.description or f.reason
             alternatives = f"; free alternatives: {', '.join(f.alternatives)}" if f.alternatives else ""
-            warnings.append(f"sficheck: {f.package.name} is {f.status.value} ({why}){alternatives}")
+            warnings.append(clean(f"sficheck: {f.package.name} is {f.status.value} ({why}){alternatives}"))
     return warnings

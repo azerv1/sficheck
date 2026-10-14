@@ -85,8 +85,8 @@ line-length = 120
 target-version = "py311"
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "PTH"]
-ignore = ["E501", "RUF001"]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "PTH", "S"]
+ignore = ["E501", "RUF001", "S101"]  # asserts narrow types for mypy and are pytest's checks
 
 [tool.mypy]
 python_version = "3.11"

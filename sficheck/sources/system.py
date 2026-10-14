@@ -195,7 +195,7 @@ def flatpak_appstream_licenses() -> dict[str, str]:
             try:
                 opener = gzip.open if path.suffix == ".gz" else open
                 with opener(path, "rb") as fh:
-                    tree = ET.parse(fh)
+                    tree = ET.parse(fh)  # noqa: S314 -- expat resolves no external entities and caps entity expansion (2.4.1+)
             except (OSError, ET.ParseError) as exc:
                 log.debug("skip %s: %s", path, exc)
                 continue

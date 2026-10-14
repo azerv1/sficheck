@@ -220,7 +220,9 @@ def load_parabola(fetcher: Fetcher, include_aur: bool = True, include_privacy: b
 
 def load_user(location: str, fetcher: Fetcher) -> Blacklist:
     """A user list: JSON in the bundled format, or Parabola-format text. Path or URL."""
-    if re.match(r"^https?://", location):
+    if re.match(r"^http://", location):
+        raise OSError(f"{location}: use an https:// URL, so the list can't be changed on its way here")
+    if re.match(r"^https://", location):
         text = fetcher.get(location)
         if text is None:
             raise OSError(f"could not fetch {location}")

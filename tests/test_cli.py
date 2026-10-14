@@ -364,6 +364,22 @@ def test_antifeatures_in_every_format() -> None:
     assert "| phones home | tracking, drm |" in md  # its own column, not repeated in the description
 
 
+def test_untrusted_text_cannot_drive_the_terminal_or_a_spreadsheet() -> None:
+    evil = Package("ext\x1b]0;owned\x07‮", "browser", "=HYPERLINK(1)")
+    findings = [Finding(evil, Status.NONFREE, description="\x1b[2Jgone", ring=Ring.ME)]
+    reports = [SourceReport("browser", "browser", findings, error="bad\x1b[31m")]
+    for out in (
+        render.table(findings, render.Palette(False), 200),
+        render.markdown(findings, reports, False),
+        render.summary_text(reports, render.Palette(False), False),
+    ):
+        assert "\x1b" not in out and "‮" not in out
+    assert "ext?]0;owned??" in render.table(findings, render.Palette(False), 200)
+    (row,) = csv.DictReader(io.StringIO(render.as_csv(findings)))
+    assert row["Version"] == "'=HYPERLINK(1)" and row["Ring"] == "-3"  # a ring number is no formula
+    assert "\x1b" not in row["Description"]
+
+
 def test_empty_sources_are_left_out_of_the_summaries() -> None:
     findings = [Finding(Package("vgk", "fake"), Status.NONFREE)]
     reports = [
