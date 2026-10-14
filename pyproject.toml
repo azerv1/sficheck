@@ -11,7 +11,6 @@ requires-python = ">=3.11"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE", "NOTICE"]
 authors = [
-    { name = "vmavromatis", email = "bill.mavromatis@protonmail.com" },
     { name = "azerv1", email = "azerv1@users.noreply.github.com" },
 ]
 maintainers = [{ name = "azerv1", email = "azerv1@users.noreply.github.com" }]
