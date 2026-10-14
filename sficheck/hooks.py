@@ -44,9 +44,11 @@ def hook_text(manager: str, command: list[str]) -> str:
         )
     if manager == "apt":
         # Version 2 of the protocol sends old versions too, so upgrades can be told apart from new installs.
+        # apt runs the line through sh and aborts the install if it fails, so a broken or uninstalled
+        # sficheck falls back to cat, which drains what apt sends and succeeds.
         return (
             "// Written by sficheck --install-hook apt; remove with --remove-hook apt.\n"
-            f"DPkg::Pre-Install-Pkgs {{ {_apt_quote(check)}; }};\n"
+            f"DPkg::Pre-Install-Pkgs {{ {_apt_quote(check + ' || cat > /dev/null')}; }};\n"
             f'DPkg::Tools::Options::{command[0]}::Version "2";\n'
         )
     # dnf5 runs the command once per package; the sh guard skips upgrades and removals cheaply.

@@ -28,7 +28,7 @@ def test_pacman_hook_runs_before_installs_with_the_targets() -> None:
 
 def test_apt_hook_asks_for_protocol_version_2() -> None:
     text = hooks.hook_text("apt", COMMAND)
-    assert 'DPkg::Pre-Install-Pkgs { "/home/me/.local/bin/sficheck --check-targets dpkg"; };' in text
+    assert 'DPkg::Pre-Install-Pkgs { "/home/me/.local/bin/sficheck --check-targets dpkg || cat > /dev/null"; };' in text
     assert 'DPkg::Tools::Options::/home/me/.local/bin/sficheck::Version "2";' in text
 
 
