@@ -132,12 +132,10 @@ def test_snap(fake_run: FakeRun, fetcher: StubFetcher, ctx: Context) -> None:
 def test_brew(fake_run: FakeRun, fetcher: StubFetcher, ctx: Context) -> None:
     data = {
         "formulae": [{"name": "wget", "license": "GPL-3.0-or-later", "installed": [{"version": "1.24"}]}],
-        "casks": [{"token": "google-chrome", "version": "130", "installed": "130"}],
     }
     fake_run({"brew info": json.dumps(data)})
     found = scan(Brew(ctx), fetcher)
     assert found["wget"].status is Status.FREE
-    assert found["google-chrome"].status is Status.NONFREE
 
 
 def test_cargo_reads_registry_manifest(

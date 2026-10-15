@@ -23,8 +23,6 @@ USER_AGENT = f"sficheck/{__version__} (+https://github.com/azerv1/sficheck)"
 def cache_dir() -> Path:
     if sys.platform == "win32":
         base = Path(os.environ.get("LOCALAPPDATA") or Path.home() / "AppData" / "Local")
-    elif sys.platform == "darwin":
-        base = Path.home() / "Library" / "Caches"
     else:
         base = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
     return base / "sficheck"

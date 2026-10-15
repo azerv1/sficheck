@@ -11,20 +11,19 @@ from pathlib import Path
 from sficheck.models import Package
 from sficheck.sources.base import Source
 
-# Profile roots relative to the home folder (Linux, flatpak, snap, macOS). Missing ones are skipped.
+# Profile roots relative to the home folder (Linux, flatpak, snap). Missing ones are skipped.
 FIREFOX_HOME_ROOTS = (
     ".mozilla/firefox",
     ".var/app/org.mozilla.firefox/.mozilla/firefox",
     "snap/firefox/common/.mozilla/firefox",
-    "Library/Application Support/Firefox/Profiles",
 )
-# Chromium-family "User Data" folders: (browser, Linux ~/.config path, macOS path, Windows %LOCALAPPDATA% path).
+# Chromium-family "User Data" folders: (browser, Linux ~/.config path, Windows %LOCALAPPDATA% path).
 CHROMIUM_ROOTS = (
-    ("chrome", "google-chrome", "Google/Chrome", "Google/Chrome/User Data"),
-    ("chromium", "chromium", "Chromium", "Chromium/User Data"),
-    ("brave", "BraveSoftware/Brave-Browser", "BraveSoftware/Brave-Browser", "BraveSoftware/Brave-Browser/User Data"),
-    ("edge", "microsoft-edge", "Microsoft Edge", "Microsoft/Edge/User Data"),
-    ("vivaldi", "vivaldi", "Vivaldi", "Vivaldi/User Data"),
+    ("chrome", "google-chrome", "Google/Chrome/User Data"),
+    ("chromium", "chromium", "Chromium/User Data"),
+    ("brave", "BraveSoftware/Brave-Browser", "BraveSoftware/Brave-Browser/User Data"),
+    ("edge", "microsoft-edge", "Microsoft/Edge/User Data"),
+    ("vivaldi", "vivaldi", "Vivaldi/User Data"),
 )
 _MSG = re.compile(r"^__MSG_(\w+)__$")
 
@@ -40,12 +39,7 @@ def _chromium_roots() -> list[tuple[str, Path]]:
     home = Path.home()
     config = Path(os.environ.get("XDG_CONFIG_HOME") or home / ".config")
     local = Path(os.environ.get("LOCALAPPDATA") or home / "AppData" / "Local")
-    support = home / "Library" / "Application Support"
-    return [
-        (browser, root)
-        for browser, linux, mac, windows in CHROMIUM_ROOTS
-        for root in (config / linux, support / mac, local / windows)
-    ]
+    return [(browser, root) for browser, linux, windows in CHROMIUM_ROOTS for root in (config / linux, local / windows)]
 
 
 def _dirs(path: Path) -> list[Path]:

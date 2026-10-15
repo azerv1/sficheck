@@ -88,4 +88,3 @@ def env_path(var: str, default: Path) -> Path:
 
 
 IS_WINDOWS = sys.platform == "win32"
-IS_MAC = sys.platform == "darwin"

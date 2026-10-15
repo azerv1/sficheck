@@ -6,11 +6,10 @@ sficheck (SFI-check) finds proprietary software at every level, kernel drivers, 
 
 sficheck is a fork of [absolutely-proprietary](https://github.com/vmavromatis/absolutely-proprietary) by Vasilis Mavromatis and contributors. The original was a single script for Arch-based distros: it checked pacman packages against Parabola's blacklists and printed your Stallman Freedom Index. This fork adds:
 
-- system package managers beyond pacman (dpkg, rpm, nix, flatpak, snap, brew, winget, scoop, choco, the Windows registry) and 28 language package managers
+- system package managers beyond pacman (dpkg, rpm, nix, flatpak, snap, brew) and 28 language package managers
 - the kernel, hypervisor, firmware and hardware scans (rings 0 to -3), each selectable on its own
 - opt-in browser and Android scans, anti-feature tags, and `--in-use`
 - install-time warnings for pacman, apt and dnf
-- Windows and macOS support
 - the classification chain: user blacklists, ecosystem authorities, curated lists, SPDX parsing and online license lookups
 - JSON output, a config file, caching, and a test suite with Hypothesis property tests
 
@@ -73,7 +72,6 @@ Other formats: `--format markdown`, `csv` or `json`, and `-o FILE` writes to a f
 - **`dpkg`** — Debian, Ubuntu, Mint… The archive area decides: `non-free`, `non-free-firmware`, `restricted` and `multiverse` are nonfree, `contrib` is uses-nonfree. Third-party packages (Chrome, VS Code, Teams…) come from the curated list.
 - **`rpm`** — Fedora, RHEL, openSUSE, Mageia… The License tag from the rpm database, as SPDX on current Fedora or as older Callaway names like `GPLv2+` and `ASL 2.0`. Firmware tagged `LicenseRef-Fedora-Firmware` or `Redistributable, no modification permitted` is nonfree.
 - **`nix`** — `nix-env`, `nix profile` and NixOS `systemPackages`, using nixpkgs `meta.license.free`.
-- **`winget`**, **`scoop`**, **`choco`** — license from `winget show` (cached), scoop manifests and Chocolatey nuspecs.
 - **`Python`** — `pip` (default interpreter), `uv` tools, `pipx`
 - **`JavaScript/TypeScript`** — `npm`, `pnpm`, `yarn`, `bun`, `deno`
 - **`JVM`** — `sdkman` (Oracle JDK and GraalVM builds are nonfree), `coursier`, and the opt-in caches `maven` and `gradle`
@@ -87,8 +85,8 @@ Opt-in sources only run when named, e.g. `--sources maven,gradle`.
 
 - **`browser`** — extensions you installed in Firefox and Chromium-based browsers (Chrome, Chromium, Brave, Edge, Vivaldi), and the Widevine DRM module those browsers download to play protected video. Widevine is nonfree and tagged `drm`.
 - It reads only these local files, never history, cookies or passwords:
-  - Firefox: `extensions.json` and the `gmp-widevinecdm` folder in each profile, under `~/.mozilla/firefox` (plus its flatpak and snap locations), `~/Library/Application Support/Firefox/Profiles` or `%APPDATA%\Mozilla\Firefox\Profiles`.
-  - Chromium-based: each extension's `manifest.json` (and its `_locales` folder for the display name) under `<profile>/Extensions`, and the `WidevineCdm` folder, under `~/.config/<browser>`, `~/Library/Application Support/<vendor>/<browser>` or `%LOCALAPPDATA%\<vendor>\<browser>\User Data`.
+  - Firefox: `extensions.json` and the `gmp-widevinecdm` folder in each profile, under `~/.mozilla/firefox` (plus its flatpak and snap locations).
+  - Chromium-based: each extension's `manifest.json` (and its `_locales` folder for the display name) under `<profile>/Extensions`, and the `WidevineCdm` folder, under `~/.config/<browser>`.
 - Firefox's built-in add-ons, themes, dictionaries and language packs are skipped.
 - With `--online-licenses`, Firefox extensions are looked up on addons.mozilla.org, which publishes the license each developer declares; a custom license stays unknown. Chrome Web Store doesn't publish licenses, so Chromium extensions rely on the curated `browser.json` and are unknown otherwise.
 
@@ -109,7 +107,7 @@ Proprietary findings also carry the CPU protection ring the software runs in. A 
 | -3 ME         | a coprocessor (ME = Management Engine) or the CPU itself, below the OS | Intel ME, AMD PSP, CPU microcode                                            |
 | -2 firmware   | system firmware                                                        | BIOS/UEFI                                                                   |
 | -1 hypervisor | underneath every OS on the machine                                     | Hyper-V, VMware, Parallels, the VirtualBox Extension Pack                   |
-| 0 kernel      | the kernel                                                             | Riot Vanguard, Easy Anti-Cheat, BattlEye, FACEIT AC, nvidia, Windows itself |
+| 0 kernel      | the kernel                                                             | Riot Vanguard, Easy Anti-Cheat, BattlEye, FACEIT AC, nvidia                 |
 | 3 user        | an ordinary program                                                    | everything else                                                             |
 
 ## Only what runs now: `--in-use`
@@ -189,7 +187,7 @@ Defaults for any option can live in `~/.config/sficheck/config.json`
 
 User blacklists use either Parabola's text format (`name:replacement:ref:id:[status] description`) or the bundled JSON format. They're read from a local path or an `https://` URL.
 
-Downloads (Parabola lists, registry lookups, `winget show` output) are cached for 24 hours in `~/.cache/sficheck` (`%LOCALAPPDATA%\sficheck` on Windows). If the network fails, a stale cache is used. `--offline` never touches the network.
+Downloads (Parabola lists, registry lookups) are cached for 24 hours in `~/.cache/sficheck`. If the network fails, a stale cache is used. `--offline` never touches the network.
 
 ## Development
 

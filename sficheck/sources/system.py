@@ -261,7 +261,7 @@ class Snap(Source):
 class Brew(Source):
     name = "brew"
     kind = "system"
-    description = "Homebrew formulae (license field) and casks (curated list)"
+    description = "Homebrew formulae (license field)"
     lists = ("common",)
 
     def available(self) -> bool:
@@ -275,9 +275,7 @@ class Brew(Source):
         for formula in data.get("formulae", []):
             installed = formula.get("installed") or [{}]
             yield self.pkg(formula["name"], installed[-1].get("version", ""), formula.get("license"), type="formula")
-        for cask in data.get("casks", []):
-            yield self.pkg(cask["token"], cask.get("installed") or cask.get("version", ""), None, type="cask")
 
     def in_use(self, packages: Sequence[Package], running: set[Path]) -> set[str] | None:
-        # Formulae run from <prefix>/Cellar/<name>/<version>/; casks are apps brew can't map.
+        # Formulae run from <prefix>/Cellar/<name>/<version>/.
         return {p.parts[p.parts.index("Cellar") + 1] for p in running if "Cellar" in p.parts[:-1]}

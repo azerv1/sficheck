@@ -1,5 +1,5 @@
 # Developer shortcuts; everything runs through uv. Recipes are plain commands, so they work
-# whether make hands them to sh (Linux, macOS, Git Bash) or cmd.exe.
+# whether make hands them to sh (Linux, Git Bash) or cmd.exe.
 
 .DEFAULT_GOAL := help
 .PHONY: help sync lint format test clean audit install schema

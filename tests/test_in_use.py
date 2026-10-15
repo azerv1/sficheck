@@ -62,7 +62,7 @@ def test_flatpak_snap_and_brew(fake_run: FakeRun, ctx: Context) -> None:
     assert Flatpak(ctx).in_use([], set()) == {"org.mozilla.firefox", "org.gimp.GIMP"}
     paths = {Path("/snap/firefox/4848/usr/lib/firefox/firefox"), Path("/snap/bin/firefox"), Path("/usr/bin/x")}
     assert Snap(ctx).in_use([], paths) == {"firefox"}
-    cellar = {Path("/opt/homebrew/Cellar/wget/1.24.5/bin/wget"), Path("/Applications/Zoom.app/Contents/MacOS/zoom")}
+    cellar = {Path("/opt/homebrew/Cellar/wget/1.24.5/bin/wget"), Path("/usr/bin/zoom")}
     assert Brew(ctx).in_use([], cellar) == {"wget"}
 
 
