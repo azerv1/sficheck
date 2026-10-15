@@ -1,4 +1,4 @@
-## Unreleased
+## 0.2.0 (2026-10-16)
 
 ### BREAKING CHANGE
 
@@ -7,10 +7,24 @@
 
 ### Feat
 
+- drop macOS support
+- **cli**: add install-time hooks for pacman, apt and dnf
+- **sources**: add an opt-in Android source over adb
+- **cli**: add --in-use to report only what runs now
+- **sources**: add an opt-in browser source
+- **lists**: tag findings with anti-features
 - **sources**: add rpm for Fedora, RHEL and openSUSE
 - **lists**: publish a JSON Schema for the curated lists
 - **json**: version the JSON report and publish its schema
 - **cli**: scan every layer by default and add --software
+
+### Fix
+
+- **hooks**: show dnf warnings on stderr
+- **hooks**: keep apt installs working when sficheck can't run
+- **schema**: generate the same JSON Schemas on every Python version
+- **proc**: search only PATH for tools on Windows
+- **security**: harden install hooks, output and downloads
 
 ## 0.1.0 (2026-10-12)
 
