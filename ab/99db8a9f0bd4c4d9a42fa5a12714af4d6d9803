@@ -1,0 +1,19 @@
+pyproject.toml
+  s_4d7dbb40c2169b::t_90a816ef557531 144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ab99db8a9f0bd4c4d9a42fa5a12714af4d6d9803",
+  "prompts": {},
+  "sessions": {
+    "s_4d7dbb40c2169b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2cc965ab-7f44-49e0-a2b8-006a4ab62b4c",
+        "model": "unknown"
+      },
+      "human_author": "azerv1 <asterioszer@gmail.com>"
+    }
+  }
+}
